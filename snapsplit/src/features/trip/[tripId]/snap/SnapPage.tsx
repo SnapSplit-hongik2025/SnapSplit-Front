@@ -3,15 +3,14 @@ import { useState, useRef } from 'react';
 import TabSelector from '@/features/trip/[tripId]/snap/_components/TabSelector';
 import UploadButton from '@/features/trip/[tripId]/snap/_components/UploadButton';
 import BottomNavBar from '@/shared/components/BottomNavBar';
-import TripHeader from '@/features/trip/[tripId]/_components/TripHeader';
-import TripInfo from '@/features/trip/[tripId]/_components/TripInfo';
+import TripHeader from '../budget/_components/TripHeader';
+import TripInfo from '../budget/_components/TripInfo';
 import BaseTabView from '@/features/trip/[tripId]/snap/_components/tabView/BaseTabView';
 import FolderTabView from '@/features/trip/[tripId]/snap/_components/tabView/FolderTabView';
 import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 
 export default function SnapPage() {
-
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 테스트 데이터
@@ -38,11 +37,7 @@ export default function SnapPage() {
       <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* 컨텐츠 영역 */}
-      {activeTab === '전체' ? (
-        <BaseTabView />
-      ) : (
-        <FolderTabView />
-      )}
+      {activeTab === '전체' ? <BaseTabView /> : <FolderTabView />}
       <FloatingModal>
         <UploadButton inputRef={fileInputRef} />
       </FloatingModal>

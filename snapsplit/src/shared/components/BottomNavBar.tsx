@@ -9,7 +9,7 @@ export default function BottomNavBar() {
   const { tripId } = useParams();
 
   const tabs = [
-    { label: 'BUDGET', iconPath: '/svg/budget.svg', path: `/trip/${tripId}` },
+    { label: 'BUDGET', iconPath: '/svg/budget.svg', path: `/trip/${tripId}/budget` },
     { label: 'SNAP', iconPath: '/svg/snap.svg', path: `/trip/${tripId}/snap` },
     { label: 'SPLIT', iconPath: '/svg/split.svg', path: `/trip/${tripId}/split` },
   ];

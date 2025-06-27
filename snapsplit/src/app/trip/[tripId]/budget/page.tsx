@@ -1,13 +1,13 @@
 import BottomNavBar from '@/shared/components/BottomNavBar';
-import TripInfo from '@/features/trip/[tripId]/_components/TripInfo';
-import DailyExpenseList from '@/features/trip/[tripId]/_components/DailyExpenseList';
-import ExpenseFilter from '@/features/trip/[tripId]/_components/ExpenseFilter';
-import SharedBudgetBar from '@/features/trip/[tripId]/_components/SharedBudgetBar';
-import TripDateBar from '@/features/trip/[tripId]/_components/TripDateBar';
-import TripHeader from '@/features/trip/[tripId]/_components/TripHeader';
-import BottomSheetTrigger from '@/features/trip/[tripId]/_components/modal/BottomSheetTrigger';
+import TripInfo from '@/features/trip/[tripId]/budget/_components/TripInfo';
+import DailyExpenseList from '@/features/trip/[tripId]/budget/_components/DailyExpenseList';
+import ExpenseFilter from '@/features/trip/[tripId]/budget/_components/ExpenseFilter';
+import SharedBudgetBar from '@/features/trip/[tripId]/budget/_components/SharedBudgetBar';
+import TripDateBar from '@/features/trip/[tripId]/budget/_components/TripDateBar';
+import TripHeader from '@/features/trip/[tripId]/budget/_components/TripHeader';
+import BottomSheetTrigger from '@/features/trip/[tripId]/budget/_components/modal/BottomSheetTrigger';
 
-export default async function TripPage({ params }: { params: Promise<{ tripId: string }> }) {
+export default async function Budget({ params }: { params: Promise<{ tripId: string }> }) {
   const { tripId } = await params;
   console.log(tripId);
 

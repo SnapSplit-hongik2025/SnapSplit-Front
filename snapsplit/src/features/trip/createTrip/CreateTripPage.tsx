@@ -44,7 +44,7 @@ export default function CreateTripPage() {
       // 마지막 단계라면 여행 생성하고 생성된 여행 홈으로 이동
       // 백엔드 API data로 받아오도록 수정하기
       const TripId = 1;
-      router.push(routerPath.trip.href(TripId));
+      router.push(`${routerPath.trip.href(TripId)}/budget`);
     } else {
       // 다음 스텝으로 이동
       setStep((prev) => prev + 1);
