@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import landing_logo from '@public/svg/landing-logo.svg';
+import KakaoLoginButton from '@/shared/components/KakaoLoginButton';
 
 const LandingSection = () => {
   const [showKakao, setShowKakao] = useState(false);
@@ -41,9 +42,9 @@ const LandingSection = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="w-full bg-yellow-300 flex justify-center p-3 rounded-2xl text-black cursor-pointer"
+              className="w-full flex justify-center"
             >
-              카카오 로그인
+              <KakaoLoginButton />
             </motion.div>
           </Link>
         )}
