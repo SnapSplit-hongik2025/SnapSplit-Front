@@ -19,20 +19,18 @@ const KakaoCallbackPage = () => {
           setIsLoading(false);
           return;
         }
-        // 인가코드 받아오는 것 까지 성공
+        console.log('인가코드:', code);
 
         // 백엔드에 인가 코드 전송
-        const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-        const response = await fetch(`${backendUrl}/auth/kakao/login`, {
+        const response = await fetch('/api/auth/kakao/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code }),
         });
 
         if (!response.ok) {
-          console.log(response.body);
+          const data = await response.json();
+          console.log(data);
           console.log('로그인 실패:', response.statusText);
           setError('로그인에 실패했습니다. 다시 시도해주세요.');
           setIsLoading(false);

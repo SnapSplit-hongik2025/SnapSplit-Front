@@ -25,7 +25,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (!backendResponse.ok) {
-      const errorData = await backendResponse.json();
+      let errorData: Record<string, unknown> = {};
+      try {
+        errorData = await backendResponse.json();
+      } catch {
+        // JSON 파싱 실패 (빈 응답 등)
+        errorData = { message: '알 수 없는 에러가 발생했습니다.' };
+      }
       return NextResponse.json(
         { error: errorData.message || '로그인에 실패했습니다.' },
         { status: backendResponse.status }
