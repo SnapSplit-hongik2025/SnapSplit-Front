@@ -12,8 +12,11 @@ export async function POST(request: NextRequest) {
     }
 
     // 백엔드 API 호출
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const backendResponse = await fetch(`${backendUrl}/api/auth/kakao/login`, {
+    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+
+    console.log('backendUrl:', backendUrl);
+
+    const backendResponse = await fetch(`${backendUrl}/auth/kakao/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

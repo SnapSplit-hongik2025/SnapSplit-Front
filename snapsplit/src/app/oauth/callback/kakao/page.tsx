@@ -19,9 +19,11 @@ const KakaoCallbackPage = () => {
           setIsLoading(false);
           return;
         }
+        // 인가코드 받아오는 것 까지 성공
 
         // 백엔드에 인가 코드 전송
-        const response = await fetch('/auth/kakao/login', {
+        const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+        const response = await fetch(`${backendUrl}/auth/kakao/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -30,12 +32,17 @@ const KakaoCallbackPage = () => {
         });
 
         if (!response.ok) {
+          console.log(response.body);
+          console.log('로그인 실패:', response.statusText);
+          setError('로그인에 실패했습니다. 다시 시도해주세요.');
+          setIsLoading(false);
           throw new Error(`HTTP ${response.status} 에러 발생`);
         }
 
         await response.json();
 
         // 로그인 성공 시 홈으로 리다이렉트
+        console.log('로그인 성공');
         router.push('/home');
       } catch (err) {
         setError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
