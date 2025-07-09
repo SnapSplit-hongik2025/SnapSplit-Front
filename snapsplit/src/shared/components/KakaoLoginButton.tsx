@@ -8,7 +8,9 @@ interface KakaoLoginButtonProps {
 
 const KakaoLoginButton = ({ className = '' }: KakaoLoginButtonProps) => {
   const handleKakaoLogin = () => {
-    signIn('kakao');
+    signIn('kakao', {
+      callbackUrl: '/home', // 로그인 후 홈으로 리다이렉트
+    });
   };
 
   return (

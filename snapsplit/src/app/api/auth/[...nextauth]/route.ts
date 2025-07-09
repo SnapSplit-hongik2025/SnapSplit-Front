@@ -8,7 +8,6 @@ const handler = NextAuth({
       clientSecret: process.env.KAKAO_CLIENT_SECRET!,
     }),
   ],
-  // 필요시 콜백 등 추가 설정 가능
 });
 
 export { handler as GET, handler as POST }; 

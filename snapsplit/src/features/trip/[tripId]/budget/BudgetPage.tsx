@@ -1,5 +1,3 @@
-'use client';
-
 import TripInfo from './_components/TripInfo';
 import DailyExpenseList from './_components/DailyExpenseList';
 import SharedBudgetBar from './_components/SharedBudgetBar';
