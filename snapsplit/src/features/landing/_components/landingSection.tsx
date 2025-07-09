@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import landing_logo from '@public/svg/landing-logo.svg';
@@ -36,17 +35,15 @@ const LandingSection = () => {
             시작하기
           </motion.button>
         ) : (
-          <Link href="/home" key="kakao">
-            <motion.div
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="w-full flex justify-center"
-            >
-              <KakaoLoginButton />
-            </motion.div>
-          </Link>
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="w-full flex justify-center"
+          >
+            <KakaoLoginButton />
+          </motion.div>
         )}
       </AnimatePresence>
     </main>
