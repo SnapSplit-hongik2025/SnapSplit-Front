@@ -1,5 +1,6 @@
 'use client';
 
+import { useParams } from "next/navigation";
 import ExpenseForm from "@/features/trip/[tripId]/budget/expense/_components/ExpenseForm";
 
 const postExpense = (formData: FormData) => {
@@ -7,11 +8,12 @@ const postExpense = (formData: FormData) => {
   console.log(formData);
 }
 
-const AddExpenseModal = () => {
+const ExpensePage = () => {
+    const { mode } = useParams() as {mode: 'add' | 'remove'}
 
   return (
-    <ExpenseForm mode="add" onSubmit={postExpense} />
+    <ExpenseForm mode={mode} onSubmit={postExpense} />
   );
 };
 
-export default AddExpenseModal;
+export default ExpensePage;

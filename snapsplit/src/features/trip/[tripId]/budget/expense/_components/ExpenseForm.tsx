@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import CurrencyList from '@/features/trip/[tripId]/budget/expense/_components/CurrencyList';
 import ExpenseSection from './ExpenseSection';
-import backArrow from '@public/svg/leftArrow.svg';
 import calendar from '@public/svg/calendar.svg';
 import { useRouter } from 'next/navigation';
 import CalendarSheet from './CalendarSheet';
@@ -27,7 +26,7 @@ const ExpenseForm = ({ mode, onSubmit }: ExpenseFormProps) => {
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [currency, setCurrency] = useState<string>('미국 - USD(달러)');
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isFormDataReady, setIsFormDataReady] = useState(false);
   const router = useRouter();
@@ -53,7 +52,7 @@ const ExpenseForm = ({ mode, onSubmit }: ExpenseFormProps) => {
     <div className="w-full h-full pb-15 flex flex-col items-center bg-white">
       <div className="flex w-full h-12 items-center justify-between px-5 py-3">
         <button onClick={() => router.back()}>
-          <Image alt="back" src={backArrow} />
+          <Image alt="back" src="/svg/arrow-left-grey-850.svg" width={24} height={24} />
         </button>
         <p className="text-label-1">{isAdd ? '경비 추가하기' : '경비 빼기'}</p>
         <div className="w-6 h-6" />

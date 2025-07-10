@@ -5,19 +5,10 @@ import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
 import rightArrow from '@public/svg/rightArrow.svg';
 import Image from 'next/image';
 import devider from '@public/svg/devider-2-green.svg';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const SharedBudgetBar = ({ totalShared, tripId }: SharedBudgetBarProps) => {
   const Currencysymbol = useCurrencySymbol(totalShared[0].totalSharedCurrency);
-  const router = useRouter();
-
-  const handleClickAdd = () => {
-    router.push(`/trip/${tripId}/budget/expense-add`);
-  };
-
-  const handleClickRemove = () => {
-    router.push(`/trip/${tripId}/budget/expense-remove`);
-  };
 
   if (!totalShared) {
     return <div>예산 정보를 불러올 수 없습니다.</div>;
@@ -30,17 +21,19 @@ const SharedBudgetBar = ({ totalShared, tripId }: SharedBudgetBarProps) => {
           <div className="w-full flex flex-row justify-between items-center text-green text-sm pb-1">
             <p>공동경비 잔액</p>
             <div className="flex flex-row gap-3">
-              <button onClick={handleClickRemove}>빼기</button>
+              <Link href={`/trip/${tripId}/budget/expense/remove`}>빼기</Link>
               <Image src={devider} alt="devider" width={2} height={20} />
-              <button onClick={handleClickAdd}>추가하기</button>
+              <Link href={`/trip/${tripId}/budget/expense/add`}>추가하기</Link>
             </div>
           </div>
-          <div className="flex flex-row w-full">
+          <div className="flex flex-row w-full items-center">
             <p className="text-head-0 text-black">
               {Currencysymbol}
               {totalShared[0].totalSharedAmount.toLocaleString()}
             </p>
-            <Image alt=">" src={rightArrow} width={25} height={25} />
+            <Link href={`/trip/${tripId}/budget/detail`}>
+              <Image alt=">" src={rightArrow} width={25} height={25} />
+            </Link>
           </div>
           <p className="text-body-2 text-grey-550 w-full">지금까지 쇼핑에 150,000원 썼어요!</p>
         </div>

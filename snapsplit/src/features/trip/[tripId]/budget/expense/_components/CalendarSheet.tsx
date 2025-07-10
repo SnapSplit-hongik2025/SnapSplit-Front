@@ -9,8 +9,8 @@ const CalendarSheet = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  selectedDate: Date | null;
-  setSelectedDate: (date: Date | null) => void;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
 }) => {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>

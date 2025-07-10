@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { calSans } from '@/shared/fonts/cal-sans';
 
 export const metadata: Metadata = {
   title: 'SnapScpit',
@@ -12,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={calSans.variable}>
       <head>
         <link
           rel="stylesheet"

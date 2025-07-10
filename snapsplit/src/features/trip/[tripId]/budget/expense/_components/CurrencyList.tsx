@@ -17,7 +17,7 @@ const CurrencyList = ({ onClose, setCurrency, selectedCurrency }: CurrencyListPr
     <BottomSheet isOpen={true} onClose={onClose}>
       <div className="flex flex-col w-full">
         {currencyList.map((currency) => (
-          <button key={currency} onClick={() => setCurrency(currency)} className="flex items-center py-3">
+          <button key={currency} onClick={() => {setCurrency(currency); onClose();}} className="flex items-center py-3">
             {currency === selectedCurrency && <Image alt="check" src={checkGreen} width={24} height={24} />}
             {currency !== selectedCurrency && <Image alt="check" src={checkGrey} width={24} height={24} />}
             <div className="pl-1 text-body-1">{currency}</div>
