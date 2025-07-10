@@ -22,6 +22,7 @@ export default function Profile() {
     <div>
       <p>안녕하세요, {session.user?.name}님!</p>
       <p>이메일: {session.user?.email}</p>
+      <p>이미지: {session.user?.image}</p>
       <button onClick={() => signOut()}>로그아웃</button>
     </div>
   );
