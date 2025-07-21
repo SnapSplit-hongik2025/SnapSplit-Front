@@ -22,6 +22,10 @@ export default function CreateTripPage() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
+  // 여행 날짜 상태
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
   // JSON에서 국가 목록 로딩
   useEffect(() => {
     fetch('/mocks/countries.json')
@@ -61,7 +65,14 @@ export default function CreateTripPage() {
       onToggle={toggleCountry}
       onClick={handleNextStep}
     />,
-    <SelectDateSection key="step2" onClick={handleNextStep} />,
+    <SelectDateSection
+      key="step2"
+      startDate={startDate}
+      endDate={endDate}
+      setStartDate={setStartDate}
+      setEndDate={setEndDate}
+      onClick={handleNextStep}
+    />,
     <AddMemberSection key="step3" onClick={handleNextStep} />,
     <InputTripNameSection key="step4" onClick={handleNextStep} />,
   ];

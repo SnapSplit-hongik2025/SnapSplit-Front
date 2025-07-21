@@ -17,6 +17,7 @@ module.exports = {
         'label-2': ['16px', { lineHeight: '24px', letterSpacing: '-0.015em', fontWeight: '500' }],
         'body-1': ['14px', { lineHeight: '21px', letterSpacing: '-0.015em', fontWeight: '600' }],
         'body-2': ['14px', { lineHeight: '21px', letterSpacing: '-0.015em', fontWeight: '400' }],
+        'body-3': ['14px', { lineHeight: '21px', letterSpacing: '-0.015em', fontWeight: '500' }],
         'caption-1': ['12px', { lineHeight: '18px', letterSpacing: '-0.015em', fontWeight: '500' }],
         'caption-2': ['12px', { lineHeight: '18px', letterSpacing: '-0.015em', fontWeight: '400' }],
       },
@@ -29,6 +30,7 @@ module.exports = {
         light_grey: '#F5F5F5',
         bg_green: '#DFF5EC',
         green: '#2ecd89',
+        status_error: '#FD7564',
         black: '#0C0D11',
         white: '#FFFFFF',
         grey: {

@@ -1,59 +1,47 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { addMonths, format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, addDays } from 'date-fns';
+import { addMonths, format, isSameDay, isSameMonth, startOfMonth } from 'date-fns';
 import Image from 'next/image';
+import { generateDates } from '@/shared/utils/calendar';
 
-type CalendarProps = {
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
+// 선택 타입 정의
+export type CalendarMode = 'single' | 'range';
+
+export type CalendarProps = {
+  mode: CalendarMode;
+  selectedDate?: Date;
+  selectedRange?: { start: Date | null; end: Date | null };
+  onSelectDate: (date: Date) => void;
 };
 
-export default function Calendar({ selectedDate, setSelectedDate }: CalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState<Date>(startOfMonth(selectedDate));
-
-  const generateDates = () => {
-    const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth);
-    const startDay = getDay(start); // 0=일
-
-    const prevMonthEnd = endOfMonth(addMonths(start, -1));
-    const prevDates =
-      startDay === 0
-        ? []
-        : eachDayOfInterval({
-            start: addDays(prevMonthEnd, -startDay + 1),
-            end: prevMonthEnd,
-          });
-
-    const currentDates = eachDayOfInterval({ start, end });
-
-    const totalCells = prevDates.length + currentDates.length;
-    const nextDatesCount = (7 - (totalCells % 7)) % 7;
-
-    const nextMonthStart = startOfMonth(addMonths(start, 1));
-    const nextDates = Array.from({ length: nextDatesCount }, (_, i) => addDays(nextMonthStart, i));
-
-    return [...prevDates, ...currentDates, ...nextDates];
-  };
-
-  const dates = useMemo(() => generateDates(), [currentMonth]);
-
+export default function Calendar({
+  mode,
+  selectedDate,
+  selectedRange,
+  onSelectDate,
+}: CalendarProps) {
+  const [currentMonth, setCurrentMonth] = useState<Date>(startOfMonth(selectedDate || new Date()));
+  const dates = useMemo(() => generateDates(currentMonth), [currentMonth]); // generateDates(currentMonth: Date) -> 이번 달 페이지의 모든 날짜를 반환
+  const isCurrentMonthPage = useMemo(() => isSameMonth(currentMonth, new Date()), [currentMonth]);
+  
   const handlePrevMonth = () => {
+    if (isCurrentMonthPage) {
+      return;
+    } // 현재 페이지가 현재 달이면 이전 달로 이동하지 않음
+
     setCurrentMonth(addMonths(currentMonth, -1));
   };
-
-  const handleNextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
+  const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2 py-4 bg-white rounded-2xl w-full">
+    <div className="flex flex-col items-center w-full px-1.5 py-4 gap-2">
       <div className="flex items-center justify-between w-70">
         <h2 className="text-label-1">{format(currentMonth, 'yyyy년 M월')}</h2>
         <div className="flex items-center gap-3">
           <button onClick={handlePrevMonth}>
-            <Image alt="arrow" src="/svg/arrow-left-grey-850.svg" width={24} height={24} />
+            {isCurrentMonthPage && <Image alt="arrow" src="/svg/arrow-left-grey-350.svg" width={24} height={24} />}
+            {!isCurrentMonthPage && <Image alt="arrow" src="/svg/arrow-right-black.svg" width={24} height={24} className="scale-x-[-1]" />}
           </button>
           <button onClick={handleNextMonth}>
             <Image alt="arrow" src="/svg/arrow-right-black.svg" width={24} height={24} />
@@ -65,35 +53,81 @@ export default function Calendar({ selectedDate, setSelectedDate }: CalendarProp
         {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
           <div
             key={day}
-            className={`
-            flex w-11 h-11 items-center justify-center text-body-1
-            ${day === '일' ? 'text-[#FD7564]' : 'text-grey-550'}
-          `}
+            className={`flex w-11 h-11 items-center justify-center text-body-3 ${
+              day === '일' ? 'text-status_error' : 'text-grey-550'
+            }`}
           >
             {day}
           </div>
         ))}
-        {dates.map((date, index) => {
-          if (!date) return null;
+        {mode === 'single'
+          ? dates.map((date, index) => {
+              // single mode
+              const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+              const isSelected = selectedDate && isSameDay(date, selectedDate);
 
-          const isSelected = selectedDate && isSameDay(date, selectedDate);
-          const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+              return (
+                <button
+                  key={`${date.toISOString()}-${index}`}
+                  onClick={() => onSelectDate(date)}
+                  className="relative flex w-11 h-11 p-1 rounded-full items-center justify-center"
+                >
+                  <span
+                    className={`relative z-10 text-body-3 ${
+                      !isCurrentMonth ? 'text-grey-350' : isSelected ? 'text-white' : 'text-black'
+                    }`}
+                  >
+                    {format(date, 'd')}
+                  </span>
+                  {isSelected ? <span className="absolute inset-0 rounded-full bg-primary z-0" /> : null}
+                </button>
+              );
+            })
+          : dates.map((date, index) => {
+              // range mode
+              const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+              const isSelectedStart = selectedRange?.start && isSameDay(date, selectedRange.start);
+              const isSelectedEnd = selectedRange?.end && isSameDay(date, selectedRange.end);
+              const isInRange =
+                selectedRange?.start && selectedRange?.end && date > selectedRange.start && date < selectedRange.end;
 
-          return (
-            <button
-              key={`${date.toISOString()}-${index}`} // ✅ 중복 방지
-              onClick={() => setSelectedDate(date)}
-              className="relative flex w-11 h-11 p-1 rounded-full items-center justify-center"
-            >
-              <span
-                className={`relative z-10 text-body-1 ${!isCurrentMonth ? 'text-grey-550' : isSelected ? 'text-white' : 'text-black'}`}
-              >
-                {format(date, 'd')}
-              </span>
-              {isSelected ? <span className="absolute inset-0 rounded-full bg-primary z-0" /> : null}
-            </button>
-          );
-        })}
+              return (
+                <button
+                  key={`${date.toISOString()}-${index}`}
+                  onClick={() => onSelectDate(date)}
+                  className="relative flex w-11 h-11 items-center justify-center"
+                >
+                  <div className={`flex w-10 h-10 items-center justify-center ${
+                    isInRange ? 'bg-pale_green w-11' : 'bg-transparent w-10 rounded-full'
+                  }`}>
+                    <span
+                      className={`relative z-10 text-body-3 ${
+                        !isCurrentMonth
+                          ? 'text-grey-350'
+                          : isSelectedStart || isSelectedEnd
+                            ? 'text-white'
+                            : isInRange
+                              ? 'text-primary'
+                              : 'text-black'
+                      }`}
+                    >
+                      {format(date, 'd')}
+                    </span>
+                    {/* 오른쪽 반 (예: startDate용) */}
+                    {isSelectedStart && selectedRange?.end !== null && (
+                      <span className="absolute right-0 h-10 w-1/2 bg-pale_green" />
+                    )}
+                    {/* 왼쪽 반 (예: endDate용) */}
+                    {isSelectedEnd && selectedRange?.start !== null && (
+                      <span className="absolute left-0 h-10 w-1/2 bg-pale_green" />
+                    )}
+                    {isSelectedStart || isSelectedEnd ? (
+                      <span className="absolute w-10 h-10 rounded-full bg-primary" />
+                    ) : null}
+                  </div>
+                </button>
+              );
+            })}
       </div>
     </div>
   );

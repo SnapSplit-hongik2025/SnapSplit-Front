@@ -14,7 +14,7 @@ const CalendarSheet = ({
 }) => {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <Calendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      <Calendar mode="single" selectedDate={selectedDate} onSelectDate={setSelectedDate} />
       <button 
         onClick={() => {
           onClose();
