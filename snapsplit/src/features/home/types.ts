@@ -1,4 +1,21 @@
- 
+ export type Trip = {
+  tripId: number;
+  tripName: string;
+  startDate: string;
+  endDate: string;
+  countryNames: string[];
+ };
+
+export interface CreateTripSectionProps{
+  upcomingTrips: Trip[];
+  ongoingTrips: Trip[];
+}
+
+export interface CurrentTripListProps {
+  upcomingTrips: Trip[];
+  ongoingTrips: Trip[];
+}
+
 export type UpcomingTripProps = {
   tripName: string;
   tripCountry: string;
