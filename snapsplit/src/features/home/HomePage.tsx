@@ -10,7 +10,7 @@ export default function HomePage() {
       <HomeHeader />
       <CreateTripSection upcomingTrips={mock.data.upcomingTrips} ongoingTrips={mock.data.ongoingTrips} />
       <PastTripImgCardList />
-      <AllPastTripList />
+      <AllPastTripList pastTrips={mock.data.pastTrips} />
     </div>
   );
 }

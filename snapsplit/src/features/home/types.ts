@@ -23,13 +23,23 @@ export type UpcomingTripProps = {
   dDay: string;
 };
 
+export interface PastTripImgCardListProps {
+  pastTrips: Trip[];
+}
+
 export type PastTripCardProp = {
   tripName: string;
   tripDate: string;
 }
 
 export type PastTripListProps = {
+  tripId: number;
   tripName: string;
   tripStartDate: string;
   tripEndDate: string;
+  countryNames: string[];
+}
+
+export interface AllPastTripListProps {
+  pastTrips: Trip[];
 }
