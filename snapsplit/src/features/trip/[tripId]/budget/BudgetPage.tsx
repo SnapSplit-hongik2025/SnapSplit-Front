@@ -7,27 +7,28 @@ import TripHeader from '@/shared/components/TripHeader';
 import { BudgetPageProps } from './type';
 
 // 목데이터
-import tripDetailMock from '@public/mocks/budget-mock.json';
+import mock from '@public/mocks/budget-mock.json';
 
 const BudgetPage = ({ tripId }: BudgetPageProps) => {
-  console.log('- tripId: ' + tripId);
-  const { trip, totalShared, expenses } = tripDetailMock.data;
-
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-white">
         <TripHeader tripId={tripId} />
         <TripInfo
-          tripName={trip.tripName}
-          countries={trip.countries}
-          startDate={trip.startDate}
-          endDate={trip.endDate}
+          tripName={mock.data.tripName}
+          countries={mock.data.countries}
+          startDate={mock.data.startDate}
+          endDate={mock.data.endDate}
         />
-        <SharedBudgetBar totalShared={totalShared} tripId={trip.tripId} />
-        <TripDateBar startDate={trip.startDate} endDate={trip.endDate} />
+        <SharedBudgetBar
+          tripId={mock.data.tripId}
+          sharedFund={mock.data.sharedFund}
+          topExpense={mock.data.topCategoryExpense}
+        />
+        <TripDateBar startDate={mock.data.startDate} endDate={mock.data.endDate} />
       </div>
-      <DailyExpenseList expenses={expenses} tripStartDate={trip.startDate} tripEndDate={trip.endDate} />
-      <BottomSheetTrigger total={trip.tripTotalExpense} />
+      {/* <DailyExpenseList expenses={expenses} tripStartDate={trip.startDate} tripEndDate={trip.endDate} />
+      <BottomSheetTrigger total={trip.tripTotalExpense} /> */}
     </div>
   );
 };

@@ -6,11 +6,12 @@ import rightArrow from '@public/svg/rightArrow.svg';
 import Image from 'next/image';
 import devider from '@public/svg/devider-2-green.svg';
 import Link from 'next/link';
+import { mapCategoryToKor } from '@/shared/utils/useCategoryMapper';
 
-const SharedBudgetBar = ({ totalShared, tripId }: SharedBudgetBarProps) => {
-  const Currencysymbol = useCurrencySymbol(totalShared[0].totalSharedCurrency);
+const SharedBudgetBar = ({ tripId, sharedFund, topExpense }: SharedBudgetBarProps) => {
+  const Currencysymbol = useCurrencySymbol(sharedFund.defaultCurrency);
 
-  if (!totalShared) {
+  if (!sharedFund) {
     return <div>예산 정보를 불러올 수 없습니다.</div>;
   } // 에러 페이지나 모달 띄우기
 
@@ -29,13 +30,15 @@ const SharedBudgetBar = ({ totalShared, tripId }: SharedBudgetBarProps) => {
           <div className="flex flex-row w-full items-center">
             <p className="text-head-0 text-black">
               {Currencysymbol}
-              {totalShared[0].totalSharedAmount.toLocaleString()}
+              {sharedFund.balance.toLocaleString()}
             </p>
             <Link href={`/trip/${tripId}/budget/detail`}>
               <Image alt=">" src={rightArrow} width={25} height={25} />
             </Link>
           </div>
-          <p className="text-body-2 text-grey-550 w-full">지금까지 쇼핑에 150,000원 썼어요!</p>
+          <p className="text-body-2 text-grey-550 w-full">
+            지금까지 [{mapCategoryToKor(topExpense.category)}]에 {topExpense.amountKRW.toLocaleString()}원 썼어요!
+          </p>
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ const TripInfo = ({ tripName, countries, startDate, endDate }: TripInfoProps) =>
           {useISOtoFormattedDate(startDate)} - {useISOtoFormattedDate(endDate)}
         </p>
         <Image alt="|" src={devider} />
-        <p className="text-body-2 truncate">{countries?.map((c) => c.countryName).join(', ') || '국가 정보 없음'}</p>
+        <p className="text-body-2 truncate">{countries?.map((c) => c).join(', ') || '국가 정보 없음'}</p>
       </div>
     </div>
   );
