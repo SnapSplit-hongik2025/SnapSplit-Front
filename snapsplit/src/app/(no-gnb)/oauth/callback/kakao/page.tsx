@@ -5,7 +5,6 @@ import publicInstance from '@/api/instance/publicInstance';
 import { useRouter } from 'next/navigation';
 
 export default function KaKaoRedirect() {
-  console.log('[KakaoRedirect]: 마운트');
   const hasRequested = useRef(false);
   const router = useRouter();
   useEffect(() => {
@@ -16,7 +15,7 @@ export default function KaKaoRedirect() {
 
     if (!code) {
       alert('인증 코드가 없습니다.');
-      router.push('/');
+      router.replace('/');
       return;
     }
 
@@ -24,11 +23,11 @@ export default function KaKaoRedirect() {
       try {
         const res = await publicInstance.post(`/auth/kakao/login?code=${code}`);
         if (res.status === 200) {
-          router.push('/home');
+          router.replace('/home');
         }
       } catch (error) {
         console.error('카카오 로그인 실패 : ', error);
-        router.push('/');
+        router.replace('/');
       }
     };
     kakaoLogin();
