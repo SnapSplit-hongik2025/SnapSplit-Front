@@ -35,8 +35,8 @@ export type PastTripCardProp = {
 export type PastTripListProps = {
   tripId: number;
   tripName: string;
-  tripStartDate: string;
-  tripEndDate: string;
+  startDate: string;
+  endDate: string;
   countryNames: string[];
 }
 

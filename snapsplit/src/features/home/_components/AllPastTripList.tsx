@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { PastTripListProps, AllPastTripListProps } from '../types';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
 
-const PastTripItem = ({ tripId, tripName, tripStartDate, tripEndDate }: PastTripListProps) => {
+const PastTripItem = ({ tripId, tripName, startDate, endDate }: PastTripListProps) => {
   return (
     <Link className="space-x-[14px] py-4" href={`trip/${tripId}/budget`}>
       <div className="flex flex-row gap-3">
@@ -11,7 +11,7 @@ const PastTripItem = ({ tripId, tripName, tripStartDate, tripEndDate }: PastTrip
           <p>{tripName}</p>
           <div className="flex flex-row text-grey-550 text-caption-1">
             <span>
-              {useISOtoFormattedDate(tripStartDate)} - {useISOtoFormattedDate(tripEndDate)}
+              {useISOtoFormattedDate(startDate)} - {useISOtoFormattedDate(endDate)}
             </span>
           </div>
         </div>
@@ -36,8 +36,8 @@ const AllPastTripList = ({ pastTrips }: AllPastTripListProps) => {
             key={trip.tripId}
             tripId={trip.tripId}
             tripName={trip.tripName}
-            tripStartDate={trip.startDate}
-            tripEndDate={trip.endDate}
+            startDate={trip.startDate}
+            endDate={trip.endDate}
             countryNames={trip.countryNames}
           />
         ))}
