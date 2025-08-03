@@ -41,17 +41,32 @@ export type ExpenseItemProps = {
   expenseDay: string;
 };
 
-
-export type DailyExpenseListProps = {
-  expenses: Expense[];
-};
-
 export type User = {
   userId: number;
   userIconImg: string;
 };
 
-
 export type UserIconListProps = {
   users: User[];
+};
+
+export type expense = {
+  expenseId: number;
+  category: string;
+  expenseName: string;
+  expenseMemo: string;
+  amount: number;
+  currency: string;
+  splitters: string[];
+};
+
+export type dailyExpenses = {
+  date: string;
+  expenses: expense[];
+};
+
+export type DailyExpenseListProps = {
+  dailyExpenses: dailyExpenses[];
+  tripStartDate: string;
+  tripEndDate: string;
 };

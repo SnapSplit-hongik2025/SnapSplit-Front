@@ -27,8 +27,12 @@ const BudgetPage = ({ tripId }: BudgetPageProps) => {
         />
         <TripDateBar startDate={mock.data.startDate} endDate={mock.data.endDate} />
       </div>
-      {/* <DailyExpenseList expenses={expenses} tripStartDate={trip.startDate} tripEndDate={trip.endDate} />
-      <BottomSheetTrigger total={trip.tripTotalExpense} /> */}
+      <DailyExpenseList
+        dailyExpenses={mock.data.dailyExpenses}
+        tripStartDate={mock.data.startDate}
+        tripEndDate={mock.data.endDate}
+      />
+      <BottomSheetTrigger total={mock.data.totalExpense} />
     </div>
   );
 };

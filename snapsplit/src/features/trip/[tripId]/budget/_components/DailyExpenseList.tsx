@@ -1,36 +1,44 @@
-import { Expense } from '../api';
-import { groupExpensesByDate } from '@/shared/utils/groupExpenses';
+// DailyExpenseList.tsx
+import dayjs from 'dayjs';
 import ExpenseDateBar from './ExpenseDateBar';
 import ExpenseItem from './ExpenseItem';
-import AddExpenseButton from './AddExpenseButton';
-import TopFloatingButton from '@/shared/components/TopFloatingButton';
+import { DailyExpenseListProps } from '../type';
 
-type DailyExpenseListProps = {
-  expenses: Expense[];
-  tripStartDate: string;
-  tripEndDate: string;
-};
-
-const DailyExpenseList = ({ expenses, tripStartDate, tripEndDate }: DailyExpenseListProps) => {
-  const groupedExpenses = groupExpensesByDate(expenses, tripStartDate, tripEndDate);
+export default function DailyExpenseList({ dailyExpenses, tripStartDate }: DailyExpenseListProps) {
+  const start = dayjs(tripStartDate);
 
   return (
-    <div
-      id="scroll-target-top"
-      className="flex-grow w-full space-y-8 px-5 pt-5 text-grey-850 pb-[159px] overflow-y-auto scrollbar-hide bg-grey-50"
-    >
-      {groupedExpenses.map((group) => (
-        <div key={group.label} className="space-y-3" id={group.id ? `day-${group.id}` : undefined}>
-          <ExpenseDateBar expenseDay={group.label} type={group.type} dayIndex={group.dayIndex} />
-          {group.expenses.map((expense) => (
-            <ExpenseItem key={`${expense.expenseId}-${expense.expenseCurrency}`} expense={expense} />
-          ))}
-          <AddExpenseButton />
-        </div>
-      ))}
-      <TopFloatingButton />
+    <div className="flex-1 overflow-y-auto">
+      {dailyExpenses.map(({ date, expenses }) => {
+        const current = dayjs(date);
+        const dayIndex = current.diff(start, 'day') + 1;
+        const inTrip = current.isSameOrAfter(start);
+
+        return (
+          <div key={date} className="px-4 py-2">
+            <ExpenseDateBar
+              expenseDay={current.format('M.D(ddd)')}
+              type={inTrip ? 'IN_TRIP' : 'PRE_TRIP'}
+              dayIndex={inTrip ? dayIndex : undefined}
+            />
+            {/* raw 데이터를 ExpenseItem이 기대하는 모양으로 매핑 */}
+            {expenses.map((e) => (
+              <ExpenseItem
+                key={e.expenseId}
+                expense={{
+                  expenseId: e.expenseId,
+                  category: e.category,
+                  expenseName: e.expenseName,
+                  expenseMemo: e.expenseMemo,
+                  amount: e.amount,
+                  currency: e.currency.toUpperCase(),
+                  splitters: e.splitters.map((name) => ({ userName: name })),
+                }}
+              />
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
-};
-
-export default DailyExpenseList;
+}
