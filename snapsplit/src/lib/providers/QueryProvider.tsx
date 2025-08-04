@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface QueryProviderProps {
   children: React.ReactNode;
@@ -15,23 +15,14 @@ export default function QueryProvider({ children, showDevtools = false }: QueryP
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5, // 5분
+            staleTime: 1000 * 60 * 5,    // 5분
             retry: 1,
+            refetchOnMount: false,       // 마운트 시 재요청 방지
+            refetchOnWindowFocus: false, // 포커스 복귀 시 재요청 방지
           },
         },
       })
   );
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // SSR 중에는 기본 렌더링, 클라이언트에서 마운트 후 QueryProvider 적용
-  if (!isMounted) {
-    return <>{children}</>;
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
