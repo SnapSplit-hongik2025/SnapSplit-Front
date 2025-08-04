@@ -5,8 +5,9 @@ import CurrentTripList from './CurrentTripList';
 import OverlayModal from '@/shared/components/modal/OverlayModal';
 import JoinTripByCodeModal from './modal/JoinTripByCodeModal';
 import { useState } from 'react';
+import { CreateTripSectionProps } from '../types';
 
-const CreateTripSection = () => {
+const CreateTripSection = ({ upcomingTrips, ongoingTrips }: CreateTripSectionProps) => {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
 
   const openJoinModal = () => {
@@ -23,7 +24,7 @@ const CreateTripSection = () => {
         스냅스플릿과 함께
         <br /> 재밌는 여행을 떠나볼까요?
       </span>
-      <CurrentTripList />
+      <CurrentTripList upcomingTrips={upcomingTrips} ongoingTrips={ongoingTrips} />
       <div className="flex flex-col w-full gap-4 px-5">
         <Link href="/trip/createTrip" className="flex bg-primary py-[14px] px-5 justify-center text-grey-50 rounded-xl">
           여행 등록하기

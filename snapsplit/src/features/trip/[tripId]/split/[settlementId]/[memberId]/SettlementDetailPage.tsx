@@ -4,10 +4,10 @@ import DetailExpenses from './_components/DetailExpenses';
 import { SettlementDetailPageProps } from './type';
 import mock from '@public/mocks/split-settlement-detail.json';
 
-const SettlementDetailPage = ({ tripId, settlementId, name }: SettlementDetailPageProps) => {
+const SettlementDetailPage = ({ name }: SettlementDetailPageProps) => {
   return (
     <div className="h-screen w-full flex flex-col overflow-y-auto scrollbar-hide">
-      <SettlementDetailHeader tripId={tripId} settlementId={settlementId} />
+      <SettlementDetailHeader />
       <TotalAmountInfo name={name} totalAmount={mock.totalAmount} />
       <DetailExpenses sharedBudgetDetails={mock.sharedBudgetDetails} />
     </div>

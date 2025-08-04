@@ -1,0 +1,54 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "메인 홈 불러오기 성공",
+  "data": {
+    "upcomingTrips": [
+      {
+        "tripId": 11,
+        "tripName": "유럽 핵심 투어",
+        "startDate": "2025-09-20",
+        "endDate": "2025-10-23",
+        "countryNames": [
+          "프랑스",
+          "영국",
+          "스위스"
+        ]
+      },
+      {
+        "tripId": 14,
+        "tripName": "호주 해변 투어",
+        "startDate": "2025-12-15",
+        "endDate": "2025-12-30",
+        "countryNames": [
+          "호주"
+        ]
+      }
+    ],
+    "ongoingTrips": [
+      {
+        "tripId": 13,
+        "tripName": "동남아 모험 여행",
+        "startDate": "2025-08-02",
+        "endDate": "2025-08-20",
+        "countryNames": [
+          "태국",
+          "베트남",
+          "말레이시아"
+        ]
+      }
+    ],
+    "pastTrips": [
+      {
+        "tripId": 12,
+        "tripName": "벚꽃구경 일본여행",
+        "startDate": "2025-04-01",
+        "endDate": "2025-04-10",
+        "tripImage": "https://example.com/japan.jpg",
+        "countryNames": [
+          "일본"
+        ]
+      }
+    ]
+  }
+}

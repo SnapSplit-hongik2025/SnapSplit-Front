@@ -1,0 +1,35 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "지출 상세 조회 성공",
+  "data": {
+    "expenseId": 30,
+    "amount": 90,
+    "amountKRW": 135000,
+    "currency": "EUR",
+    "paymentMethod": "cash",
+    "date": "2025-05-20",
+    "expenseName": "파리 레스토랑",
+    "expenseMemo": "점심 식사",
+    "category": "FOOD",
+    "payers": [
+      {
+        "memberId": 33,
+        "name": "문재영",
+        "amount": 90
+      }
+    ],
+    "splitters": [
+      {
+        "memberId": 33,
+        "name": "문재영",
+        "amount": 45
+      },
+      {
+        "memberId": 34,
+        "name": "권은정",
+        "amount": 45
+      }
+    ]
+  }
+}

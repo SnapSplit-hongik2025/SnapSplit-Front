@@ -1,14 +1,17 @@
+'use client';
+
 import Image from 'next/image';
 import arrow from '@public/svg/arrow-left-grey-1000.svg';
-import Link from 'next/link';
-import { SettlementDetailHeaderProps } from '../type';
+import { useRouter } from 'next/navigation';
 
-export default function SettlementDetailHeader({ tripId, settlementId }: SettlementDetailHeaderProps) {
+export default function SettlementDetailHeader() {
+  const router = useRouter();
+
   return (
     <header className="flex px-5 py-3 justify-between text-label-1 items-center">
-      <Link href={`/trip/${tripId}/split/${settlementId}`}>
+      <button onClick={() => router.back()}>
         <Image src={arrow} alt="back button" />
-      </Link>
+      </button>
       개별 지출 금액
       <div className="w-5 h-5" />
     </header>

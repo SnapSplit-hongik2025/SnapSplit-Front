@@ -75,8 +75,8 @@ const ExpenseForm = () => {
 
         {/* date section */}
         <div className="flex flex-col pt-6 gap-3">
-          <div className="text-label-2">날짜</div>
-          <div className="flex items-center justify-between h-12 px-4 rounded-xl border border-grey-350">
+          <div className="text-body-2">날짜</div>
+          <div className="text-body-2 flex items-center justify-between h-12 px-4 rounded-xl border border-grey-350">
             <div>{selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '날짜 선택'}</div>
             <button onClick={() => setIsCalendarOpen(!isCalendarOpen)}>
               <Image alt="calendar" src={calendar} />
