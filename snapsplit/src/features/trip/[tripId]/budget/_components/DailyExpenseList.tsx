@@ -16,18 +16,7 @@ export default function DailyExpenseList({ dailyExpenses, tripStartDate, tripEnd
           <div id={date} key={date}>
             <ExpenseDateBar expenseDate={date} tripStartDate={tripStartDate} />
             {expenses.map((e) => (
-              <ExpenseItem
-                key={e.expenseId}
-                expense={{
-                  expenseId: e.expenseId,
-                  category: e.category,
-                  expenseName: e.expenseName,
-                  expenseMemo: e.expenseMemo,
-                  amount: e.amount,
-                  currency: e.currency.toUpperCase(),
-                  splitters: e.splitters,
-                }}
-              />
+              <ExpenseItem key={e.expenseId} expense={e} />
             ))}
             <AddExpenseButton />
           </div>
