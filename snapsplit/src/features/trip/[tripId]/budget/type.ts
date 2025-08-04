@@ -70,3 +70,8 @@ export type DailyExpenseListProps = {
   tripStartDate: string;
   tripEndDate: string;
 };
+
+export type ExpenseDateBarProps = {
+  expenseDate: string;
+  tripStartDate: string;
+};
