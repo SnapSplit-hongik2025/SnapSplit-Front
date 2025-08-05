@@ -2,11 +2,11 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import LogSection from '@/features/trip/[tripId]/budget/detail/_components/LogSection';
-import BudgetOverview from '@/features/trip/[tripId]/budget/detail/_components/BudgetOverview';
+import LogSection from '@/features/trip/[tripId]/budget/shared/_components/LogSection';
+import BudgetOverview from '@/features/trip/[tripId]/budget/shared/_components/BudgetOverview';
 import { useState } from 'react';
 import OverlayModal from '@/shared/components/modal/OverlayModal';
-import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/detail/_components/CurrencyBottomSheet';
+import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/shared/_components/CurrencyBottomSheet';
 
 const SharedBudgetDetailPage = () => {
   const router = useRouter();

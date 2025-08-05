@@ -31,7 +31,7 @@ const SharedBudgetBar = ({ totalShared, tripId }: SharedBudgetBarProps) => {
               {Currencysymbol}
               {totalShared[0].totalSharedAmount.toLocaleString()}
             </p>
-            <Link href={`/trip/${tripId}/budget/detail`}>
+            <Link href={`/trip/${tripId}/budget/shared`}>
               <Image alt=">" src={rightArrow} width={25} height={25} />
             </Link>
           </div>
