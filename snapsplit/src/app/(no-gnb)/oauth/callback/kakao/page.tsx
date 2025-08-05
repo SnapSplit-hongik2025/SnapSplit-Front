@@ -3,11 +3,13 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { kakaoLogin } from '@/lib/api/auth';
-import { setAccessToken, setRefreshToken } from '@/shared/utils/tokenUtil';
+import { useAuthStore } from '@/lib/zustand/useAuthStore';
+import { User } from '@/shared/types/auth';
 
 export default function KaKaoRedirect() {
   const hasRequested = useRef(false);
   const router = useRouter();
+  const { setUser, setToken } = useAuthStore();
   useEffect(() => {
     if (hasRequested.current) return;
     hasRequested.current = true;
@@ -23,9 +25,14 @@ export default function KaKaoRedirect() {
     const login = async () => {
       try {
         const res = await kakaoLogin(code);
+        const user: User = {
+          userId: res.data.userId,
+          userName: res.data.name,
+          userCode: res.data.userCode,
+        };
         if (res.status === 200) {
-          setAccessToken(res.data.accessToken);
-          setRefreshToken(res.data.refreshToken);
+          setUser(user);
+          setToken(res.data.accessToken, res.data.refreshToken);
           router.replace('/home');
         }
       } catch (error) {

@@ -1,13 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { User } from '@/shared/types/auth';
 
-interface User {
-  userId: number;
-  userName: string;
-  userCode: string;
-}
-
-interface AuthState {
+type AuthState = {
   user: User | null; // 현재 로그인한 유저의 상태를 담음
   isLoggedIn: boolean; // 로그인 여부 체크 -> 미들웨어 등에 사용
   accessToken: string | null;
