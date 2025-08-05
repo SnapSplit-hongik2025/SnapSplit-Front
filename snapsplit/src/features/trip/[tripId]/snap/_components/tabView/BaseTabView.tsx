@@ -9,6 +9,7 @@ import { FilterState } from '@/features/trip/[tripId]/snap/type';
 import { useEffect } from 'react';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import { mockPhotos } from '@/shared/mock/Photos';
+import BottomSheetAnimation from '@/shared/components/bottom-sheet/BottomSheetAnimation';
 
 // 테스트 데이터
 const testImages = mockPhotos;
@@ -79,25 +80,30 @@ export default function BaseTabView({ setIsScrolled, setScrollToTop }: BaseTabVi
       />
 
       {/* 상단 여백: 필터 태그가 있는 경우 108px, 없는 경우 64px */}
-      <div className={filters.days.length > 0 || filters.people.length > 0 || filters.locations.length > 0 ? "min-h-27" : "min-h-16"}/>
+      <div
+        className={
+          filters.days.length > 0 || filters.people.length > 0 || filters.locations.length > 0 ? 'min-h-27' : 'min-h-16'
+        }
+      />
 
       <PhotoGrid images={filteredImages} />
 
-      {sortOpen && (
-        <BottomSheet isOpen={sortOpen} onClose={() => setSortOpen(false)}>
-          <SortBottomSheet
-            selectedSort={selectedSort}
-            onSelectSort={(opt) => setSelectedSort(opt)}
-            onClose={() => setSortOpen(false)}
-          />
-        </BottomSheet>
-      )}
+      <BottomSheet isOpen={sortOpen} onClose={() => setSortOpen(false)}>
+        <SortBottomSheet
+          selectedSort={selectedSort}
+          onSelectSort={(opt) => setSelectedSort(opt)}
+          onClose={() => setSortOpen(false)}
+        />
+      </BottomSheet>
 
-      {filterOpen && (
-        <BottomSheet isOpen={filterOpen} onClose={() => setFilterOpen(false)}>
-          <FilterBottomSheet filters={filters} setFilters={setFilters} onClose={() => setFilterOpen(false)} tab="base" />
-        </BottomSheet>
-      )}
+      <BottomSheet isOpen={filterOpen} onClose={() => setFilterOpen(false)}>
+        <FilterBottomSheet
+          filters={filters}
+          setFilters={setFilters}
+          onClose={() => setFilterOpen(false)}
+          tab="base"
+        />
+      </BottomSheet>
     </div>
   );
 }
