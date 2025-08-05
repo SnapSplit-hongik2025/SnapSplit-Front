@@ -19,7 +19,6 @@ export default function OverlayModal({
   position = 'bottom',
   className = '',
 }: OverlayModalProps) {
-  console.log('[OverlayModal]: render, isOpen =', isOpen);
   usePreventScroll(isOpen);
 
   const modalBackground = useRef<HTMLDivElement>(null);

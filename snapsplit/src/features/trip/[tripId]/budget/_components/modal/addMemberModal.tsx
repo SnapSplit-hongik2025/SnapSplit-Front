@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { motion, useMotionValue, useDragControls, animate } from 'framer-motion';
 import grabber from '@public/svg/grabber.svg';
-import { useEffect, useRef } from 'react';
 
 const mock = 's4ks0d92';
 
@@ -12,10 +11,8 @@ type AddMemberModalProps = {
 };
 
 const AddMemberModal = ({ onClose }: AddMemberModalProps) => {
-  console.log('[AddMemberModal]: render');
   const y = useMotionValue(0);
   const controls = useDragControls();
-  const ref = useRef<HTMLDivElement>(null);
 
   const handleCopy = async () => {
     try {
@@ -27,17 +24,6 @@ const AddMemberModal = ({ onClose }: AddMemberModalProps) => {
     }
   };
 
-  console.log('[effect start]: ', Date.now(), 'ref.current: ', ref.current);
-  useEffect(() => {
-    console.log('[effect]: ', Date.now(), 'ref.current: ', ref.current);
-    if (ref.current) {
-      const transform = getComputedStyle(ref.current).transform;
-      console.log('[initial transform]: ', transform);
-    } else {
-      console.log('ref.current is null');
-    }
-  }, []);
-
   const animateAndClose = async () => {
     await animate(y, 500, { type: 'tween', duration: 0.2, ease: 'easeIn' });
 
@@ -48,7 +34,6 @@ const AddMemberModal = ({ onClose }: AddMemberModalProps) => {
 
   return (
     <motion.div
-      ref={ref}
       style={{ y }}
       initial={{ y: '100%' }}
       animate={{ y: 0 }}

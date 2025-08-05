@@ -8,8 +8,6 @@ type BottomSheetProps = {
 };
 
 const BottomSheet = ({ isOpen, onClose, children }: BottomSheetProps) => {
-  console.log('[BottomSheet]: render, isOpen =', isOpen);
-
   return (
     <OverlayModal isOpen={isOpen} onClose={onClose} position="bottom">
       <BottomSheetAnimation onClose={onClose}>{children}</BottomSheetAnimation>

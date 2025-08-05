@@ -12,7 +12,6 @@ import AddMemberModal from '@trip/[tripId]/budget/_components/modal/addMemberMod
 import BottomSheet from './bottom-sheet/BottomSheet';
 import close from '@public/svg/close-grey-550.svg';
 import Button from '@/shared/components/Button';
-import BottomSheetAnimation from './bottom-sheet/BottomSheetAnimation';
 
 // 케밥 메뉴 바텀 시트
 interface KebabMenuBottomSheetProps {
@@ -22,7 +21,6 @@ interface KebabMenuBottomSheetProps {
 }
 
 const KebabMenuBottomSheet = ({ onCloseMenu, onDeleteTrip, tripId }: KebabMenuBottomSheetProps) => {
-  console.log('[KebabMenuBottomSheet]: render');
   return (
     <div className="flex flex-col w-full justify-start text-body-3">
       <Link href={`/trip/${tripId}/edit/country`} className="py-3" onClick={onCloseMenu}>

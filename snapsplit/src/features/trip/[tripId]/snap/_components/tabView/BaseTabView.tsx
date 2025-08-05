@@ -9,7 +9,6 @@ import { FilterState } from '@/features/trip/[tripId]/snap/type';
 import { useEffect } from 'react';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import { mockPhotos } from '@/shared/mock/Photos';
-import BottomSheetAnimation from '@/shared/components/bottom-sheet/BottomSheetAnimation';
 
 // 테스트 데이터
 const testImages = mockPhotos;

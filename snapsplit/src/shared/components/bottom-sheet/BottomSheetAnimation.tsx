@@ -11,7 +11,7 @@ import {
   PanInfo,
 } from 'framer-motion';
 import grabber from '@public/svg/grabber.svg';
-import { ReactNode, useRef, useEffect } from 'react';
+import { ReactNode, useRef } from 'react';
 
 type BottomSheetAnimationProps = {
   children: ReactNode;
@@ -22,7 +22,6 @@ const BottomSheetAnimation = ({
   children,
   onClose,
 }: BottomSheetAnimationProps) => {
-  console.log('[BottomSheetAnimation]: render');
   const ref = useRef<HTMLDivElement>(null);
   const y = useMotionValue(0);
   const controls = useDragControls();
@@ -58,16 +57,6 @@ const BottomSheetAnimation = ({
       animate(y, 0, { type: 'spring', stiffness: 400, damping: 40 });
     }
   };
-
-  console.log('[BottomSheetAnimation]: ref.current: ', ref.current);
-  useEffect(() => {
-    if (ref.current) {
-      const transform = getComputedStyle(ref.current).transform;
-      console.log('[initial transform]: ', transform);
-    } else {
-      console.log('ref.current is null');
-    }
-  }, []);
 
   return (
     <motion.div
