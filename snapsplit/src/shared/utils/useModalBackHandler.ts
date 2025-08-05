@@ -19,5 +19,5 @@ export function useModalBackHandler(isOpen: boolean, onClose: () => void) {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 }

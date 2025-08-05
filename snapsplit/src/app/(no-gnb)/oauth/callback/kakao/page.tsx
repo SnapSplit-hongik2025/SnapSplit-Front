@@ -41,7 +41,7 @@ export default function KaKaoRedirect() {
       }
     };
     login();
-  }, [router]);
+  }, [router, setUser, setToken]);
 
   return <div>Redirecting...</div>;
 }
