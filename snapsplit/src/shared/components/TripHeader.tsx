@@ -110,13 +110,15 @@ const TripHeader = ({ tripId }: TripHeaderProps) => {
       </OverlayModal>
 
       {/* 케밥 메뉴 바텀시트 */}
-      <BottomSheet isOpen={isMenuModalOpen} onClose={() => setIsMenuModalOpen(false)}>
-        <KebabMenuBottomSheet
-          onCloseMenu={() => setIsMenuModalOpen(false)}
-          onDeleteTrip={() => setIsDeleteTripModalOpen(true)}
-          tripId={tripId}
-        />
-      </BottomSheet>
+      {isMenuModalOpen && (
+        <BottomSheet isOpen={isMenuModalOpen} onClose={() => setIsMenuModalOpen(false)}>
+          <KebabMenuBottomSheet
+            onCloseMenu={() => setIsMenuModalOpen(false)}
+            onDeleteTrip={() => setIsDeleteTripModalOpen(true)}
+            tripId={tripId}
+          />
+        </BottomSheet>
+      )}
 
       {/* 여행 삭제 모달 */}
       <OverlayModal

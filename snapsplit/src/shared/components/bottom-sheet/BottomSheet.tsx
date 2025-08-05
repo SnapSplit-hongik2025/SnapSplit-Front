@@ -10,6 +10,7 @@ type BottomSheetProps = {
 };
 
 const BottomSheet = ({ isOpen, onClose, children }: BottomSheetProps) => {
+  console.log('isOpen', isOpen);
   const y = useMotionValue(0);
   const controls = useDragControls();
 
@@ -26,7 +27,7 @@ const BottomSheet = ({ isOpen, onClose, children }: BottomSheetProps) => {
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="w-full"
+        className="w-full flex flex-col items-center px-5 pb-8 gap-3 bg-white rounded-t-2xl"
         drag="y"
         dragListener={false}
         dragControls={controls}
@@ -46,15 +47,13 @@ const BottomSheet = ({ isOpen, onClose, children }: BottomSheetProps) => {
           }
         }}
       >
-        <div className="flex flex-col items-center w-full pt-3 px-5 pb-8 gap-3 bg-white rounded-t-2xl">
-          <motion.div
-            className="cursor-grab active:cursor-grabbing touch-none"
-            onPointerDown={(e) => controls.start(e)}
-          >
-            <Image alt="grabber" src={grabber} width={grabber.width} height={grabber.height} />
-          </motion.div>
-          {children}
+        <div
+          className="flex w-full flex-1 justify-center py-3 cursor-grab active:cursor-grabbing touch-none"
+          onPointerDown={(e) => controls.start(e)}
+        >
+          <Image alt="grabber" src={grabber} />
         </div>
+        {children}
       </motion.div>
     </OverlayModal>
   );
