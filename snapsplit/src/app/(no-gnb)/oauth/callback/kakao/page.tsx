@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import publicInstance from '@/api/instance/publicInstance';
 import { useRouter } from 'next/navigation';
+import { kakaoLogin } from '@/lib/api/auth';
+import { useAuthStore } from '@/lib/zustand/useAuthStore';
+import { User } from '@/shared/types/auth';
 
 export default function KaKaoRedirect() {
   const hasRequested = useRef(false);
   const router = useRouter();
+  const { setUser, setToken } = useAuthStore();
   useEffect(() => {
     if (hasRequested.current) return;
     hasRequested.current = true;
@@ -19,10 +22,17 @@ export default function KaKaoRedirect() {
       return;
     }
 
-    const kakaoLogin = async () => {
+    const login = async () => {
       try {
-        const res = await publicInstance.post(`/auth/kakao/login?code=${code}`);
+        const res = await kakaoLogin(code);
+        const user: User = {
+          userId: res.data.userId,
+          userName: res.data.name,
+          userCode: res.data.userCode,
+        };
         if (res.status === 200) {
+          setUser(user);
+          setToken(res.data.accessToken, res.data.refreshToken);
           router.replace('/home');
         }
       } catch (error) {
@@ -30,8 +40,8 @@ export default function KaKaoRedirect() {
         router.replace('/');
       }
     };
-    kakaoLogin();
-  }, [router]);
+    login();
+  }, [router, setUser, setToken]);
 
   return <div>Redirecting...</div>;
 }

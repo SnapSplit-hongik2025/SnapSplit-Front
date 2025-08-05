@@ -1,3 +1,5 @@
+// axios 인스턴스 생성 함수
+
 import axios from 'axios';
 
 const createAxiosInstance = () => {
@@ -8,4 +10,5 @@ const createAxiosInstance = () => {
     },
   });
 };
+
 export default createAxiosInstance;
