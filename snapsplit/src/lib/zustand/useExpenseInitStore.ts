@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export type Member = {
   memberId: number;
@@ -24,13 +25,14 @@ type ExpenseInitState = {
   clearExpenseInitData: () => void;
 };
 
-export const useExpenseInitStore = create<ExpenseInitState>()((set) => ({
+export const useExpenseInitStore = create<ExpenseInitState>()(
+  persist((set) => ({
   defaultCurrency: '',
   availCurrencies: [],
   exchangeRates: {},
   defaultDate: '',
   members: [],
-  setExpenseInitData: (data) =>
+  setExpenseInitData: (data: ExpenseInitData) =>
     set({
       defaultCurrency: data.defaultCurrency,
       availCurrencies: data.availCurrencies,
@@ -46,4 +48,8 @@ export const useExpenseInitStore = create<ExpenseInitState>()((set) => ({
       defaultDate: '',
       members: [],
     }),
-}));
+}), {
+  name: 'expenseInitData',
+  storage: createJSONStorage(() => localStorage),
+}),
+);

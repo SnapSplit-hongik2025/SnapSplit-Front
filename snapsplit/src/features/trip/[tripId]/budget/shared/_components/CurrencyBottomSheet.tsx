@@ -2,32 +2,34 @@
 
 import Image from 'next/image';
 import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
-import { CURRENCY_LIST } from '@/shared/constants/currency';
+import { useExpenseInitStore } from '@/lib/zustand/useExpenseInitStore';
+import { getKorName, getNation } from '@/shared/utils/currency';
 
 type CurrencyBottomSheetProps = {
   onClose?: () => void;
 };
 
 const CurrencyBottomSheet = ({ onClose }: CurrencyBottomSheetProps) => {
+  const { availCurrencies } = useExpenseInitStore();
   const { setCurrency } = useExpenseStore();
-  const selectedCurrency = useExpenseStore((state) => state.expense.currency);
+  const selectedCurrency = useExpenseStore((state) => state.currency);
   return (
     <div className="flex flex-col w-full">
-      {CURRENCY_LIST.map((currency) => (
+      {availCurrencies.map((currency) => (
         <button
-          key={currency.label}
+          key={currency}
           onClick={() => {
-            setCurrency(currency.label);
+            setCurrency(currency);
             onClose?.();
           }}
           className="flex items-center py-3"
         >
-          {currency.label === selectedCurrency && <Image alt="check" src="/svg/check-green.svg" width={24} height={24} />}
-          {currency.label !== selectedCurrency && <Image alt="check" src="/svg/check_grey.svg" width={24} height={24} />}
+          {currency === selectedCurrency && <Image alt="check" src="/svg/check-green.svg" width={24} height={24} />}
+          {currency !== selectedCurrency && <Image alt="check" src="/svg/check_grey.svg" width={24} height={24} />}
           <div
-            className={`pl-[1.5px] text-body-1 ${currency.label === selectedCurrency ? 'text-primary' : 'text-grey-1000'}`}
+            className={`pl-[1.5px] text-body-1 ${currency === selectedCurrency ? 'text-primary' : 'text-grey-1000'}`}
           >
-            {currency.label}
+            {getNation(currency) + ' - ' + currency + '(' + getKorName(currency) + ')'}
           </div>
         </button>
       ))}

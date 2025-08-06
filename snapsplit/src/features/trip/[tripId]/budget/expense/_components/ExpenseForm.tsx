@@ -9,9 +9,25 @@ import CategorySection from './expense-form/CategorySection';
 import PaySection from './expense-form/PaymentSection';
 import SplitSection from './expense-form/SplitSection';
 import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+// import { expenseInitData } from '@/lib/api/expense';
+import EXPENSE_INIT_DATA from '@public/mocks/expense-init.json'
+import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseInitStore';
 
 export default function ExpenseForm() {
+  const tripId = useParams().tripId;
   const { payers } = useExpenseStore();
+  const { setExpenseInitData } = useExpenseInitStore();
+
+  useEffect(() => {
+    if (tripId) {
+      // expenseInitData(tripId as string);
+      const res = EXPENSE_INIT_DATA;
+      setExpenseInitData(res.data as ExpenseInitData);
+    }
+  }, [tripId, setExpenseInitData]);
+
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
       <ExpenseInputCard />
