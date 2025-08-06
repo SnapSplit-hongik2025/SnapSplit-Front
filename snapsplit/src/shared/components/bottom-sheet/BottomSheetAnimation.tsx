@@ -79,6 +79,7 @@ const BottomSheetAnimation = ({
       <div
         className="flex w-full justify-center py-3 cursor-grab active:cursor-grabbing"
         onPointerDown={(e) => controls.start(e, { snapToCursor: false })}
+        style={{ touchAction: 'none' }}
       >
         <Image src={grabber} alt="handle modal" />
       </div>
