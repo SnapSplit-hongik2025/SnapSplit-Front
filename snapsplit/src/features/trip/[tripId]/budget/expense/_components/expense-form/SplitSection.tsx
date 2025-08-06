@@ -18,7 +18,7 @@ export default function SplitSection() {
       </div>
       <div className="flex flex-col items-center w-full">
         {tripMembers.map((member) => (
-          <PaymentRow key={member.id} name={member.name} />
+          <PaymentRow key={member.id} payer={{ memberId: member.id, name: member.name }} />
         ))}
       </div>
     </div>

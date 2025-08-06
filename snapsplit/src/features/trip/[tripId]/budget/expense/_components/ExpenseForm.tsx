@@ -1,3 +1,5 @@
+'use client';
+
 import ExpenseInputCard from './expense-form/ExpenseInputCard';
 import TripDateSection from './expense-form/TripDateSection';
 import PaymentMethodSection from './expense-form/PaymentMethodSection';
@@ -6,8 +8,10 @@ import MemoSection from './expense-form/MemoSection';
 import CategorySection from './expense-form/CategorySection';
 import PaySection from './expense-form/PaymentSection';
 import SplitSection from './expense-form/SplitSection';
+import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 export default function ExpenseForm() {
+  const { payers } = useExpenseStore();
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
       <ExpenseInputCard />
@@ -18,7 +22,7 @@ export default function ExpenseForm() {
         <MemoSection />
         <CategorySection />
         <PaySection />
-        <SplitSection />
+        {payers.length > 0 && <SplitSection />}
       </div>
       <div className="flex items-center justify-center w-full p-5">
         <button className="flex items-center justify-center w-full h-12 px-4 rounded-xl bg-primary text-white">

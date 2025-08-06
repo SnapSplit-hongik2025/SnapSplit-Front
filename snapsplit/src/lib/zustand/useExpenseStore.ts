@@ -41,8 +41,8 @@ type ExpenseState = {
   setExpenseName: (expenseName: string) => void;
   setExpenseMemo: (expenseMemo: string) => void;
   setPaymentMethod: (paymentMethod: string) => void;
-  setPayers: (payers: Payer[]) => void;
-  setSplitters: (splitters: Splitter[]) => void;
+  appendPayer: (payer: Payer) => void;
+  appendSplitter: (splitter: Splitter) => void;
   getData: () => {
     expense: Expense;
     payers: Payer[];
@@ -70,8 +70,8 @@ export const useExpenseStore = create<ExpenseState>()(
   setExpenseName: (expenseName: string) => set(() => ({ expenseName })),
   setExpenseMemo: (expenseMemo: string) => set(() => ({ expenseMemo })),
   setPaymentMethod: (paymentMethod: string) => set(() => ({ paymentMethod })),
-  setPayers: (payers: Payer[]) => set({ payers }),
-  setSplitters: (splitters: Splitter[]) => set({ splitters }),
+  appendPayer: (payer: Payer) => set((state) => ({ payers: [...state.payers, payer] })),
+  appendSplitter: (splitter: Splitter) => set((state) => ({ splitters: [...state.splitters, splitter] })),
   getData: () => {
     return {
       expense: {

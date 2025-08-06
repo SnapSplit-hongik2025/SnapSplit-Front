@@ -1,9 +1,11 @@
+'use client';
+
 import PaymentRow from "./payment/PaymentRow";
 
 const tripMembers = [
-    { id: 1, name: "김철수" },
-    { id: 2, name: "이영희" },
-    { id: 3, name: "박민수" },
+    { memberId: 1, name: "김철수" },
+    { memberId: 2, name: "이영희" },
+    { memberId: 3, name: "박민수" },
 ];
 
 export default function PaymentSection() {
@@ -17,9 +19,9 @@ export default function PaymentSection() {
         </div>
       </div>
       <div className="flex flex-col items-center w-full">
-        <PaymentRow name="공동경비" />
+        <PaymentRow payer={{ memberId: 0, name: "공동경비" }} />
         {tripMembers.map((member) => (
-          <PaymentRow key={member.id} name={member.name} />
+          <PaymentRow key={member.memberId} payer={{ memberId: member.memberId, name: member.name }} />
         ))}
       </div>
     </div>
