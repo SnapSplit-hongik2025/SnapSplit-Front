@@ -10,8 +10,8 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
 
   return (
     <InputTripNameSection
-      tripName={mock.tripName}
-      tripImage={mock.tripImage}
+      tripName={mock.data.tripName}
+      tripImage={mock.data.tripImage}
       onClick={() => {
         /* api 호출 */
       }}
