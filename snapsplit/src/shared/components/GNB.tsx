@@ -33,7 +33,7 @@ export default function GNB() {
     <nav className="fixed bottom-0 h-15 display-w-full border-t border-grey-250 bg-white z-navbar">
       <div className="flex w-full items-center py-[9px]">
         {tabs.map((tab) => {
-          const isActive = pathname === tab.path;
+          const isActive = isActiveTab(pathname, tab.path);
           return (
             <button
               key={tab.label}
@@ -55,3 +55,8 @@ export default function GNB() {
     </nav>
   );
 }
+
+const isActiveTab = (pathname: string, tabPath: string) => {
+  // pathname이 tabPath로 시작하는지 확인
+  return pathname.startsWith(tabPath);
+};
