@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { Trip } from '@home/types';
 
 type PastTripCardProps = {
+  tripId: number;
   tripName: string;
   startDate: string;
   endDate: string;
   countryNames: string[];
 };
 
-export const PastTripCard = ({ tripName, startDate, endDate, countryNames }: PastTripCardProps) => {
+export const PastTripCard = ({ tripId, tripName, startDate, endDate, countryNames }: PastTripCardProps) => {
   return (
     <div className="w-full p-4 bg-white rounded-xl flex justify-between items-center">
       <div className="flex flex-col flex-1 gap-1">
@@ -30,8 +31,8 @@ export const PastTripCard = ({ tripName, startDate, endDate, countryNames }: Pas
           </span>
         </div>
       </div>
-      <Link href={'#'}>
-        <Image src={right_arrow} alt="go trip pag" />
+      <Link href={`/trip/${tripId}/budget`}>
+        <Image src={right_arrow} alt="go trip page" />
       </Link>
     </div>
   );
