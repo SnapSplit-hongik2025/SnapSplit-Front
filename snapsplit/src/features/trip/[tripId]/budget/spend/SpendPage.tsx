@@ -1,7 +1,9 @@
+import SpendHeader from "./_components/SpendHeader";
+
 const SpendPage = () => {
     return (
         <div>
-            <h1>Spend Page</h1>
+            <SpendHeader />
         </div>
     );
 }
