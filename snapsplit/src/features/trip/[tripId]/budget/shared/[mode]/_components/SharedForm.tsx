@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import CurrencyList from '@/features/trip/[tripId]/budget/expense/_components/CurrencyList';
-import ExpenseSection from './ExpenseSection';
+import CurrencyList from '@/features/trip/[tripId]/budget/shared/[mode]/_components/CurrencyList';
+import BudgetInput from './BudgetInput';
 import calendar from '@public/svg/calendar.svg';
 import { useRouter } from 'next/navigation';
 import CalendarSheet from './CalendarSheet';
@@ -17,7 +17,7 @@ const onSubmit = (formData: FormData) => {
   console.log(formData);
 };
 
-const ExpenseForm = () => {
+const SharedForm = () => {
   const { mode } = useParams() as { mode: 'add' | 'remove' };
   const isAdd = mode === 'add';
   const [amount, setAmount] = useState('');
@@ -58,7 +58,7 @@ const ExpenseForm = () => {
       {/* main section */}
       <div className="flex flex-col w-full p-5">
         {/* expense section */}
-        <ExpenseSection
+        <BudgetInput
           currency={currency}
           amount={amount}
           setAmount={setAmount}
@@ -113,4 +113,4 @@ const ExpenseForm = () => {
   );
 };
 
-export default ExpenseForm;
+export default SharedForm;
