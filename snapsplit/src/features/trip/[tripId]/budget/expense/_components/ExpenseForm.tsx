@@ -1,8 +1,8 @@
-import ExpenseInputCard from './ExpenseInputCard';
+import ExpenseInputCard from './expense-form/ExpenseInputCard';
 import TripDateSection from './expense-form/TripDateSection';
 import PaymentMethodSection from './expense-form/PaymentMethodSection';
-import TitleSection from './expense-form/TitleSection';
-import DescriptionSection from './expense-form/DescriptionSection';
+import NameSection from './expense-form/NameSection';
+import MemoSection from './expense-form/MemoSection';
 import CategorySection from './expense-form/CategorySection';
 import PaySection from './expense-form/PaymentSection';
 import SplitSection from './expense-form/SplitSection';
@@ -14,8 +14,8 @@ export default function ExpenseForm() {
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         <TripDateSection />
         <PaymentMethodSection />
-        <TitleSection />
-        <DescriptionSection />
+        <NameSection />
+        <MemoSection />
         <CategorySection />
         <PaySection />
         <SplitSection />

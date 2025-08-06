@@ -1,9 +1,8 @@
 import Image from 'next/image';
+import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 type Props = {
   onClose: () => void;
-  selectedDate: string;
-  setSelectedDate: (date: string) => void;
 };
 
 const DATE_OPTIONS = [
@@ -15,19 +14,21 @@ const DATE_OPTIONS = [
   { value: 'Day 6', label: 'Day 6' },
 ];
 
-export default function DateSelectSheet({ onClose, selectedDate, setSelectedDate }: Props) {
+export default function DateSelectSheet({ onClose }: Props) {
+  const { date, setDate } = useExpenseStore();
+
   return (
     <div className="flex flex-col items-center w-full">
       {DATE_OPTIONS.map((option) => (
         <button
           key={option.value}
           onClick={() => {
-            setSelectedDate(option.value);
+            setDate(option.value);
             onClose();
           }}
-          className={`flex items-center gap-1 w-full py-3 text-body-3 ${selectedDate === option.value ? 'text-primary' : 'text-grey-1000'}`}
+          className={`flex items-center gap-1 w-full py-3 text-body-3 ${date === option.value ? 'text-primary' : 'text-grey-1000'}`}
         >
-          {selectedDate === option.value ? (
+          {date === option.value ? (
             <Image src="/svg/check-green.svg" alt="selected" width={24} height={24} />
           ) : (
             <Image src="/svg/check_grey.svg" alt="unselected" width={24} height={24} />

@@ -1,30 +1,30 @@
 import Image from 'next/image';
+import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 type Props = {
   name: string;
-  selectedCategory: string | null;
-  setSelectedCategory: (category: string | null) => void;
 };
 
-export default function CategoryItem({ name, selectedCategory, setSelectedCategory }: Props) {
+export default function CategoryItem({ name }: Props) {
+  const { category, setCategory } = useExpenseStore();
 
   const toggleCategory = () => {
-    if (selectedCategory === name) {
-      setSelectedCategory(null);
+    if (category === name) {
+      setCategory('');
     } else {
-      setSelectedCategory(name);
+      setCategory(name);
     }
   };
 
   return (
     <button
       onClick={toggleCategory}
-      className={`flex-1 flex flex-col items-center pt-1 pb-2.5 rounded-full ${selectedCategory === name ? 'bg-primary text-white' : 'border-[1px] border-grey-250'}`}
+      className={`flex-1 flex flex-col items-center pt-1 pb-2.5 rounded-full border-[1px] ${category === name ? 'bg-primary text-white border-primary' : 'border-grey-250'}`}
     >
       <div className="w-8 h-8">
-        <Image src={selectedCategory === name ? "/svg/category-example-white.svg" : "/svg/category-example-grey.svg"} alt="category" width={32} height={32} />
+        <Image src={category === name ? "/svg/category-example-white.svg" : "/svg/category-example-grey.svg"} alt="category" width={32} height={32} />
       </div>
-      <div className={`text-caption-1 ${selectedCategory === name ? 'text-white' : 'text-grey-450'}`}>{name}</div>
+      <div className={`text-caption-1 ${category === name ? 'text-white' : 'text-grey-450'}`}>{name}</div>
     </button>
   );
 }

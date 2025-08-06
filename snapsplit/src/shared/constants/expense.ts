@@ -24,9 +24,11 @@ export const EXPENSE_CATEGORY = [
 
 export const EXPENSE_METHOD = [
     {
-        name: '현금'
+        name: 'cash',
+        label: '현금'
     },
     {
-        name: '카드'
+        name: 'credit_card',
+        label: '카드'
     },
 ];
