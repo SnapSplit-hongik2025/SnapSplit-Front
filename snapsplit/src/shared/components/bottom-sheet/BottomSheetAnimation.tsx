@@ -73,7 +73,7 @@ const BottomSheetAnimation = ({
       onDrag={handleDrag}
       onDragEnd={handleDragEnd}
       // --- UI와 관련된 부분 ---
-      className="fixed bottom-0 left-0 right-0 w-full h-auto max-w-lg mx-auto bg-white rounded-t-[20px] shadow-lg flex flex-col"
+      className="fixed bottom-0 left-0 right-0 min-w-[360px] max-w-[415px] lg:max-w-[360px] mx-auto h-auto bg-white rounded-t-[20px] flex flex-col"
     >
       {/* 드래그 핸들 */}
       <div
