@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import LogSection from '@/features/trip/[tripId]/budget/shared/_components/LogSection';
 import BudgetOverview from '@/features/trip/[tripId]/budget/shared/_components/BudgetOverview';
 import { useState } from 'react';
-import OverlayModal from '@/shared/components/modal/OverlayModal';
+import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/shared/_components/CurrencyBottomSheet';
 
 const SharedBudgetDetailPage = () => {
@@ -42,15 +42,13 @@ const SharedBudgetDetailPage = () => {
 
       <BudgetOverview />
 
-      {isOpen && (
-        <OverlayModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <CurrencyBottomSheet
-            onClose={() => setIsOpen(false)}
-            selectedCurrency={selectedCurrency}
-            setCurrency={setSelectedCurrency}
-          />
-        </OverlayModal>
-      )}
+      <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <CurrencyBottomSheet
+          onClose={() => setIsOpen(false)}
+          selectedCurrency={selectedCurrency}
+          setCurrency={setSelectedCurrency}
+        />
+      </BottomSheet>
     </div>
   );
 };
