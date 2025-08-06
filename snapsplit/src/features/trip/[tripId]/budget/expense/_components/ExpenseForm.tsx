@@ -1,16 +1,16 @@
-import SpendInputCard from './SpendInputCard';
-import TripDateSection from './spendForm/TripDateSection';
-import PaymentMethodSection from './spendForm/PaymentMethodSection';
-import TitleSection from './spendForm/TitleSection';
-import DescriptionSection from './spendForm/DescriptionSection';
-import CategorySection from './spendForm/CategorySection';
-import PaySection from './spendForm/PaymentSection';
-import SplitSection from './spendForm/SplitSection';
+import ExpenseInputCard from './ExpenseInputCard';
+import TripDateSection from './expense-form/TripDateSection';
+import PaymentMethodSection from './expense-form/PaymentMethodSection';
+import TitleSection from './expense-form/TitleSection';
+import DescriptionSection from './expense-form/DescriptionSection';
+import CategorySection from './expense-form/CategorySection';
+import PaySection from './expense-form/PaymentSection';
+import SplitSection from './expense-form/SplitSection';
 
-export default function SpendForm() {
+export default function ExpenseForm() {
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
-      <SpendInputCard />
+      <ExpenseInputCard />
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         <TripDateSection />
         <PaymentMethodSection />

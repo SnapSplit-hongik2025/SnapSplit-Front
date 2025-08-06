@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function SpendHeader() {
+export default function ExpenseHeader() {
   const router = useRouter();
   return (
     <div className="flex items-center justify-between w-full px-5 py-3">

@@ -6,7 +6,7 @@ import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/shared/_components/CurrencyBottomSheet';
 import { useState } from 'react';
 
-export default function SpendInputCard() {
+export default function ExpenseInputCard() {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState('USD(달러)');
   return (

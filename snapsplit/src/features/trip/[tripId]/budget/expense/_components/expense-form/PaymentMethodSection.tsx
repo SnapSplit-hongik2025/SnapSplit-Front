@@ -1,6 +1,6 @@
 'use client';
 
-import { SPEND_METHOD } from '@/shared/constants/spend';
+import { EXPENSE_METHOD } from '@/shared/constants/expense';
 import { useState } from 'react';
 
 export default function PaymentMethodSection() {
@@ -9,7 +9,7 @@ export default function PaymentMethodSection() {
     <div className="flex flex-col items-start w-full gap-3">
       <div className="text-body-3">지불 방법</div>
       <div className="flex items-center gap-3 w-full">
-        {SPEND_METHOD.map((method) => (
+        {EXPENSE_METHOD.map((method) => (
           <button
             key={method.name}
             onClick={() => setSelectedMethod(method.name)}

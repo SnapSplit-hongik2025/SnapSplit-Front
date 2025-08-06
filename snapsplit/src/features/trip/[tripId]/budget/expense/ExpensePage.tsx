@@ -1,13 +1,13 @@
-import SpendHeader from './_components/SpendHeader';
-import SpendForm from './_components/SpendForm';
+import ExpenseHeader from './_components/ExpenseHeader';
+import ExpenseForm from './_components/ExpenseForm';
 
-const SpendPage = () => {
+const ExpensePage = () => {
   return (
     <div className="flex flex-col items-center min-h-screen">
-      <SpendHeader />
-      <SpendForm />
+      <ExpenseHeader />
+      <ExpenseForm />
     </div>
   );
 };
 
-export default SpendPage;
+export default ExpensePage;

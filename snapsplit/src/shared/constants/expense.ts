@@ -1,4 +1,4 @@
-export const SPEND_CATEGORY = [
+export const EXPENSE_CATEGORY = [
     {
         name: '항공'
     },
@@ -22,7 +22,7 @@ export const SPEND_CATEGORY = [
     },
 ];
 
-export const SPEND_METHOD = [
+export const EXPENSE_METHOD = [
     {
         name: '현금'
     },
