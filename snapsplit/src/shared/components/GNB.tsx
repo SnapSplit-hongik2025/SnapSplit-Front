@@ -58,5 +58,5 @@ export default function GNB() {
 
 const isActiveTab = (pathname: string, tabPath: string) => {
   // pathname이 tabPath로 시작하는지 확인
-  return pathname.startsWith(tabPath);
+  return pathname === tabPath || pathname.startsWith(`${tabPath}/`);
 };
