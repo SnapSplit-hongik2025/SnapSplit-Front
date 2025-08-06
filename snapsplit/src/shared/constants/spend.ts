@@ -1,4 +1,4 @@
-const SPEND_CATEGORY = [
+export const SPEND_CATEGORY = [
     {
         name: '항공'
     },
@@ -22,4 +22,11 @@ const SPEND_CATEGORY = [
     },
 ];
 
-export default SPEND_CATEGORY;
+export const SPEND_METHOD = [
+    {
+        name: '현금'
+    },
+    {
+        name: '카드'
+    },
+];
