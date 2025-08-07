@@ -11,7 +11,6 @@ privateInstance.interceptors.request.use(
         const { accessToken } = getToken(); // accessToken 가져오기
         if (accessToken) {
             config.headers["Authorization"] = `Bearer ${accessToken}`;
-            console.log("[로그인 시도] Access Token:", accessToken);
         }
         return config;
     },
