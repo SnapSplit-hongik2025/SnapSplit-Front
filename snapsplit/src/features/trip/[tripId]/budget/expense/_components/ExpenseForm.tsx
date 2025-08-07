@@ -17,7 +17,7 @@ import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseIn
 
 export default function ExpenseForm() {
   const tripId = useParams().tripId;
-  const { payers } = useExpenseStore();
+  const { payers, setCurrency, setDate, setReady, isReady } = useExpenseStore();
   const { setExpenseInitData } = useExpenseInitStore();
 
   useEffect(() => {
@@ -25,8 +25,15 @@ export default function ExpenseForm() {
       // expenseInitData(tripId as string);
       const res = EXPENSE_INIT_DATA;
       setExpenseInitData(res.data as ExpenseInitData);
+      setCurrency(res.data.defaultCurrency);
+      setDate('Day 1');
+      setReady(true);
     }
-  }, [tripId, setExpenseInitData]);
+  }, [tripId, setExpenseInitData, setCurrency, setDate]);
+
+  if (!isReady) {
+    return null;
+  }
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
