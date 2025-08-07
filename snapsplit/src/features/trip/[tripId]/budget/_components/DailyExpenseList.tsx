@@ -5,7 +5,7 @@ import { DailyExpenseListProps } from '../type';
 import AddExpenseButton from './AddExpenseButton';
 import TopFloatingButton from '@/shared/components/TopFloatingButton';
 
-export default function DailyExpenseList({ dailyExpenses, tripStartDate, tripEndDate }: DailyExpenseListProps) {
+export default function DailyExpenseList({ dailyExpenses, tripStartDate }: DailyExpenseListProps) {
   return (
     <div
       id="scroll-target-top"
@@ -13,7 +13,7 @@ export default function DailyExpenseList({ dailyExpenses, tripStartDate, tripEnd
     >
       {dailyExpenses.map(({ date, expenses }) => {
         return (
-          <div id={date} key={date}>
+          <div id={`day-${date}`} key={date}>
             <ExpenseDateBar expenseDate={date} tripStartDate={tripStartDate} />
             {expenses.map((e) => (
               <ExpenseItem key={e.expenseId} expense={e} />

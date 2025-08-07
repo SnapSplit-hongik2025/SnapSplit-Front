@@ -68,7 +68,6 @@ export type dailyExpenses = {
 export type DailyExpenseListProps = {
   dailyExpenses: dailyExpenses[];
   tripStartDate: string;
-  tripEndDate: string;
 };
 
 export type ExpenseDateBarProps = {
