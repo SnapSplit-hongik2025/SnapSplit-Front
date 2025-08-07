@@ -1,4 +1,3 @@
-// DailyExpenseList.tsx
 import ExpenseDateBar from './ExpenseDateBar';
 import ExpenseItem from './ExpenseItem';
 import { DailyExpenseListProps } from '../type';

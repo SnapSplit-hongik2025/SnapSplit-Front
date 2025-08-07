@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { PastTripListProps, AllPastTripListProps } from '../types';
+import { PastTripListProps, AllPastTripListProps } from '../type/home-type';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
 
 const PastTripItem = ({ tripId, tripName, startDate, endDate }: PastTripListProps) => {
@@ -21,6 +21,8 @@ const PastTripItem = ({ tripId, tripName, startDate, endDate }: PastTripListProp
 };
 
 const AllPastTripList = ({ pastTrips }: AllPastTripListProps) => {
+  const hasPastTrip = pastTrips && pastTrips.length > 0;
+
   return (
     <div className="px-5">
       <section className="flex flex-col bg-white rounded-[20px] py-4 px-5">
@@ -31,16 +33,17 @@ const AllPastTripList = ({ pastTrips }: AllPastTripListProps) => {
           </Link>
         </div>
 
-        {pastTrips.map((trip) => (
-          <PastTripItem
-            key={trip.tripId}
-            tripId={trip.tripId}
-            tripName={trip.tripName}
-            startDate={trip.startDate}
-            endDate={trip.endDate}
-            countryNames={trip.countryNames}
-          />
-        ))}
+        {hasPastTrip &&
+          pastTrips.map((trip) => (
+            <PastTripItem
+              key={trip.tripId}
+              tripId={trip.tripId}
+              tripName={trip.tripName}
+              startDate={trip.startDate}
+              endDate={trip.endDate}
+              countryNames={trip.countryNames}
+            />
+          ))}
       </section>
     </div>
   );
