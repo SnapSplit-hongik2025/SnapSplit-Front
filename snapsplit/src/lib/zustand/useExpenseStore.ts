@@ -15,11 +15,13 @@ type Expense = {
 type Payer = {
   memberId: number;
   payerAmount: number;
+  isSelected: boolean;
 };
 
 type Splitter = {
   memberId: number;
   splitAmount: number;
+  isSelected: boolean;
 };
 
 type ExpenseState = {

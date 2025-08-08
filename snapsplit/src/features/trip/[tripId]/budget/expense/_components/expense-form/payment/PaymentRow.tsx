@@ -13,16 +13,24 @@ type Props = {
 
 export default function PaymentRow({ payer }: Props) {
   const [isChecked, setIsChecked] = useState(false);
-  const { appendPayer } = useExpenseStore();
+  const { appendPayer, payers } = useExpenseStore();
 
   const toggleCheck = () => {
+    const payerIndex = payers.findIndex((p) => p.memberId === payer.memberId);
+    if (payerIndex !== -1) {
+      payers[payerIndex].isSelected = !isChecked;
+    }
+    appendPayer({ memberId: payer.memberId, payerAmount: 0, isSelected: !isChecked });
     setIsChecked(!isChecked);
-    appendPayer({ memberId: payer.memberId, payerAmount: 0 });
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const amount = parseInt(e.target.value);
-    appendPayer({ memberId: payer.memberId, payerAmount: amount });
+    const payerIndex = payers.findIndex((p) => p.memberId === payer.memberId);
+    if (payerIndex !== -1) {
+      payers[payerIndex].payerAmount = amount;
+    }
+    appendPayer({ memberId: payer.memberId, payerAmount: amount, isSelected: isChecked });
   };
 
   return (
