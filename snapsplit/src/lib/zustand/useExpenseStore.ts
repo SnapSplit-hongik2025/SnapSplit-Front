@@ -12,16 +12,14 @@ type Expense = {
   paymentMethod: string;
 };
 
-type Payer = {
+export type Member = {
   memberId: number;
-  payerAmount: number;
-  isSelected: boolean;
-};
-
-type Splitter = {
-  memberId: number;
+  name: string;
+  memberType: 'USER' | 'SHARED_FUND';
+  isPayer: boolean;
+  payAmount: number;
+  isSplitter: boolean;
   splitAmount: number;
-  isSelected: boolean;
 };
 
 type ExpenseState = {
@@ -33,8 +31,7 @@ type ExpenseState = {
   expenseName: string;
   expenseMemo: string;
   paymentMethod: string;
-  payers: Payer[];
-  splitters: Splitter[];
+  members: Member[];
   isReady: boolean;
   setAmount: (amount: number) => void;
   setCurrency: (currency: string) => void;
@@ -44,12 +41,13 @@ type ExpenseState = {
   setExpenseName: (expenseName: string) => void;
   setExpenseMemo: (expenseMemo: string) => void;
   setPaymentMethod: (paymentMethod: string) => void;
-  appendPayer: (payer: Payer) => void;
-  appendSplitter: (splitter: Splitter) => void;
+  isPayerExist: () => boolean;
+  setPayer: (memberId: number) => void;
+  updatePayAmount: (memberId: number, payAmount: number) => void;
+  setMembers: (members: Member[]) => void;
   getData: () => {
     expense: Expense;
-    payers: Payer[];
-    splitters: Splitter[];
+    members: Member[];
   };
   setReady: (isReady: boolean) => void;
 };
@@ -66,8 +64,7 @@ export const useExpenseStore = create<ExpenseState>()(
       expenseName: '',
       expenseMemo: '',
       paymentMethod: '',
-      payers: [],
-      splitters: [],
+      members: [],
       setAmount: (amount: number) => set(() => ({ amount })),
       setCurrency: (currency: string) => set(() => ({ currency })),
       setDate: (date: string) => set(() => ({ date })),
@@ -76,8 +73,10 @@ export const useExpenseStore = create<ExpenseState>()(
       setExpenseName: (expenseName: string) => set(() => ({ expenseName })),
       setExpenseMemo: (expenseMemo: string) => set(() => ({ expenseMemo })),
       setPaymentMethod: (paymentMethod: string) => set(() => ({ paymentMethod })),
-      appendPayer: (payer: Payer) => set((state) => ({ payers: [...state.payers, payer] })),
-      appendSplitter: (splitter: Splitter) => set((state) => ({ splitters: [...state.splitters, splitter] })),
+      isPayerExist: () => get().members.some((member) => member.isPayer),
+      setPayer: (memberId: number) => set((state) => ({ members: state.members.map((member) => (member.memberId === memberId ? { ...member, isPayer: true } : member)) })),
+      updatePayAmount: (memberId: number, payAmount: number) => set((state) => ({ members: state.members.map((member) => (member.memberId === memberId ? { ...member, payAmount } : member)) })),
+      setMembers: (members: Member[]) => set(() => ({ members })),
       getData: () => {
         return {
           expense: {
@@ -90,8 +89,7 @@ export const useExpenseStore = create<ExpenseState>()(
             expenseMemo: get().expenseMemo,
             paymentMethod: get().paymentMethod,
           },
-          payers: get().payers,
-          splitters: get().splitters,
+          members: get().members,
         };
       },
       setReady: (isReady: boolean) => set(() => ({ isReady })),

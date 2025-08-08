@@ -1,14 +1,11 @@
 'use client';
 
 import PaymentRow from "./payment/PaymentRow";
-
-const tripMembers = [
-    { memberId: 1, name: "김철수" },
-    { memberId: 2, name: "이영희" },
-    { memberId: 3, name: "박민수" },
-];
+import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
 
 export default function PaymentSection() {
+  const { members } = useExpenseStore();
+
   return (
     <div className="flex flex-col items-center gap-3 w-full text-body-3">
       <div className="flex items-center justify-between w-full">
@@ -20,9 +17,12 @@ export default function PaymentSection() {
       </div>
       <div className="flex flex-col items-center w-full">
         <PaymentRow payer={{ memberId: 0, name: "공동경비" }} />
-        {tripMembers.map((member) => (
-          <PaymentRow key={member.memberId} payer={{ memberId: member.memberId, name: member.name }} />
-        ))}
+        {members.map((member) => {
+          if(member.memberType === 'SHARED_FUND') return null;
+          return (
+            <PaymentRow key={member.memberId} payer={{ memberId: member.memberId, name: member.name }} />
+          );
+        })}
       </div>
     </div>
   );
