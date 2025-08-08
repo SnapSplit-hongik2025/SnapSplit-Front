@@ -8,75 +8,62 @@ import MemoSection from './expense-form/MemoSection';
 import CategorySection from './expense-form/CategorySection';
 import PaySection from './expense-form/PaymentSection';
 import SplitSection from './expense-form/SplitSection';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
+import Button from '@/shared/components/Button';
+
+import {
+  useExpenseStore,
+  Member,
+  selectIsValid,
+  selectIsInitialized,
+  selectHasPayer,
+} from '@/lib/zustand/useExpenseStore';
+
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
-// import { expenseInitData } from '@/lib/api/expense';
 import EXPENSE_INIT_DATA from '@public/mocks/expense-init.json';
 import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseInitStore';
-import Button from '@/shared/components/Button';
-import { Member } from '@/lib/zustand/useExpenseStore';
 
 export default function ExpenseForm() {
-  const tripId = useParams().tripId;
-  const {
-    setCurrency,
-    setDate,
-    setReady,
-    isReady,
-    amount,
-    expenseName,
-    expenseMemo,
-    category,
-    paymentMethod,
-    isPayerExist,
-    setMembers,
-  } = useExpenseStore();
+  const tripId = useParams().tripId as string | undefined;
+
+  // setters
+  const setCurrency = useExpenseStore((s) => s.setCurrency);
+  const setDate = useExpenseStore((s) => s.setDate);
+  const setMembers = useExpenseStore((s) => s.setMembers);
+  const setInitialized = useExpenseStore((s) => s.setInitialized);
+
+  // derived & lifecycle
+  const isInitialized = useExpenseStore(selectIsInitialized);
+  const isValid = useExpenseStore(selectIsValid);
+  const hasPayer = useExpenseStore(selectHasPayer);
+
   const { setExpenseInitData } = useExpenseInitStore();
 
-  const formValidate = () => {
-    // 1. 통화: 기본값 있음
-    // 2. 금액: 기본값 없음
-    if (amount === 0) {
-      return false;
-    }
-    // 3. 날짜: 기본값 있음
-    // 4. 지출명: 기본값 없음
-    if (expenseName === '') {
-      return false;
-    }
-    // 5. 지출 내용: 기본값 없음
-    if (expenseMemo === '') {
-      return false;
-    }
-    // 6. 카테고리: 기본값 없음
-    if (category === '') {
-      return false;
-    }
-    // 7. 결제 방법: 기본값 없음
-    if (paymentMethod === '') {
-      return false;
-    }
-    // 8. 결제자: 기본값 없음
-    // 9. 정산자: 기본값 없음
-    return true;
-  };
-
   useEffect(() => {
-    if (tripId) {
-      // expenseInitData(tripId as string);
-      const res = EXPENSE_INIT_DATA;
-      setExpenseInitData(res.data as ExpenseInitData);
-      setCurrency(res.data.defaultCurrency);
-      setDate('Day 1');
-      setMembers(res.data.members.map((member) => ({ ...member, isPayer: false, payAmount: 0, isSplitter: false, splitAmount: 0 })) as Member[]);
-      setReady(true);
-    }
-  }, [tripId, setExpenseInitData, setCurrency, setDate, setReady, setMembers]);
+    if (!tripId) return;
 
-  if (!isReady) {
-    return null;
-  }
+    // TODO: API 반환 데이터로 대체
+    const res = EXPENSE_INIT_DATA as { data: ExpenseInitData };
+    setExpenseInitData(res.data);
+
+    // INIT
+    // TODO: 초기화 로직 다듬기
+    setCurrency(res.data.defaultCurrency);
+    setDate('Day 1');
+
+    const initMembers: Member[] = res.data.members.map((m) => ({
+      ...m,
+      isPayer: false,
+      payAmount: 0,
+      isSplitter: false,
+      splitAmount: 0,
+    }));
+    setMembers(initMembers);
+
+    setInitialized(true);
+  }, [tripId, setExpenseInitData, setCurrency, setDate, setMembers, setInitialized]);
+
+  if (!isInitialized) return null;
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
@@ -88,10 +75,10 @@ export default function ExpenseForm() {
         <MemoSection />
         <CategorySection />
         <PaySection />
-        {isPayerExist() && <SplitSection />}
+        {hasPayer && <SplitSection />}
       </div>
       <div className="flex items-center justify-center w-full p-5">
-        <Button label="추가하기" onClick={() => {}} enabled={formValidate()} />
+        <Button label="추가하기" onClick={() => { /* TODO: submit handler */ }} enabled={isValid} />
       </div>
     </div>
   );

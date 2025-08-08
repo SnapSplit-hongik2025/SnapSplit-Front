@@ -1,12 +1,11 @@
-import PaymentRow from "./payment/PaymentRow";
+'use client';
 
-const tripMembers = [
-    { id: 1, name: "김철수" },
-    { id: 2, name: "이영희" },
-    { id: 3, name: "박민수" },
-];
+import SplitRow from "./payment/SplitRow";
+import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
 
 export default function SplitSection() {
+  const { members } = useExpenseStore();
+
   return (
     <div className="flex flex-col items-center gap-3 w-full text-body-3">
       <div className="flex items-center justify-between w-full">
@@ -17,9 +16,12 @@ export default function SplitSection() {
         </div>
       </div>
       <div className="flex flex-col items-center w-full">
-        {tripMembers.map((member) => (
-          <PaymentRow key={member.id} payer={{ memberId: member.id, name: member.name }} />
-        ))}
+        {members.map((member) => {
+          if(member.memberType === 'SHARED_FUND') return null;
+          return (
+            <SplitRow key={member.memberId} splitter={{ memberId: member.memberId, name: member.name }} />
+          );
+        })}
       </div>
     </div>
   );

@@ -5,39 +5,39 @@ import { useCallback } from 'react';
 import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 type Props = {
-  payer: {
+  splitter: {
     memberId: number;
     name: string;
   };
 };
 
-export default function PaymentRow({ payer }: Props) {
+export default function SplitRow({ splitter }: Props) {
   const member = useExpenseStore(
-    (s) => s.members.find((m) => m.memberId === payer.memberId)
+    (s) => s.members.find((m) => m.memberId === splitter.memberId)
   );
 
-  const setPayer = useExpenseStore((s) => s.setPayer);
-  const updatePayAmount = useExpenseStore((s) => s.updatePayAmount);
+  const setSplitter = useExpenseStore((s) => s.setSplitter);
+  const updateSplitAmount = useExpenseStore((s) => s.updateSplitAmount);
 
-  const isChecked = !!member?.isPayer;
-  const payAmount = member?.payAmount ?? 0;
+  const isChecked = !!member?.isSplitter;
+  const splitAmount = member?.splitAmount ?? 0;
 
   const toggleCheck = useCallback(() => {
-    setPayer(payer.memberId, !isChecked);
-  }, [setPayer, payer.memberId, isChecked]);
+    setSplitter(splitter.memberId, !isChecked);
+  }, [setSplitter, splitter.memberId, isChecked]);
 
   const handleAmountChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const n = e.currentTarget.valueAsNumber; // empty => NaN
       const amount = Number.isFinite(n) ? n : 0;
-      updatePayAmount(payer.memberId, amount);
+      updateSplitAmount(splitter.memberId, amount);
     },
-    [payer.memberId, updatePayAmount]
+    [splitter.memberId, updateSplitAmount]
   );
 
   return (
     <div className="flex items-center justify-between w-full py-2">
-      <div>{payer.name}</div>
+      <div>{splitter.name}</div>
       <div className="flex items-center">
         <div className="flex items-center justify-center w-20">
           <button
@@ -60,7 +60,7 @@ export default function PaymentRow({ payer }: Props) {
           inputMode="numeric"
           className="flex items-center justify-center w-24 text-center text-grey-450"
           placeholder="0"
-          value={Number.isFinite(payAmount) ? payAmount : ''}
+          value={Number.isFinite(splitAmount) ? splitAmount : ''}
           onChange={handleAmountChange}
         />
       </div>
