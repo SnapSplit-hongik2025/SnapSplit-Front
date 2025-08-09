@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useCallback } from 'react';
 import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
+import AmountInput from './AmountInput';
 
 type Props = {
   payer: {
@@ -12,24 +13,21 @@ type Props = {
 };
 
 export default function PaymentRow({ payer }: Props) {
-  const member = useExpenseStore(
-    (s) => s.members.find((m) => m.memberId === payer.memberId)
-  );
+  const member = useExpenseStore((s) => s.members.find((m) => m.memberId === payer.memberId));
 
   const setPayer = useExpenseStore((s) => s.setPayer);
   const updatePayAmount = useExpenseStore((s) => s.updatePayAmount);
 
   const isChecked = !!member?.isPayer;
-  const payAmount = member?.payAmount ?? 0;
+  const payAmount = member?.payAmount ?? null;
 
   const toggleCheck = useCallback(() => {
     setPayer(payer.memberId, !isChecked);
   }, [setPayer, payer.memberId, isChecked]);
 
   const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const n = e.currentTarget.valueAsNumber; // empty => NaN
-      const amount = Number.isFinite(n) ? n : 0;
+    (value: string) => {
+      const amount = Number(value) || null;
       updatePayAmount(payer.memberId, amount);
     },
     [payer.memberId, updatePayAmount]
@@ -55,14 +53,7 @@ export default function PaymentRow({ payer }: Props) {
             />
           </button>
         </div>
-        <input
-          type="number"
-          inputMode="numeric"
-          className="flex items-center justify-center w-24 text-center text-grey-450"
-          placeholder="0"
-          value={Number.isFinite(payAmount) ? payAmount : ''}
-          onChange={handleAmountChange}
-        />
+        <AmountInput value={payAmount?.toString() || ''} updateValue={handleAmountChange} />
       </div>
     </div>
   );

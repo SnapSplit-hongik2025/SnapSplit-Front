@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useCallback } from 'react';
 import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
+import AmountInput from './AmountInput';
 
 type Props = {
   splitter: {
@@ -12,24 +13,21 @@ type Props = {
 };
 
 export default function SplitRow({ splitter }: Props) {
-  const member = useExpenseStore(
-    (s) => s.members.find((m) => m.memberId === splitter.memberId)
-  );
+  const member = useExpenseStore((s) => s.members.find((m) => m.memberId === splitter.memberId));
 
   const setSplitter = useExpenseStore((s) => s.setSplitter);
   const updateSplitAmount = useExpenseStore((s) => s.updateSplitAmount);
 
   const isChecked = !!member?.isSplitter;
-  const splitAmount = member?.splitAmount ?? 0;
+  const splitAmount = member?.splitAmount ?? null;
 
   const toggleCheck = useCallback(() => {
     setSplitter(splitter.memberId, !isChecked);
   }, [setSplitter, splitter.memberId, isChecked]);
 
   const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const n = e.currentTarget.valueAsNumber; // empty => NaN
-      const amount = Number.isFinite(n) ? n : 0;
+    (value: string) => {
+      const amount = Number(value) || null;
       updateSplitAmount(splitter.memberId, amount);
     },
     [splitter.memberId, updateSplitAmount]
@@ -55,14 +53,7 @@ export default function SplitRow({ splitter }: Props) {
             />
           </button>
         </div>
-        <input
-          type="number"
-          inputMode="numeric"
-          className="flex items-center justify-center w-24 text-center text-grey-450"
-          placeholder="0"
-          value={Number.isFinite(splitAmount) ? splitAmount : ''}
-          onChange={handleAmountChange}
-        />
+        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} />
       </div>
     </div>
   );

@@ -54,9 +54,9 @@ export default function ExpenseForm() {
     const initMembers: Member[] = res.data.members.map((m) => ({
       ...m,
       isPayer: false,
-      payAmount: 0,
+      payAmount: null,
       isSplitter: false,
-      splitAmount: 0,
+      splitAmount: null,
     }));
     setMembers(initMembers);
 

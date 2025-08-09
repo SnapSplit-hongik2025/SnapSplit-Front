@@ -6,6 +6,10 @@ export function getNation(currencyCode: string): string {
   return currencyMap[currencyCode].nation;
 }
 
+export function getSymbol(currencyCode: string): string {
+  return currencyMap[currencyCode].symbol;
+}
+
 const currencyMap: Record<string, Currency> = {
   KRW: {
     KorName: '원',

@@ -26,9 +26,9 @@ export type Member = {
   name: string;
   memberType: 'USER' | 'SHARED_FUND';
   isPayer: boolean;
-  payAmount: number;
+  payAmount: number | null;
   isSplitter: boolean;
-  splitAmount: number;
+  splitAmount: number | null;
 };
 
 export type ExpenseState = {
@@ -58,8 +58,8 @@ export type ExpenseState = {
   setPaymentMethod: (paymentMethod: string) => void;
   setMembers: (members: Member[]) => void;
   setPayer: (memberId: number, isPayer: boolean) => void;
-  updatePayAmount: (memberId: number, payAmount: number) => void;
-  updateSplitAmount: (memberId: number, splitAmount: number) => void;
+  updatePayAmount: (memberId: number, payAmount: Member['payAmount']) => void;
+  updateSplitAmount: (memberId: number, splitAmount: Member['splitAmount']) => void;
   setSplitter: (memberId: number, isSplitter: boolean) => void;
 
   // helpers
