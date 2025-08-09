@@ -10,6 +10,8 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+const isClient = typeof window !== 'undefined';
+
 export type Expense = {
   date: string;
   amount: number;
@@ -73,8 +75,8 @@ export const useExpenseStore = create<ExpenseState>()(
       isInitialized: false,
       date: '',
       amount: 0,
-      currency: '한국 - KRW(원)',
-      exchangeRate: 0,
+      currency: 'KRW',
+      exchangeRate: 1,
       category: '',
       expenseName: '',
       expenseMemo: '',
@@ -136,19 +138,18 @@ export const useExpenseStore = create<ExpenseState>()(
     }),
     {
       name: 'expense',
-      storage: createJSONStorage(() => localStorage),
-      // keep persist minimal — no derived/lifecycle fields if you don't want them restored
-      // partialize: (s) => ({
-      //   date: s.date,
-      //   amount: s.amount,
-      //   currency: s.currency,
-      //   exchangeRate: s.exchangeRate,
-      //   category: s.category,
-      //   expenseName: s.expenseName,
-      //   expenseMemo: s.expenseMemo,
-      //   paymentMethod: s.paymentMethod,
-      //   members: s.members,
-      // })
+      storage: isClient ? createJSONStorage(() => localStorage) : undefined,
+      partialize: (s) => ({
+        date: s.date,
+        amount: s.amount,
+        currency: s.currency,
+        exchangeRate: s.exchangeRate,
+        category: s.category,
+        expenseName: s.expenseName,
+        expenseMemo: s.expenseMemo,
+        paymentMethod: s.paymentMethod,
+        members: s.members,
+      })
     }
   )
 );

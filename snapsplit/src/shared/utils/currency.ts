@@ -1,13 +1,21 @@
+// TODO: CurrencyCode 타입 정의
+
 export function getKorName(currencyCode: string): string {
-  return currencyMap[currencyCode].KorName;
+  const entry = currencyMap[currencyCode];
+  if (!entry) return currencyCode;
+  return entry.KorName;
 }
 
 export function getNation(currencyCode: string): string {
-  return currencyMap[currencyCode].nation;
+  const entry = currencyMap[currencyCode];
+  if (!entry) return currencyCode;
+  return entry.nation;
 }
 
 export function getSymbol(currencyCode: string): string {
-  return currencyMap[currencyCode].symbol;
+  const entry = currencyMap[currencyCode];
+  if (!entry) return currencyCode;
+  return entry.symbol;
 }
 
 const currencyMap: Record<string, Currency> = {
