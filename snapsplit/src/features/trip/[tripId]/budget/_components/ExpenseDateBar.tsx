@@ -1,28 +1,28 @@
 import Image from 'next/image';
 import devider from '@public/svg/devider.svg';
+import { getKoreanDay } from '@/shared/utils/getKoreanDay';
+import dayjs from 'dayjs';
+import { ExpenseDateBarProps } from '../type';
 
-type ExpenseDateBarProps = {
-  expenseDay: string; // ex. '여행준비' or '4.7(월)'
-  type: 'PRE_TRIP' | 'IN_TRIP';
-  dayIndex?: number;
-};
+export default function ExpenseDateBar({ expenseDate, tripStartDate }: ExpenseDateBarProps) {
+  const current = dayjs(expenseDate);
+  const start = dayjs(tripStartDate);
+  const diffDays = current.diff(start, 'day');
+  const inTrip = diffDays >= 0;
+  const dayIndex = diffDays + 1;
+  const displayDate = `${current.month() + 1}.${current.date()}/${getKoreanDay(current)}`;
 
-const ExpenseDateBar = ({ expenseDay, type, dayIndex }: ExpenseDateBarProps) => {
-  const mainLabel = type === 'IN_TRIP' && dayIndex !== undefined ? `Day ${dayIndex}` : expenseDay;
-
-  const subLabel = type === 'IN_TRIP' && dayIndex !== undefined ? expenseDay : null;
-
-  return (
-    <div className="flex gap-2 items-center">
-      <p className="text-body-1 text-grey-850">{mainLabel}</p>
-      {subLabel && (
-        <>
-          <Image alt="구분선" src={devider} />
-          <p className="text-body-1 text-grey-550">{subLabel}</p>
-        </>
-      )}
+  const content = inTrip ? (
+    <div className="flex gap-2 items-center pb-[6px]">
+      <p className="text-body-1 text-grey-850">Day {dayIndex}</p>
+      <Image alt="구분선" src={devider} />
+      <p className="text-body-1 text-grey-550">{displayDate}</p>
+    </div>
+  ) : (
+    <div className="flex gap-2 items-center pb-[6px]">
+      <p className="text-body-1 text-grey-850">여행 준비</p>
     </div>
   );
-};
 
-export default ExpenseDateBar;
+  return content;
+}

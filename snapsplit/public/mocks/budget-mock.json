@@ -3,82 +3,129 @@
   "success": true,
   "message": "여행 상세 조회 성공",
   "data": {
-    "trip": {
-      "tripId": 1,
-      "tripName": "부산 여행",
-      "memberCount": 3,
-      "startDate": "2025-06-01",
-      "endDate": "2025-06-12",
-      "tripImage": "https://example.com/trip1.jpg",
-      "tripTotalExpense": 450000,
-      "countries": [
-        {
-          "countryId": 1,
-          "countryName": "대한민국"
-        }
-      ]
+    "tripId": 14,
+    "tripName": "2025 유럽 여행",
+    "startDate": "2025-05-21",
+    "endDate": "2025-05-29",
+    "countries": [
+      "프랑스",
+      "이탈리아"
+    ],
+    "sharedFund": {
+      "defaultCurrency": "KRW",
+      "balance": 498889
     },
-    "totalShared": [
+    "topCategoryExpense": {
+      "category": "OTHERS",
+      "amountKRW": 13000
+    },
+    "dailyExpenses": [
       {
-        "totalSharedCurrency": "KRW",
-        "totalSharedAmount": 300000
+        "date": "2025-05-20",
+        "expenses": [
+          {
+            "expenseId": 30,
+            "category": "FOOD",
+            "expenseName": "파리 레스토랑",
+            "expenseMemo": "점심 식사",
+            "amount": 90,
+            "currency": "EUR",
+            "splitters": [
+              "문재영",
+              "권은정"
+            ]
+          },
+          {
+            "expenseId": 31,
+            "category": "FLIGHT",
+            "expenseName": "테이블수정테스트",
+            "expenseMemo": "이제공동경비잔액90만원",
+            "amount": 120000,
+            "currency": "KRW",
+            "splitters": [
+              "문재영",
+              "권은정"
+            ]
+          },
+          {
+            "expenseId": 41,
+            "category": "SHOPPING",
+            "expenseName": "쇼핑",
+            "expenseMemo": "기념품",
+            "amount": 2222,
+            "currency": "krw",
+            "splitters": [
+              "문재영",
+              "권은정"
+            ]
+          },
+          {
+            "expenseId": 42,
+            "category": "TOUR",
+            "expenseName": "투어입장료",
+            "expenseMemo": "싼듯",
+            "amount": 5555,
+            "currency": "krw",
+            "splitters": [
+              "문재영",
+              "권은정"
+            ]
+          },
+          {
+            "expenseId": 43,
+            "category": "TOUR",
+            "expenseName": "투어입장료",
+            "expenseMemo": "투어재밌당",
+            "amount": 3333,
+            "currency": "eur",
+            "splitters": [
+              "문재영",
+              "권은정"
+            ]
+          },
+          {
+            "expenseId": 44,
+            "category": "FLIGHT",
+            "expenseName": "비행기추가비용",
+            "expenseMemo": "멍청비용 흑흑",
+            "amount": 1234,
+            "currency": "eur",
+            "splitters": [
+              "문재영"
+            ]
+          },
+          {
+            "expenseId": 46,
+            "category": "OTHERS",
+            "expenseName": "팁",
+            "expenseMemo": "팁드림",
+            "amount": 10,
+            "currency": "eur",
+            "splitters": [
+              "문재영",
+              "권은정"
+            ]
+          }
+        ]
       },
       {
-        "totalSharedCurrency": "USD",
-        "totalSharedAmount": 120.50
+        "date": "2025-05-23",
+        "expenses": [
+          {
+            "expenseId": 29,
+            "category": "FOOD",
+            "expenseName": "저녁 식사",
+            "expenseMemo": "로마 현지 레스토랑에서 파스타 + 와인",
+            "amount": 45000,
+            "currency": "KRW",
+            "splitters": [
+              "문재영",
+              "권은정"
+            ]
+          }
+        ]
       }
     ],
-    "expenses": [
-      {
-        "expenseId": 101,
-        "expenseDate": "2025-06-01",
-        "expenseAmount": 150000,
-        "expenseCurrency": "KRW",
-        "expenseUsers": [
-          {
-            "userId": 11,
-            "userName": "문재영"
-          },
-          {
-            "userId": 12,
-            "userName": "권은정"
-          }
-        ],
-        "expenseCategory": "식비"
-      },
-      {
-        "expenseId": 102,
-        "expenseDate": "2025-06-02",
-        "expenseAmount": 100.00,
-        "expenseCurrency": "USD",
-        "expenseUsers": [
-          {
-            "userId": 13,
-            "userName": "박지수"
-          }
-        ],
-        "expenseCategory": "숙박"
-      },{
-        "expenseId": 103,
-        "expenseDate": "2025-05-29",
-        "expenseAmount": 1110000,
-        "expenseCurrency": "KRW",
-        "expenseUsers": [
-          {
-            "userId": 11,
-            "userName": "문재영"
-          },
-          {
-            "userId": 12,
-            "userName": "권은정"
-          },
-          {
-            "userId": 13,
-            "userName": "박지수"
-          }
-        ],
-        "expenseCategory": "항공"
-      }
-    ]
+    "totalExpense": 25344
   }
 }

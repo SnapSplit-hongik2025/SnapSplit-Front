@@ -1,7 +1,7 @@
 'use client';
 
 import { useDragScroll } from '@/shared/utils/useDragScroll';
-import { CurrentTripListProps } from '../types';
+import { CurrentTripListProps } from '../type/home-type';
 import { getDaysUntilTrip } from '@/shared/utils/DatetoDay/getDaysUntilTrip';
 import Link from 'next/link';
 
@@ -16,7 +16,6 @@ type CurrentTripItemProps = {
 const CurrentTripItem = ({ tripId, tripName, startDate, endDate, countryNames }: CurrentTripItemProps) => {
   const daysLeft = getDaysUntilTrip(startDate);
 
-  // D-day 라벨링
   let dLabel: string;
   if (daysLeft > 0) {
     dLabel = `D-${daysLeft}`;
@@ -58,6 +57,9 @@ const CurrentTripItem = ({ tripId, tripName, startDate, endDate, countryNames }:
 const CurrentTripList = ({ upcomingTrips, ongoingTrips }: CurrentTripListProps) => {
   const { scrollRef, onMouseDown, onMouseMove, onMouseUp } = useDragScroll('x');
 
+  const hasOngoing = ongoingTrips && ongoingTrips.length > 0;
+  const hasUpcoming = upcomingTrips && upcomingTrips.length > 0;
+
   return (
     <div
       ref={scrollRef}
@@ -67,26 +69,28 @@ const CurrentTripList = ({ upcomingTrips, ongoingTrips }: CurrentTripListProps) 
       onMouseLeave={onMouseUp}
       className="flex overflow-x-auto scrollbar-hide px-8"
     >
-      {ongoingTrips.map((trip) => (
-        <CurrentTripItem
-          key={trip.tripId}
-          tripId={trip.tripId}
-          tripName={trip.tripName}
-          startDate={trip.startDate}
-          endDate={trip.endDate}
-          countryNames={trip.countryNames}
-        />
-      ))}
-      {upcomingTrips.map((trip) => (
-        <CurrentTripItem
-          key={trip.tripId}
-          tripId={trip.tripId}
-          tripName={trip.tripName}
-          startDate={trip.startDate}
-          endDate={trip.endDate}
-          countryNames={trip.countryNames}
-        />
-      ))}
+      {hasOngoing &&
+        ongoingTrips.map((trip) => (
+          <CurrentTripItem
+            key={trip.tripId}
+            tripId={trip.tripId}
+            tripName={trip.tripName}
+            startDate={trip.startDate}
+            endDate={trip.endDate}
+            countryNames={trip.countryNames}
+          />
+        ))}
+      {hasUpcoming &&
+        upcomingTrips.map((trip) => (
+          <CurrentTripItem
+            key={trip.tripId}
+            tripId={trip.tripId}
+            tripName={trip.tripName}
+            startDate={trip.startDate}
+            endDate={trip.endDate}
+            countryNames={trip.countryNames}
+          />
+        ))}
     </div>
   );
 };

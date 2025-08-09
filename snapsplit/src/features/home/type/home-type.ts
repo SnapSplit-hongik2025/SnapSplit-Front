@@ -1,19 +1,26 @@
- export type Trip = {
+export type TripDto = {
   tripId: number;
   tripName: string;
   startDate: string;
   endDate: string;
   countryNames: string[];
- };
+  tripImage?: string;
+};
+
+export type GetHomeResponseDto = {
+  upcomingTrips: TripDto[];
+  ongoingTrips: TripDto[];
+  pastTrips: TripDto[];
+};
 
 export interface CreateTripSectionProps{
-  upcomingTrips: Trip[];
-  ongoingTrips: Trip[];
+  upcomingTrips: TripDto[];
+  ongoingTrips: TripDto[];
 }
 
 export interface CurrentTripListProps {
-  upcomingTrips: Trip[];
-  ongoingTrips: Trip[];
+  upcomingTrips: TripDto[];
+  ongoingTrips: TripDto[];
 }
 
 export type UpcomingTripProps = {
@@ -24,7 +31,7 @@ export type UpcomingTripProps = {
 };
 
 export interface PastTripImgCardListProps {
-  pastTrips: Trip[];
+  pastTrips: TripDto[];
 }
 
 export type PastTripCardProp = {
@@ -41,5 +48,5 @@ export type PastTripListProps = {
 }
 
 export interface AllPastTripListProps {
-  pastTrips: Trip[];
+  pastTrips: TripDto[];
 }

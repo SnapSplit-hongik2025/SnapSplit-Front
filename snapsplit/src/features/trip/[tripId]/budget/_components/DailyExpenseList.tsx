@@ -1,36 +1,27 @@
-import { Expense } from '../api';
-import { groupExpensesByDate } from '@/shared/utils/groupExpenses';
 import ExpenseDateBar from './ExpenseDateBar';
 import ExpenseItem from './ExpenseItem';
+import { DailyExpenseListProps } from '../type';
 import AddExpenseButton from './AddExpenseButton';
 import TopFloatingButton from '@/shared/components/TopFloatingButton';
 
-type DailyExpenseListProps = {
-  expenses: Expense[];
-  tripStartDate: string;
-  tripEndDate: string;
-};
-
-const DailyExpenseList = ({ expenses, tripStartDate, tripEndDate }: DailyExpenseListProps) => {
-  const groupedExpenses = groupExpensesByDate(expenses, tripStartDate, tripEndDate);
-
+export default function DailyExpenseList({ dailyExpenses, tripStartDate }: DailyExpenseListProps) {
   return (
     <div
       id="scroll-target-top"
-      className="flex-grow w-full space-y-8 px-5 pt-5 text-grey-850 pb-[159px] overflow-y-auto scrollbar-hide bg-grey-50"
+      className="flex-grow w-full space-y-8 p-5 pb-[159px] overflow-y-auto scrollbar-hide bg-grey-50"
     >
-      {groupedExpenses.map((group) => (
-        <div key={group.label} className="space-y-3" id={group.id ? `day-${group.id}` : undefined}>
-          <ExpenseDateBar expenseDay={group.label} type={group.type} dayIndex={group.dayIndex} />
-          {group.expenses.map((expense) => (
-            <ExpenseItem key={`${expense.expenseId}-${expense.expenseCurrency}`} expense={expense} />
-          ))}
-          <AddExpenseButton />
-        </div>
-      ))}
+      {dailyExpenses.map(({ date, expenses }) => {
+        return (
+          <div id={`day-${date}`} key={date}>
+            <ExpenseDateBar expenseDate={date} tripStartDate={tripStartDate} />
+            {expenses.map((e) => (
+              <ExpenseItem key={e.expenseId} expense={e} />
+            ))}
+            <AddExpenseButton />
+          </div>
+        );
+      })}
       <TopFloatingButton />
     </div>
   );
-};
-
-export default DailyExpenseList;
+}

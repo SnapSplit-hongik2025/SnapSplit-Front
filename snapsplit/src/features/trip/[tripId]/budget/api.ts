@@ -1,12 +1,10 @@
 export type Expense = {
-    expenseId: number;
-    expenseDate: string;
-    expenseAmount: number;
-    expenseCurrency: string;
-    expenseCategory: string;
-    expenseUsers: {
-      userId: number;
-      userName: string;
-    }[];
+  expenseId: number;
+  category: string;
+  expenseName: string;
+  expenseMemo: string;
+  amount: number;
+  currency: string;
+  splitters: string[];
   };
   
