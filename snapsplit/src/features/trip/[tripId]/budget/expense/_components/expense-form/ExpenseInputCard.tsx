@@ -9,11 +9,27 @@ import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 export default function ExpenseInputCard() {
   const [isOpen, setIsOpen] = useState(false);
-  const { amount, setAmount } = useExpenseStore();
+  const amount = useExpenseStore((s) => s.amount);
+  const setAmount = useExpenseStore((s) => s.setAmount);
 
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(Number(e.target.value));
+    const inputValue = e.target.value;
+    console.log('[AmountInput] inputValue:', inputValue, typeof inputValue);
+
+    // 정규식을 사용하여 입력값이 숫자로만 구성되었는지 확인합니다.
+    // (빈 문자열도 허용하기 위해 `*` 사용)
+    const numericRegex = /^[0-9]*$/;
+
+    if (numericRegex.test(inputValue)) {
+      // 유효한 숫자 문자열(또는 빈 문자열)일 경우에만 상태를 업데이트합니다.
+      // 이 로직 덕분에 '0'에서 backspace를 누르면 빈 문자열('')이 되어
+      // 입력창이 깨끗하게 지워집니다.
+      setAmount(Number(inputValue));
+    }
+    // 숫자나 빈 문자열이 아니면 (예: 'abc', '12a') 상태를 업데이트하지 않아
+    // 입력이 무시됩니다.
   };
+
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-5 py-4 rounded-xl bg-grey-150">
@@ -25,6 +41,7 @@ export default function ExpenseInputCard() {
             className="w-full text-head-0 placeholder:text-grey-550"
             placeholder="금액 입력"
             onChange={onChangeAmount}
+            value={amount || ''}
           />
           <div className="text-body-3 text-grey-550">
             {'='}

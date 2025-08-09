@@ -4,7 +4,7 @@ import SplitRow from "./payment/SplitRow";
 import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
 
 export default function SplitSection() {
-  const { members } = useExpenseStore();
+  const members = useExpenseStore((s) => s.members);
 
   return (
     <div className="flex flex-col items-center gap-3 w-full text-body-3">

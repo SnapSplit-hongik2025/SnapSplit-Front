@@ -36,7 +36,7 @@ export type Member = {
 export type ExpenseState = {
   // form fields
   date: string;
-  amount: number;
+  amount: number | null;
   currency: string;
   exchangeRate: number;
   category: string;
@@ -74,7 +74,7 @@ export const useExpenseStore = create<ExpenseState>()(
       // initial values
       isInitialized: false,
       date: '',
-      amount: 0,
+      amount: null,
       currency: 'KRW',
       exchangeRate: 1,
       category: '',
@@ -125,7 +125,7 @@ export const useExpenseStore = create<ExpenseState>()(
       getData: () => ({
         expense: {
           date: get().date,
-          amount: get().amount,
+          amount: get().amount || 0,
           currency: get().currency,
           exchangeRate: get().exchangeRate,
           category: get().category,
@@ -165,7 +165,7 @@ export const hasPayer = (members: Member[]) => members.some((m) => m.isPayer);
 export const hasSplitter = (members: Member[]) => members.some((m) => m.isSplitter);
 
 export const selectIsValid = (s: ExpenseState) => {
-  const amountOk = s.amount > 0;
+  const amountOk = s.amount !== null && s.amount > 0;
   const nameOk = s.expenseName.trim().length > 0;
   const memoOk = s.expenseMemo.trim().length > 0;
   const categoryOk = s.category.trim().length > 0;

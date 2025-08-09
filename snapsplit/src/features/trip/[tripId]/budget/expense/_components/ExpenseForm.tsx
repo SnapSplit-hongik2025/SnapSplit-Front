@@ -6,7 +6,7 @@ import PaymentMethodSection from './expense-form/PaymentMethodSection';
 import NameSection from './expense-form/NameSection';
 import MemoSection from './expense-form/MemoSection';
 import CategorySection from './expense-form/CategorySection';
-import PaySection from './expense-form/PaymentSection';
+import PaySection from './expense-form/PaySection';
 import SplitSection from './expense-form/SplitSection';
 import Button from '@/shared/components/Button';
 

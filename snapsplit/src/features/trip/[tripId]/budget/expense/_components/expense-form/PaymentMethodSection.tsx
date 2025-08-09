@@ -4,7 +4,9 @@ import { EXPENSE_METHOD } from '@/shared/constants/expense';
 import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 export default function PaymentMethodSection() {
-  const { paymentMethod, setPaymentMethod } = useExpenseStore();
+  const paymentMethod = useExpenseStore((s) => s.paymentMethod);
+  const setPaymentMethod = useExpenseStore((s) => s.setPaymentMethod);
+
   return (
     <div className="flex flex-col items-start w-full gap-3">
       <div className="text-body-3">지불 방법</div>
@@ -12,6 +14,7 @@ export default function PaymentMethodSection() {
         {EXPENSE_METHOD.map((method) => (
           <button
             key={method.name}
+            type="button"
             onClick={() => {
               setPaymentMethod(method.name);
             }}

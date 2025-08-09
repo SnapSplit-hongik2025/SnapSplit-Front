@@ -3,8 +3,8 @@
 import PaymentRow from "./payment/PaymentRow";
 import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
 
-export default function PaymentSection() {
-  const { members } = useExpenseStore();
+export default function PaySection() {
+  const members = useExpenseStore((s) => s.members);
   const sharedFund = members.find((member) => member.memberType === 'SHARED_FUND');
 
   return (
@@ -17,7 +17,9 @@ export default function PaymentSection() {
         </div>
       </div>
       <div className="flex flex-col items-center w-full">
-        <PaymentRow payer={{ memberId: sharedFund?.memberId || 0, name: "공동경비" }} />
+        {sharedFund && (
+          <PaymentRow payer={{ memberId: sharedFund?.memberId || 0, name: "공동경비" }} />
+        )}
         {members.map((member) => {
           if(member.memberType === 'SHARED_FUND') return null;
           return (

@@ -19,7 +19,7 @@ const SharedBudgetDetailPage = () => {
     <div className="flex flex-col h-screen">
       <div className="flex items-center justify-between w-full px-5 py-3">
         <button onClick={() => router.back()}>
-          <Image src="/svg/arrow-left-grey-1000.svg" alt="back" width={24} height={24} />
+          <Image src="/svg/arrow-left-grey-1000.svg" alt="뒤로" width={24} height={24} />
         </button>
         <div className="text-label-1">공동경비 세부내역</div>
         <div className="w-6 h-6" />

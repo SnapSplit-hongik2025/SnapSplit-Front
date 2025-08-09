@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import CurrencyList from '@/features/trip/[tripId]/budget/shared/[mode]/_components/CurrencyList';
 import BudgetInput from './BudgetInput';
@@ -26,16 +26,9 @@ const SharedForm = () => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isFormDataReady, setIsFormDataReady] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (amount && currency && selectedDate && selectedCategory) {
-      setIsFormDataReady(true);
-    } else {
-      setIsFormDataReady(false);
-    }
-  }, [amount, currency, selectedDate, selectedCategory]);
+  const isFormDataReady = Boolean(amount && currency && selectedDate && selectedCategory);
 
   const handleSubmit = () => {
     const formData = new FormData();

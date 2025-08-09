@@ -23,7 +23,10 @@ export default function PaymentRow({ payer }: Props) {
 
   const toggleCheck = useCallback(() => {
     setPayer(payer.memberId, !isChecked);
-  }, [setPayer, payer.memberId, isChecked]);
+    if (isChecked) {
+      updatePayAmount(payer.memberId, null);
+    }
+  }, [setPayer, payer.memberId, isChecked, updatePayAmount]);
 
   const handleAmountChange = useCallback(
     (value: string) => {

@@ -23,7 +23,10 @@ export default function SplitRow({ splitter }: Props) {
 
   const toggleCheck = useCallback(() => {
     setSplitter(splitter.memberId, !isChecked);
-  }, [setSplitter, splitter.memberId, isChecked]);
+    if (isChecked) {
+      updateSplitAmount(splitter.memberId, null);
+    }
+  }, [setSplitter, splitter.memberId, isChecked, updateSplitAmount]);
 
   const handleAmountChange = useCallback(
     (value: string) => {

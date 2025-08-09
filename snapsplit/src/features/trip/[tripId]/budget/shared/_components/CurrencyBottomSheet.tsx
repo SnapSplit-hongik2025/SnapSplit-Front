@@ -1,18 +1,17 @@
 'use client';
 
 import Image from 'next/image';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
-import { useExpenseInitStore } from '@/lib/zustand/useExpenseInitStore';
 import { getKorName, getNation } from '@/shared/utils/currency';
 
 type CurrencyBottomSheetProps = {
   onClose?: () => void;
+  selectedCurrency: string;
+  setCurrency: (currency: string) => void;
 };
 
-const CurrencyBottomSheet = ({ onClose }: CurrencyBottomSheetProps) => {
-  const { availCurrencies } = useExpenseInitStore();
-  const { setCurrency } = useExpenseStore();
-  const selectedCurrency = useExpenseStore((state) => state.currency);
+const availCurrencies = ['USD', 'EUR', 'JPY'];
+
+const CurrencyBottomSheet = ({ onClose, selectedCurrency, setCurrency }: CurrencyBottomSheetProps) => {
   return (
     <div className="flex flex-col w-full">
       {availCurrencies.map((currency) => (
