@@ -22,9 +22,9 @@ const SharedBudgetBar = ({ tripId, sharedFund, topExpense }: SharedBudgetBarProp
           <div className="w-full flex flex-row justify-between items-center text-green text-sm pb-1">
             <p>공동경비 잔액</p>
             <div className="flex flex-row gap-3">
-              <Link href={`/trip/${tripId}/budget/expense/remove`}>빼기</Link>
+              <Link href={`/trip/${tripId}/budget/shared/remove`}>빼기</Link>
               <Image src={devider} alt="devider" width={2} height={20} />
-              <Link href={`/trip/${tripId}/budget/expense/add`}>추가하기</Link>
+              <Link href={`/trip/${tripId}/budget/shared/add`}>추가하기</Link>
             </div>
           </div>
           <div className="flex flex-row w-full items-center">

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import arrow_bottom from '@public/svg/arrow_bottom.svg';
 
-type ExpenseSectionProps = {
+type BudgetInputProps = {
   currency: string;
   amount: string;
   setAmount: (amount: string) => void;
@@ -10,7 +10,7 @@ type ExpenseSectionProps = {
 };
 
 // TODO: 통화별 환율 적용 결과 표시
-const ExpenseSection = ({ currency, amount, setAmount, isCurrencyOpen, setIsCurrencyOpen }: ExpenseSectionProps) => {
+const BudgetInput = ({ currency, amount, setAmount, isCurrencyOpen, setIsCurrencyOpen }: BudgetInputProps) => {
   const parseCurrencyLabel = (fullLabel: string): string => {
     const parts = fullLabel.split(' - ');
     return parts[1] ?? fullLabel; // fallback: 전체 반환
@@ -41,4 +41,4 @@ const ExpenseSection = ({ currency, amount, setAmount, isCurrencyOpen, setIsCurr
   );
 };
 
-export default ExpenseSection;
+export default BudgetInput;
