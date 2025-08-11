@@ -1,0 +1,11 @@
+export type ApiEnvelope<T> = {
+    status: number;
+    success: boolean;
+    message: string;
+    data: T;
+}
+
+export type TokenPair = {
+    accessToken: string;
+    refreshToken: string;
+}
