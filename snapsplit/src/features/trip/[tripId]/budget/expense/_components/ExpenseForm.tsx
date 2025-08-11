@@ -42,25 +42,32 @@ export default function ExpenseForm() {
   useEffect(() => {
     if (!tripId) return;
 
-    // TODO: API 반환 데이터로 대체
-    const res = EXPENSE_INIT_DATA as { data: ExpenseInitData };
-    setExpenseInitData(res.data);
+    setInitialized(false);
 
-    // INIT
-    // TODO: 초기화 로직 다듬기
-    setCurrency(res.data.defaultCurrency);
-    setDate('Day 1');
+    try {
+      // TODO: API 반환 데이터로 대체
+      const res = EXPENSE_INIT_DATA as { data: ExpenseInitData };
+      setExpenseInitData(res.data);
 
-    const initMembers: Member[] = res.data.members.map((m) => ({
-      ...m,
-      isPayer: false,
-      payAmount: null,
-      isSplitter: false,
-      splitAmount: null,
-    }));
-    setMembers(initMembers);
+      // INIT
+      // TODO: 초기화 로직 다듬기
+      setCurrency(res.data.defaultCurrency);
+      setDate('Day 1');
 
-    setInitialized(true);
+      const initMembers: Member[] = res.data.members.map((m) => ({
+        ...m,
+        isPayer: false,
+        payAmount: null,
+        isSplitter: false,
+        splitAmount: null,
+      }));
+      setMembers(initMembers);
+    } catch (error) {
+      console.error('지출 초기화 데이터 가져오기 실패 : ', error);
+      // TODO: 에러 상태 표시
+    } finally {
+      setInitialized(true);
+    }
   }, [tripId, setExpenseInitData, setCurrency, setDate, setMembers, setInitialized]);
 
   if (!isInitialized) return null;
@@ -78,7 +85,13 @@ export default function ExpenseForm() {
         {hasPayer && <SplitSection />}
       </div>
       <div className="flex items-center justify-center w-full p-5">
-        <Button label="추가하기" onClick={() => { /* TODO: submit handler */ }} enabled={isValid} />
+        <Button
+          label="추가하기"
+          onClick={() => {
+            /* TODO: submit handler */
+          }}
+          enabled={isValid}
+        />
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ export default function PaySection() {
       </div>
       <div className="flex flex-col items-center w-full">
         {sharedFund && (
-          <PaymentRow payer={{ memberId: sharedFund?.memberId || 0, name: "공동경비" }} />
+          <PaymentRow payer={{ memberId: sharedFund.memberId, name: "공동경비" }} />
         )}
         {members.map((member) => {
           if(member.memberType === 'SHARED_FUND') return null;
