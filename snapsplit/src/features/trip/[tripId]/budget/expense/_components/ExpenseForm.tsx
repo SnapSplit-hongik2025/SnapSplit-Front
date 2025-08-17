@@ -26,11 +26,14 @@ import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseIn
 export default function ExpenseForm() {
   const tripId = useParams().tripId as string | undefined;
 
-  // setters
-  const setCurrency = useExpenseStore((s) => s.setCurrency);
+  // value & setters
   const setDate = useExpenseStore((s) => s.setDate);
   const setMembers = useExpenseStore((s) => s.setMembers);
   const setInitialized = useExpenseStore((s) => s.setInitialized);
+  const amount = useExpenseStore((s) => s.amount);
+  const setAmount = useExpenseStore((s) => s.setAmount);
+  const currency = useExpenseStore((s) => s.currency);
+  const setCurrency = useExpenseStore((s) => s.setCurrency);
 
   // derived & lifecycle
   const isInitialized = useExpenseStore(selectIsInitialized);
@@ -74,7 +77,7 @@ export default function ExpenseForm() {
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
-      <ExpenseInputCard />
+      <ExpenseInputCard amount={amount} setAmount={setAmount} currency={currency} setCurrency={setCurrency}/>
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         <TripDateSection />
         <PaymentMethodSection />

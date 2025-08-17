@@ -5,12 +5,16 @@ import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/shared/_components/CurrencyBottomSheet';
 import CurrencyButton from '@/features/trip/[tripId]/budget/expense/_components/CurrencyButton';
 import ReceiptRegisterButton from '@/features/trip/[tripId]/budget/expense/_components/ReceiptRegisterButton';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
-export default function ExpenseInputCard() {
+type Props = {
+  amount: number | null;
+  setAmount: (amount: number) => void;
+  currency: string;
+  setCurrency: (currency: string) => void;
+};
+
+export default function ExpenseInputCard({amount, setAmount, currency, setCurrency}: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const amount = useExpenseStore((s) => s.amount);
-  const setAmount = useExpenseStore((s) => s.setAmount);
 
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -51,7 +55,7 @@ export default function ExpenseInputCard() {
       </div>
       <ReceiptRegisterButton />
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <CurrencyBottomSheet onClose={() => setIsOpen(false)} />
+        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} setCurrency={setCurrency} />
       </BottomSheet>
     </div>
   );
