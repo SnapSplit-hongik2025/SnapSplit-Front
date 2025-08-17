@@ -37,6 +37,12 @@ export default function ExpenseForm() {
   const setDate = useExpenseStore((s) => s.setDate);
   const paymentMethod = useExpenseStore((s) => s.paymentMethod);
   const setPaymentMethod = useExpenseStore((s) => s.setPaymentMethod);
+  const expenseName = useExpenseStore((s) => s.expenseName);
+  const setExpenseName = useExpenseStore((s) => s.setExpenseName);
+  const expenseMemo = useExpenseStore((s) => s.expenseMemo);
+  const setExpenseMemo = useExpenseStore((s) => s.setExpenseMemo);
+  const category = useExpenseStore((s) => s.category);
+  const setCategory = useExpenseStore((s) => s.setCategory);
 
   // derived & lifecycle
   const isInitialized = useExpenseStore(selectIsInitialized);
@@ -84,9 +90,9 @@ export default function ExpenseForm() {
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         <TripDateSection date={date} setDate={setDate} />
         <PaymentMethodSection paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
-        <NameSection />
-        <MemoSection />
-        <CategorySection />
+        <NameSection expenseName={expenseName} setExpenseName={setExpenseName} />
+        <MemoSection expenseMemo={expenseMemo} setExpenseMemo={setExpenseMemo}/>
+        <CategorySection category={category} setCategory={setCategory} />
         <PaySection />
         {hasPayer && <SplitSection />}
       </div>
