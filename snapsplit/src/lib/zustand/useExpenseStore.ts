@@ -9,6 +9,7 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { ExpenseCreateData, Payer, Splitter } from '@/shared/types/expense';
 
 const isClient = typeof window !== 'undefined';
 
@@ -65,7 +66,12 @@ export type ExpenseState = {
   setSplitter: (memberId: number, isSplitter: boolean) => void;
 
   // helpers
-  getData: () => { expense: Expense; members: Member[] };
+  getData: () => ExpenseCreateData;
+  getPayers: () => Payer[];
+  getSplitter: () => Splitter[];
+
+  // reset
+  reset: () => void;
 };
 
 export const useExpenseStore = create<ExpenseState>()(
@@ -98,28 +104,47 @@ export const useExpenseStore = create<ExpenseState>()(
       setMembers: (members) => set({ members }),
       setPayer: (memberId, isPayer) =>
         set((state) => ({
-          members: state.members.map((m) =>
-            m.memberId === memberId ? { ...m, isPayer } : m
-          ),
+          members: state.members.map((m) => (m.memberId === memberId ? { ...m, isPayer } : m)),
         })),
       setSplitter: (memberId, isSplitter) =>
         set((state) => ({
-          members: state.members.map((m) =>
-            m.memberId === memberId ? { ...m, isSplitter } : m
-          ),
+          members: state.members.map((m) => (m.memberId === memberId ? { ...m, isSplitter } : m)),
         })),
       updatePayAmount: (memberId, payAmount) =>
         set((state) => ({
-          members: state.members.map((m) =>
-            m.memberId === memberId ? { ...m, payAmount } : m
-          ),
+          members: state.members.map((m) => (m.memberId === memberId ? { ...m, payAmount } : m)),
         })),
       updateSplitAmount: (memberId, splitAmount) =>
         set((state) => ({
-          members: state.members.map((m) =>
-            m.memberId === memberId ? { ...m, splitAmount } : m
-          ),
+          members: state.members.map((m) => (m.memberId === memberId ? { ...m, splitAmount } : m)),
         })),
+
+      getPayers: () => {
+        const payers: Payer[] = [];
+        get().members.forEach((m) => {
+          if (m.isPayer) {
+            const payer: Payer = {
+              memberId: m.memberId,
+              payerAmount: m.payAmount || 0,
+            };
+            payers.push(payer);
+          }
+        });
+        return payers;
+      },
+      getSplitter: () => {
+        const splitters: Splitter[] = [];
+        get().members.forEach((m) => {
+          if (m.isSplitter) {
+            const splitter: Splitter = {
+              memberId: m.memberId,
+              splitAmount: m.splitAmount || 0,
+            };
+            splitters.push(splitter);
+          }
+        });
+        return splitters;
+      },
 
       // helpers
       getData: () => ({
@@ -133,8 +158,23 @@ export const useExpenseStore = create<ExpenseState>()(
           expenseMemo: get().expenseMemo,
           paymentMethod: get().paymentMethod,
         },
-        members: get().members,
+        payers: get().getPayers(),
+        splitters: get().getSplitter(),
       }),
+
+      // reset
+      reset: () =>
+        set({
+          date: '',
+          amount: null,
+          currency: 'KRW',
+          exchangeRate: 1,
+          category: '',
+          expenseName: '',
+          expenseMemo: '',
+          paymentMethod: '',
+          members: [],
+        }),
     }),
     {
       name: 'expense',
@@ -149,11 +189,10 @@ export const useExpenseStore = create<ExpenseState>()(
         expenseMemo: s.expenseMemo,
         paymentMethod: s.paymentMethod,
         members: s.members,
-      })
+      }),
     }
   )
 );
-
 
 // =========================
 // Derived helpers & selectors
