@@ -43,6 +43,8 @@ export default function ExpenseForm() {
   const category = useExpenseStore((s) => s.category);
   const setCategory = useExpenseStore((s) => s.setCategory);
 
+  const exchangeRates = useExpenseInitStore((s) => s.exchangeRates);
+
   // derived & lifecycle
   const isInitialized = useExpenseStore(selectIsInitialized);
   const setInitialized = useExpenseStore((s) => s.setInitialized);
@@ -95,7 +97,7 @@ export default function ExpenseForm() {
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
-      <ExpenseInputCard amount={amount} setAmount={setAmount} currency={currency} setCurrency={setCurrency}/>
+      <ExpenseInputCard amount={amount} setAmount={setAmount} currency={currency} setCurrency={setCurrency} exchangeRates={exchangeRates}/>
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         <TripDateSection date={date} setDate={setDate} />
         <PaymentMethodSection paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
