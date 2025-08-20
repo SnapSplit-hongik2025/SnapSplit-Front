@@ -5,6 +5,7 @@ import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/shared/_components/CurrencyBottomSheet';
 import CurrencyButton from '@/features/trip/[tripId]/budget/expense/_components/CurrencyButton';
 import ReceiptRegisterButton from '@/features/trip/[tripId]/budget/expense/_components/ReceiptRegisterButton';
+import { useExpenseInitStore } from '@/lib/zustand/useExpenseInitStore';
 
 type Props = {
   amount: number | null;
@@ -15,6 +16,7 @@ type Props = {
 
 export default function ExpenseInputCard({amount, setAmount, currency, setCurrency}: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const exchangeRates = useExpenseInitStore((s) => s.exchangeRates);
 
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -34,6 +36,10 @@ export default function ExpenseInputCard({amount, setAmount, currency, setCurren
     // 입력이 무시됩니다.
   };
 
+  const transformAmount = (korAmount: number, currency: string) => {
+    const exchangeRate = exchangeRates[currency];
+    return korAmount * exchangeRate;
+  };
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-5 py-4 rounded-xl bg-grey-150">
@@ -49,7 +55,7 @@ export default function ExpenseInputCard({amount, setAmount, currency, setCurren
           />
           <div className="text-body-3 text-grey-550">
             {'='}
-            {amount}원
+            {transformAmount(amount || 0, currency)}원
           </div>
         </div>
       </div>
