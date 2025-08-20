@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/shared/_components/CurrencyBottomSheet';
-import CurrencyButton from '@/features/trip/[tripId]/budget/expense/_components/CurrencyButton';
+import CurrencyButton from '@/features/trip/[tripId]/budget/expense/_components/expense-form/input-card/CurrencyButton';
 import ReceiptRegisterButton from '@/features/trip/[tripId]/budget/expense/_components/ReceiptRegisterButton';
 
 type Props = {
