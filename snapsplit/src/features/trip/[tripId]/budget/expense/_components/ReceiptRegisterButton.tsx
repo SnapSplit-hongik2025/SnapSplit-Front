@@ -1,10 +1,15 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function ReceiptRegisterButton() {
+    const router = useRouter();
+    const handleClick = () => {
+        router.push('/trip/[tripId]/budget/expense/receipt');
+    }
     return (
-        <div className="flex items-center justify-center gap-1 w-full h-11 bg-primary rounded-xl">
+        <button className="flex items-center justify-center gap-1 w-full h-11 bg-primary rounded-xl cursor-pointer" onClick={handleClick}>
             <Image src="/svg/snap-white.svg" alt="사진 등록" width={24} height={24} />
             <div className="text-body-1 text-white">영수증으로 등록</div>
-        </div>
+        </button>
     );
 }
