@@ -1,4 +1,4 @@
 export type PastTripSummaryProps = {
-  tripCount: number;
-  countryCount: number;
+  totalTrips: number;
+  totalCountries: number;
 };
