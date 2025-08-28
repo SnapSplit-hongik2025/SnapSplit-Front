@@ -45,6 +45,7 @@ export type PastTripListProps = {
   startDate: string;
   endDate: string;
   countryNames: string[];
+  tripImage?: string;
 }
 
 export interface AllPastTripListProps {
