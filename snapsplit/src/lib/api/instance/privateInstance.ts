@@ -25,7 +25,7 @@ let isRefreshing = false;
 let failedQueue: (() => void)[] = [];
 
 privateInstance.interceptors.response.use(
-  (response) => response.data, // 2XX 응답은 그대로 반환
+  (response) => response, // 2XX 응답은 그대로 반환
 
   async (error) => {
     const originalRequest = error.config;
