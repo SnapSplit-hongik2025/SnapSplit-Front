@@ -38,7 +38,7 @@ export default function HomePage() {
       <CreateTripSection upcomingTrips={homeData.upcomingTrips} ongoingTrips={homeData.ongoingTrips} />
       {hasPastTrip ? (
         <>
-          <PastTripImgCardList />
+          <PastTripImgCardList pastTrips={homeData.pastTrips} />
           <AllPastTripList pastTrips={homeData.pastTrips} />
         </>
       ) : (

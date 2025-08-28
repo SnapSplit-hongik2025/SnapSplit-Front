@@ -2,7 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['i1.sndcdn.com'],
+    domains: [
+      'i1.sndcdn.com',
+      'snapsplit-assets.s3.ap-northeast-2.amazonaws.com',
+],
+    
   },
 };
 
