@@ -19,8 +19,8 @@ export interface CreateTripSectionProps{
 }
 
 export interface CurrentTripListProps {
-  upcomingTrips: TripDto[];
-  ongoingTrips: TripDto[];
+  upcomingTrips?: TripDto[];
+  ongoingTrips?: TripDto[];
 }
 
 export type UpcomingTripProps = {

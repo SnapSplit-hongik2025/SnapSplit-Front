@@ -21,7 +21,7 @@ const CurrentTripItem = ({ tripId, tripName, startDate, endDate, countryNames }:
   if (daysLeft > 0) {
     dLabel = `D-${daysLeft}`;
   } else if (daysLeft < 0) {
-    dLabel = `Day ${Math.abs(daysLeft)}`;
+    dLabel = `Day ${Math.abs(daysLeft) + 1}`;
   } else {
     dLabel = 'D-day';
   }
