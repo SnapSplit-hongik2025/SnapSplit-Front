@@ -4,6 +4,7 @@ import { useDragScroll } from '@/shared/utils/useDragScroll';
 import { CurrentTripListProps } from '../type/home-type';
 import { getDaysUntilTrip } from '@/shared/utils/DatetoDay/getDaysUntilTrip';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
 type CurrentTripItemProps = {
   tripId: number;
@@ -40,7 +41,7 @@ const CurrentTripItem = ({ tripId, tripName, startDate, endDate, countryNames }:
             className="text-caption-1 text-grey-550 w-full overflow-hidden whitespace-nowrap truncate"
             title={countryNames.join(', ')}
           >
-            {startDate} - {endDate} |{' '}
+            {format(startDate, 'yyyy. M. d')} - {format(endDate, 'yyyy. M. d')} | {''}
             {countryNames.map((country, idx) => (
               <span key={country + idx}>
                 {country}

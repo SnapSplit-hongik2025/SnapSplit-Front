@@ -69,7 +69,7 @@ privateInstance.interceptors.response.use(
         return privateInstance(originalRequest); // 재시도 결과 반환
       } catch (error) {
         useAuthStore.getState().clearUser();
-        window.location.href = '/login';
+        window.location.href = '/auth';
         return Promise.reject(error);
       } finally {
         // 재시도 플래그 초기화

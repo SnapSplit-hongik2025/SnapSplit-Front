@@ -14,8 +14,8 @@ export type GetHomeResponseDto = {
 };
 
 export interface CreateTripSectionProps{
-  upcomingTrips: TripDto[];
-  ongoingTrips: TripDto[];
+  upcomingTrips?: TripDto[];
+  ongoingTrips?: TripDto[];
 }
 
 export interface CurrentTripListProps {
