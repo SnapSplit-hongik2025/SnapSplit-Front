@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { StepProgressBarProps } from '@/features/trip/createTrip/type';
+import { StepProgressBarProps } from '@/features/trip/createTrip/types/type';
 
 const StepProgressBar = ({ step }: StepProgressBarProps) => {
   return (
