@@ -1,4 +1,5 @@
-import { DailyExpenseDto, ExpenseDto, TopCategoryExpenseDto } from "./budget-dto-type";
+import { GroupedExpenses } from "@/shared/utils/groupExpenses";
+import { ExpenseDto, TopCategoryExpenseDto, SharedFundDto } from "./budget-dto-type";
 
 export type BudgetPageProps = {
   tripId: string;
@@ -11,14 +12,9 @@ export type TripInfoProps = {
   endDate: string;
 };
 
-export type SharedCurrency = {
-    totalSharedCurrency: string;
-    totalSharedAmount: number;
-};
-
 export type SharedBudgetBarProps = {
   tripId: number;
-  sharedFund: { defaultCurrency: string; balance: number; }
+  sharedFund: SharedFundDto;
   topExpense: TopCategoryExpenseDto;
 };
 
@@ -44,12 +40,10 @@ export type UserIconListProps = {
 };
 
 export type DailyExpenseListProps = {
-  dailyExpenses: DailyExpenseDto[];
-  tripStartDate: string;
+  groupedExpenses: GroupedExpenses[];
 };
 
 export type ExpenseDateBarProps = {
-  expenseDate: string;
-  tripStartDate: string;
+  label: string;
 };
 

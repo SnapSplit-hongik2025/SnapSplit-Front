@@ -22,7 +22,7 @@ export interface SharedFundDto {
 
 // 가장 많이 지출한 카테고리
 export interface TopCategoryExpenseDto {
-  category: string;
+  category: BackendCategory;
   amountKRW: number;
 }
 

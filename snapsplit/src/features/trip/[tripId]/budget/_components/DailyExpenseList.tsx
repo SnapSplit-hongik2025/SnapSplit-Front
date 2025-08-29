@@ -1,6 +1,6 @@
 import ExpenseDateBar from './ExpenseDateBar';
 import ExpenseItem from './ExpenseItem';
-import { DailyExpenseListProps } from '../types/budget-type';
+import { DailyExpenseListProps } from '../type';
 import AddExpenseButton from './AddExpenseButton';
 import TopFloatingButton from '@/shared/components/TopFloatingButton';
 

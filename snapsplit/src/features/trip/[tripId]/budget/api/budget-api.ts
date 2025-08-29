@@ -4,6 +4,10 @@ import { ApiEnvelope } from "@/lib/api/type";
 import { apiPath } from "@/shared/constants/apipath";
 
 export const getTripBudgetData = async (tripId: number): Promise<GetTripBudgetDto> => {
+  if (!tripId) {
+    throw new Error('유효하지 않은 여행 ID입니다.');
+  }
+  
   try {
     const finalPath = apiPath.budget.replace('{tripId}', String(tripId));
     const res = await privateInstance.get<ApiEnvelope<GetTripBudgetDto>>(finalPath);
