@@ -1,7 +1,7 @@
 'use client';
 
 import { useDragScroll } from '@/shared/utils/useDragScroll';
-import { PastTripImgCardListProps } from '../type/home-type';
+import { PastTripImgCardListProps } from '../types/home-type';
 import Image from 'next/image';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
 
@@ -44,8 +44,13 @@ const PastTripImgCardList = ({ pastTrips }: PastTripImgCardListProps) => {
         onMouseLeave={onMouseUp}
         className="flex overflow-x-auto scrollbar-hide"
       >
-        {pastTrips.map((trip, tripId) => (
-          <PastTripCard key={tripId} tripName={trip.tripName} startDate={trip.startDate} tripImage={trip.tripImage} />
+        {pastTrips.map((trip) => (
+          <PastTripCard
+            key={trip.tripId}
+            tripName={trip.tripName}
+            startDate={trip.startDate}
+            tripImage={trip.tripImage}
+          />
         ))}
       </div>
     </div>

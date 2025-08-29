@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { PastTripListProps, AllPastTripListProps } from '../type/home-type';
+import { PastTripListProps, AllPastTripListProps } from '../types/home-type';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
 import Image from 'next/image';
 

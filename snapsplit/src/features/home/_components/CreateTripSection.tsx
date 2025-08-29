@@ -5,7 +5,7 @@ import CurrentTripList from './CurrentTripList';
 import OverlayModal from '@/shared/components/modal/OverlayModal';
 import JoinTripByCodeModal from './modal/JoinTripByCodeModal';
 import { useState } from 'react';
-import { CreateTripSectionProps } from '../type/home-type';
+import { CreateTripSectionProps } from '../types/home-type';
 import { getDaysUntilTrip } from '@/shared/utils/DatetoDay/getDaysUntilTrip';
 
 const CreateTripSection = ({ upcomingTrips, ongoingTrips }: CreateTripSectionProps) => {
