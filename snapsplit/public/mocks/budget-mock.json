@@ -5,15 +5,19 @@
   "data": {
     "tripId": 14,
     "tripName": "2025 유럽 여행",
-    "startDate": "2025-05-21",
+    "startDate": "2025-05-20",
     "endDate": "2025-05-29",
     "countries": [
       "프랑스",
       "이탈리아"
     ],
+    "memberProfileImages": [
+      "http://k.kakaocdn.net/dn/hMWH3/btsDUJAisPN/VHJFVSYT3t3Wq4Q1khWQs1/img_640x640.jpg",
+      "https://your-s3-url.com/newprofile111.jpg"
+    ],
     "sharedFund": {
       "defaultCurrency": "KRW",
-      "balance": 498889
+      "balance": 498789
     },
     "topCategoryExpense": {
       "category": "OTHERS",
@@ -109,6 +113,14 @@
         ]
       },
       {
+        "date": "2025-05-21",
+        "expenses": []
+      },
+      {
+        "date": "2025-05-22",
+        "expenses": []
+      },
+      {
         "date": "2025-05-23",
         "expenses": [
           {
@@ -124,8 +136,42 @@
             ]
           }
         ]
+      },
+      {
+        "date": "2025-05-24",
+        "expenses": [
+          {
+            "expenseId": 47,
+            "category": "FOOD",
+            "expenseName": "",
+            "expenseMemo": "",
+            "amount": 100,
+            "currency": "KRW",
+            "splitters": []
+          }
+        ]
+      },
+      {
+        "date": "2025-05-25",
+        "expenses": []
+      },
+      {
+        "date": "2025-05-26",
+        "expenses": []
+      },
+      {
+        "date": "2025-05-27",
+        "expenses": []
+      },
+      {
+        "date": "2025-05-28",
+        "expenses": []
+      },
+      {
+        "date": "2025-05-29",
+        "expenses": []
       }
     ],
-    "totalExpense": 25344
+    "totalExpense": 25444
   }
 }

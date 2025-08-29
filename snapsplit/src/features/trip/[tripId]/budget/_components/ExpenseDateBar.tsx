@@ -2,7 +2,7 @@ import Image from 'next/image';
 import devider from '@public/svg/devider.svg';
 import { getKoreanDay } from '@/shared/utils/getKoreanDay';
 import dayjs from 'dayjs';
-import { ExpenseDateBarProps } from '../type';
+import { ExpenseDateBarProps } from '../types/budget-type';
 
 export default function ExpenseDateBar({ expenseDate, tripStartDate }: ExpenseDateBarProps) {
   const current = dayjs(expenseDate);

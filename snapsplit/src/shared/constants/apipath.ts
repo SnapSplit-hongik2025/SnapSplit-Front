@@ -4,4 +4,5 @@ export const enum apiPath {
   joinTrip = "/trips/join",
   countries = "/countries",
   users = "/users/code/",
+  budget = "/trips/{tripId}/expenses",
 }

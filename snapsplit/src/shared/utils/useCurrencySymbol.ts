@@ -8,5 +8,14 @@ const currencyMap: Record<string, string> = {
   };
   
 export function useCurrencySymbol(currencyCode: string): string {
-    return currencyMap[currencyCode] ?? currencyCode;
+  // 입력값이 없으면 빈 문자열 반환
+  if (!currencyCode) {
+    return '';
+  }
+
+  // 대문자로 변환하여 일관성 유지
+  const code = currencyCode.toUpperCase();
+
+  // 맵에서 심볼을 찾고, 없으면 공백 반환
+  return currencyMap[code] || '';
   }
