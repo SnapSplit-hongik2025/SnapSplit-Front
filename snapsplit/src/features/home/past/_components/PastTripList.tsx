@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import right_arrow from '@public/svg/rightArrow.svg';
 import Link from 'next/link';
-import { Trip } from '@/features/home/types/home-type';
+import { TripDto } from '../../types/home-type';
 
 type PastTripCardProps = {
   tripId: number;
@@ -39,19 +39,20 @@ export const PastTripCard = ({ tripId, tripName, startDate, endDate, countryName
 };
 
 type PastTripListProps = {
-  trips: Trip[];
+  trips: TripDto[];
 };
 
 const PastTripList = ({ trips }: PastTripListProps) => {
   return (
     <div className="flex flex-col gap-2">
-      {trips.map((trip, index) => (
+      {trips.map((trip) => (
         <PastTripCard
-          key={index}
+          key={trip.tripId}
           tripName={trip.tripName}
           startDate={trip.startDate}
           endDate={trip.endDate}
           countryNames={trip.countryNames}
+          tripId={trip.tripId}
         />
       ))}
     </div>
