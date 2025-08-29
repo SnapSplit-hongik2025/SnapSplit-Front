@@ -42,12 +42,7 @@ const CurrentTripItem = ({ tripId, tripName, startDate, endDate, countryNames }:
             title={countryNames.join(', ')}
           >
             {format(startDate, 'yyyy. M. d')} - {format(endDate, 'yyyy. M. d')} | {''}
-            {countryNames.map((country, idx) => (
-              <span key={country + idx}>
-                {country}
-                {idx < countryNames.length - 1 && ', '}
-              </span>
-            ))}
+            {countryNames.join(', ')}
           </div>
         </div>
       </div>

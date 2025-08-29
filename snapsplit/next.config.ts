@@ -2,12 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      'i1.sndcdn.com',
-      'snapsplit-assets.s3.ap-northeast-2.amazonaws.com',
-],
-    
-  },
-};
+    remotePatterns: [
+      { protocol: 'https', hostname: 'i1.sndcdn.com' },
+      {
+        protocol: 'https',
+        hostname: 'snapsplit-assets.s3.ap-northeast-2.amazonaws.com',
+      },
+    ],
+   },
+ };
 
 export default nextConfig;

@@ -33,7 +33,9 @@ privateInstance.interceptors.response.use(
     // 실패한 요청이 refresh 토큰을 요청하는 요청이었다면 -> 재시도 없이 토큰 삭제, 로그아웃, 에러 반환
     if (originalRequest.url?.includes('/auth/token/refresh')) {
       useAuthStore.getState().clearUser();
-      window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+            window.location.href = '/auth';
+        }
       return Promise.reject(error);
     }
 
@@ -69,7 +71,9 @@ privateInstance.interceptors.response.use(
         return privateInstance(originalRequest); // 재시도 결과 반환
       } catch (error) {
         useAuthStore.getState().clearUser();
-        window.location.href = '/auth';
+        if (typeof window !== 'undefined') {
+            window.location.href = '/auth';
+        }
         return Promise.reject(error);
       } finally {
         // 재시도 플래그 초기화
