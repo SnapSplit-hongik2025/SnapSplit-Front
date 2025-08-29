@@ -2,5 +2,6 @@ export const enum apiPath {
   home = "/home",
   past = "/trips/past",
   joinTrip = "/trips/join",
-  countries = "/countries"
+  countries = "/countries",
+  users = "/users/code/",
 }
