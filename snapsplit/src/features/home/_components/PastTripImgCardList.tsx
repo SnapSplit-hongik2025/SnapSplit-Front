@@ -2,8 +2,8 @@
 
 import { useDragScroll } from '@/shared/utils/useDragScroll';
 import { PastTripImgCardListProps } from '../type/home-type';
-import { format } from 'date-fns';
 import Image from 'next/image';
+import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
 
 type PastTripCardProp = {
   tripName: string;
@@ -25,7 +25,7 @@ const PastTripCard = ({ tripName, startDate, tripImage }: PastTripCardProp) => {
         />
       )}
       <p className="text-body-1">{tripName}</p>
-      <p className="text-body-2 text-grey-550">{format(startDate, 'yyyy. M. d')}</p>
+      <p className="text-body-2 text-grey-550">{useISOtoFormattedDate(startDate)}</p>
     </div>
   );
 };

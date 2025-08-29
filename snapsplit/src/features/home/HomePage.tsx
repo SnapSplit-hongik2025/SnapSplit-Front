@@ -49,7 +49,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col bg-grey-50 min-h-[100dvh] pb-6">
       <HomeHeader />
-      <CreateTripSection upcomingTrips={homeData.upcomingTrips} ongoingTrips={homeData.ongoingTrips} />
+      <CreateTripSection upcomingTrips={homeData.upcomingTrips ?? []} ongoingTrips={homeData.ongoingTrips ?? []} />
       {hasPastTrip ? (
         <>
           <PastTripImgCardList pastTrips={homeData.pastTrips} />
