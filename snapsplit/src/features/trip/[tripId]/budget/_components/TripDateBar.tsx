@@ -1,6 +1,6 @@
 'use client';
 
-import { TripDateFilterBarProps } from '../type';
+import { TripDateFilterBarProps } from '../types/budget-type';
 import { getDateRangeArray } from '@/shared/utils/makeDateList';
 import { getKoreanDay } from '@/shared/utils/getKoreanDay';
 import { useState } from 'react';

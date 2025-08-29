@@ -1,4 +1,4 @@
-import { UserIconListProps } from '../../type';
+import { UserIconListProps } from '../../types/budget-type';
 import { UserIconItem } from './UserIconItem';
 import { MoreUsersItem } from './MoreUserItem';
 import { MAX_VISIBLE_ICONS } from '@/shared/constants/icon';

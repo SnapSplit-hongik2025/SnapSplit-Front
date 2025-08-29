@@ -1,6 +1,6 @@
 'use client';
 
-import { SharedBudgetBarProps } from '../type';
+import { SharedBudgetBarProps } from '../types/budget-type';
 import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
 import rightArrow from '@public/svg/rightArrow.svg';
 import Image from 'next/image';

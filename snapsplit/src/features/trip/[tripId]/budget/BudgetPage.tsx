@@ -4,7 +4,7 @@ import SharedBudgetBar from './_components/SharedBudgetBar';
 import TripDateBar from './_components/TripDateBar';
 import BottomSheetTrigger from './_components/modal/BottomSheetTrigger';
 import TripHeader from '@/shared/components/TripHeader';
-import { BudgetPageProps } from './type';
+import { BudgetPageProps } from './types/budget-type';
 
 // 목데이터
 import mock from '@public/mocks/budget-mock.json';

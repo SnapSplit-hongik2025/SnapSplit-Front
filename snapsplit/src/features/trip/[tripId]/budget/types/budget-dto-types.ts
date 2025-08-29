@@ -1,0 +1,44 @@
+import { BackendCategory } from '@/shared/utils/useCategoryMapper';
+
+// 여행홈 조회 API 응답 타입
+export interface GetTripBudgetDto {
+  tripId: number;
+  tripName: string;
+  startDate: string;
+  endDate: string;
+  countries: string[];
+  memberProfileImages: string[];
+  sharedFund: SharedFundDto;
+  topCategoryExpense: TopCategoryExpenseDto;
+  dailyExpenses: DailyExpenseDto[];
+  totalExpense: number;
+}
+
+// 공동 경비 잔액
+export interface SharedFundDto {
+  defaultCurrency: string;
+  balance: number;
+}
+
+// 가장 많이 지출한 카테고리
+export interface TopCategoryExpenseDto {
+  category: string;
+  amountKRW: number;
+}
+
+// 날짜별 지출 내역
+export interface DailyExpenseDto {
+  date: string;
+  expenses: ExpenseDto[];
+}
+
+// 지출 내역
+export interface ExpenseDto {
+  expenseId: number;
+  category: BackendCategory;
+  expenseName: string;
+  expenseMemo: string;
+  amount: number;
+  currency: string;
+  splitters: string[];
+}

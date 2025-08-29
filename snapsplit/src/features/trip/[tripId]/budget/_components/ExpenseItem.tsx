@@ -1,5 +1,5 @@
 import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
-import { expense } from '../type';
+import { expense } from '../types/budget-type';
 
 type ExpenseItemProps = {
   expense: expense;

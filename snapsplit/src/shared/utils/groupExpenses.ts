@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { Expense } from '@/features/trip/[tripId]/budget/api';
+import { Expense } from '@/features/trip/[tripId]/budget/api/api';
 import { getKoreanDay } from './getKoreanDay';
 
 dayjs.extend(isSameOrBefore);

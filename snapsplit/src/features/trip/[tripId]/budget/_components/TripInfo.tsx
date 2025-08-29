@@ -1,6 +1,6 @@
 import devider from '@public/svg/devider.svg';
 import Image from 'next/image';
-import { TripInfoProps } from '../type';
+import { TripInfoProps } from '../types/budget-type';
 import UserIconList from './UserIconList/UserIconList';
 import user_mock from '@public/mocks/trip-budget-mock.json';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';

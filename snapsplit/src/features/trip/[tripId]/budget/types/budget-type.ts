@@ -1,72 +1,50 @@
-import { Expense } from "./api";
+import { DailyExpenseDto, ExpenseDto, TopCategoryExpenseDto } from "./budget-dto-types";
 
 export type BudgetPageProps = {
   tripId: string;
 };
 
-// TripInfo.tsx
 export type TripInfoProps = {
-    tripName: string;
+  tripName: string;
   countries: string[];
-    startDate: string;
-    endDate: string;
+  startDate: string;
+  endDate: string;
 };
-  
-// SharedBudgetBar.tsx
+
 export type SharedCurrency = {
     totalSharedCurrency: string;
     totalSharedAmount: number;
 };
-  
-type topCategoryExpense = {
-  category: string;
-  amountKRW: number;
-}
-  
+
 export type SharedBudgetBarProps = {
   tripId: number;
   sharedFund: { defaultCurrency: string; balance: number; }
-  topExpense: topCategoryExpense;
+  topExpense: TopCategoryExpenseDto;
 };
 
-// TripDateFilterBarProps.tsx
 export type TripDateFilterBarProps = {
   startDate: string;
   endDate: string;
 };
 
-// DailyExpenseList.tsx
 export type ExpenseItemProps = {
-  expense: Expense;
+  expense: ExpenseDto;
   expenseDay: string;
 };
 
+// 이미지만 받는 걸로 수정 필요 - 1
 export type User = {
   userId: number;
   userIconImg: string;
 };
 
+// 이미지만 받는 걸로 수정 필요 - 2
 export type UserIconListProps = {
   users: User[];
 };
 
-export type expense = {
-  expenseId: number;
-  category: string;
-  expenseName: string;
-  expenseMemo: string;
-  amount: number;
-  currency: string;
-  splitters: string[];
-};
-
-export type dailyExpenses = {
-  date: string;
-  expenses: expense[];
-};
-
 export type DailyExpenseListProps = {
-  dailyExpenses: dailyExpenses[];
+  dailyExpenses: DailyExpenseDto[];
   tripStartDate: string;
 };
 
@@ -74,3 +52,4 @@ export type ExpenseDateBarProps = {
   expenseDate: string;
   tripStartDate: string;
 };
+
