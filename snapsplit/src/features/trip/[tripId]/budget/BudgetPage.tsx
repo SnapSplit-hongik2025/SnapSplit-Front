@@ -7,9 +7,11 @@ import TripHeader from '@/shared/components/TripHeader';
 import { BudgetPageProps } from './types/budget-type';
 
 // 목데이터
-import mock from '@public/mocks/budget-mock.json';
+import mockData from '@public/mocks/budget-mock.json';
+import { GetTripBudgetDto } from './types/budget-dto-type';
 
 const BudgetPage = ({ tripId }: BudgetPageProps) => {
+  const mock = mockData as { data: GetTripBudgetDto };
   return (
     <div className="h-screen flex flex-col">
       <div className="bg-white">

@@ -1,4 +1,4 @@
-import { DailyExpenseDto, ExpenseDto, TopCategoryExpenseDto } from "./budget-dto-types";
+import { DailyExpenseDto, ExpenseDto, TopCategoryExpenseDto } from "./budget-dto-type";
 
 export type BudgetPageProps = {
   tripId: string;
