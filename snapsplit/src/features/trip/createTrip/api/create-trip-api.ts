@@ -1,5 +1,5 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
-import { apiPath } from '@/shared/constants/apiPath';
+import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 import { CreateTripRequestDto, CreateTripResponseDto, GetCountryTripDto, GetUserCodeDto as GetUserInfoDto } from '../types/type';
 
@@ -7,6 +7,9 @@ import { CreateTripRequestDto, CreateTripResponseDto, GetCountryTripDto, GetUser
 export const getCountryTrip = async (): Promise<GetCountryTripDto> => {
     try {
         const res = await privateInstance.get<ApiEnvelope<GetCountryTripDto>>(apiPath.countries);
+        if (!res.data.success) {
+            throw new Error(res.data.message || '국가 목록 조회에 실패했습니다.');
+        }
         return res.data.data;
     } catch (error) {
         console.error('[API Error] Failed to get country trip:', error);
@@ -23,6 +26,9 @@ export const getUserInfo = async (userCode: string): Promise<GetUserInfoDto> => 
     try {
         const finalPath = `${apiPath.users}${userCode}`;
         const res = await privateInstance.get<ApiEnvelope<GetUserInfoDto>>(finalPath);
+        if (!res.data.success) {
+            throw new Error(res.data.message || '유저 정보 조회에 실패했습니다.');
+        }
         return res.data.data;
     } catch (error) {
         console.error(`[API Error] Failed to get user info for code ${userCode}:`, error);
@@ -33,10 +39,15 @@ export const getUserInfo = async (userCode: string): Promise<GetUserInfoDto> => 
 // 여행 생성
 export const createTrip = async (tripData: CreateTripRequestDto): Promise<CreateTripResponseDto> => {
     if (!tripData.tripName || tripData.countries.length === 0 || !tripData.startDate || !tripData.endDate) {
-        throw new Error('여행 생성에 필요한 모든 필드를 채워주세요.');}
+        throw new Error('여행 생성에 필요한 모든 필드를 채워주세요.');
+    }
+    
+    if (new Date(tripData.startDate) >= new Date(tripData.endDate)) {
+        throw new Error('여행 시작일은 종료일보다 이전이어야 합니다.');
+    }
     
     try {
-        const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>('/trips', tripData);
+        const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(apiPath.trips, tripData);
         return res.data.data;
     } catch (error) {
         console.error('[API Error] Failed to create trip:', error);

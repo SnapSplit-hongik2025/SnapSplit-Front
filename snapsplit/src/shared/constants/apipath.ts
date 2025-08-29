@@ -3,6 +3,7 @@ export const enum apiPath {
   past = "/trips/past",
   joinTrip = "/trips/join",
   countries = "/countries",
-  users = "/users/code/",
+  users = "/users/code",
   budget = "/trips/{tripId}/expenses",
+  trips = "/trips",
 }
