@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import right_arrow from '@public/svg/rightArrow.svg';
 import Link from 'next/link';
-import { Trip } from '@/features/home/type/home-type';
+import { Trip } from '@/features/home/types/home-type';
 
 type PastTripCardProps = {
   tripId: number;
