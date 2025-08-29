@@ -1,7 +1,7 @@
 'use client';
 
 import { useDragScroll } from '@/shared/utils/useDragScroll';
-import { CurrentTripListProps } from '../type/home-type';
+import { CurrentTripListProps } from '../types/home-type';
 import { getDaysUntilTrip } from '@/shared/utils/DatetoDay/getDaysUntilTrip';
 import Link from 'next/link';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';

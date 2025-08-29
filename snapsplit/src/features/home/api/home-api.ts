@@ -1,5 +1,5 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
-import { GetHomeResponseDto } from '../type/home-type';
+import { GetHomeResponseDto } from '../types/home-type';
 import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 

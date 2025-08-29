@@ -1,4 +1,4 @@
-import { UpcomingTripProps } from '../type/home-type';
+import { UpcomingTripProps } from '../types/home-type';
 
 const UpcomingTrip = ({ tripName, tripCountry, tripDate, dDay }: UpcomingTripProps) => {
   return (

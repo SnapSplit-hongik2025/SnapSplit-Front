@@ -6,7 +6,7 @@ import CreateTripSection from './_components/CreateTripSection';
 import PastTripImgCardList from './_components/PastTripImgCardList';
 import AllPastTripList from './_components/AllPastTripList';
 import { getHomeData } from './api/home-api';
-import { GetHomeResponseDto } from './type/home-type';
+import { GetHomeResponseDto } from './types/home-type';
 
 export default function HomePage() {
   const [homeData, setHomeData] = useState<GetHomeResponseDto | null>(null);
