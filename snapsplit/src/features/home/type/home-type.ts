@@ -14,13 +14,13 @@ export type GetHomeResponseDto = {
 };
 
 export interface CreateTripSectionProps{
-  upcomingTrips: TripDto[];
-  ongoingTrips: TripDto[];
+  upcomingTrips?: TripDto[];
+  ongoingTrips?: TripDto[];
 }
 
 export interface CurrentTripListProps {
-  upcomingTrips: TripDto[];
-  ongoingTrips: TripDto[];
+  upcomingTrips?: TripDto[];
+  ongoingTrips?: TripDto[];
 }
 
 export type UpcomingTripProps = {
@@ -39,13 +39,8 @@ export type PastTripCardProp = {
   tripDate: string;
 }
 
-export type PastTripListProps = {
-  tripId: number;
-  tripName: string;
-  startDate: string;
-  endDate: string;
-  countryNames: string[];
-}
+export type PastTripListProps = TripDto;
+
 
 export interface AllPastTripListProps {
   pastTrips: TripDto[];

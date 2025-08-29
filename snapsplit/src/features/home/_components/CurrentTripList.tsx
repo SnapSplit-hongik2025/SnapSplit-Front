@@ -4,6 +4,7 @@ import { useDragScroll } from '@/shared/utils/useDragScroll';
 import { CurrentTripListProps } from '../type/home-type';
 import { getDaysUntilTrip } from '@/shared/utils/DatetoDay/getDaysUntilTrip';
 import Link from 'next/link';
+import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
 
 type CurrentTripItemProps = {
   tripId: number;
@@ -20,7 +21,7 @@ const CurrentTripItem = ({ tripId, tripName, startDate, endDate, countryNames }:
   if (daysLeft > 0) {
     dLabel = `D-${daysLeft}`;
   } else if (daysLeft < 0) {
-    dLabel = `Day ${Math.abs(daysLeft)}`;
+    dLabel = `Day ${Math.abs(daysLeft) + 1}`;
   } else {
     dLabel = 'D-day';
   }
@@ -40,13 +41,8 @@ const CurrentTripItem = ({ tripId, tripName, startDate, endDate, countryNames }:
             className="text-caption-1 text-grey-550 w-full overflow-hidden whitespace-nowrap truncate"
             title={countryNames.join(', ')}
           >
-            {startDate} - {endDate} |{' '}
-            {countryNames.map((country, idx) => (
-              <span key={country + idx}>
-                {country}
-                {idx < countryNames.length - 1 && ', '}
-              </span>
-            ))}
+            {useISOtoFormattedDate(startDate)} - {useISOtoFormattedDate(endDate)} | {''}
+            {countryNames.join(', ')}
           </div>
         </div>
       </div>

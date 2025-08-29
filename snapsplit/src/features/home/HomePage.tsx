@@ -12,21 +12,35 @@ export default function HomePage() {
   const [homeData, setHomeData] = useState<GetHomeResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const hasPastTrip = homeData?.pastTrips && homeData.pastTrips.length > 0;
+  const hasPastTrip = (homeData?.pastTrips?.length ?? 0) > 0;
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchData = async () => {
       try {
         const data = await getHomeData();
-        setHomeData(data);
-        console.log('홈 데이터:', data);
+        // 상태 업데이트 전, 컴포넌트가 여전히 마운트 상태인지 확인
+        if (mounted) {
+          setHomeData(data);
+          console.log('홈 데이터:', data);
+        }
       } catch (e) {
-        console.log('홈 데이터 로딩 실패:', e);
+        if (mounted) {
+          console.log('홈 데이터 로딩 실패:', e);
+        }
       } finally {
-        setLoading(false);
+        // 로딩 상태 업데이트 전에도 마운트 상태 확인
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
     fetchData();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) return <div>로딩중...</div>;
@@ -35,10 +49,10 @@ export default function HomePage() {
   return (
     <div className="flex flex-col bg-grey-50 min-h-[100dvh] pb-6">
       <HomeHeader />
-      <CreateTripSection upcomingTrips={homeData.upcomingTrips} ongoingTrips={homeData.ongoingTrips} />
+      <CreateTripSection upcomingTrips={homeData.upcomingTrips ?? []} ongoingTrips={homeData.ongoingTrips ?? []} />
       {hasPastTrip ? (
         <>
-          <PastTripImgCardList />
+          <PastTripImgCardList pastTrips={homeData.pastTrips} />
           <AllPastTripList pastTrips={homeData.pastTrips} />
         </>
       ) : (
