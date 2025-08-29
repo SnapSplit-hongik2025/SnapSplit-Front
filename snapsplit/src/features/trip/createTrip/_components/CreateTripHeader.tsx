@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { CreateTripHeaderProps } from '@/features/trip/createTrip/type';
+import { CreateTripHeaderProps } from '@/features/trip/createTrip/types/type';
 
 const CreateTripHeader = ({ step, onPrev }: CreateTripHeaderProps) => {
   return (
