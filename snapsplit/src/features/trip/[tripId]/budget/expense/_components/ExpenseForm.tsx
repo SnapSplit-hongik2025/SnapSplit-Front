@@ -12,13 +12,16 @@ import Button from '@/shared/components/Button';
 
 import { useExpenseStore, Member, selectIsValid, selectIsInitialized } from '@/lib/zustand/useExpenseStore';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import EXPENSE_INIT_DATA from '@public/mocks/expense-init.json';
 import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseInitStore';
 import { expenseCreate } from '@/lib/api/expense';
+import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
+import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 
 export default function ExpenseForm() {
+  // tripId
   const params = useParams();
   const tripId = params.tripId as string;
 
@@ -50,6 +53,12 @@ export default function ExpenseForm() {
   const { setExpenseInitData } = useExpenseInitStore();
 
   const getData = useExpenseStore((s) => s.getData);
+
+  // receipt
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from');
+  const isFromReceipt = from === 'receipt';
+  const receiptItems = useReceiptStore((s) => s.items);
 
   useEffect(() => {
     // reset
@@ -107,6 +116,7 @@ export default function ExpenseForm() {
         <NameSection expenseName={expenseName} setExpenseName={setExpenseName} />
         <MemoSection expenseMemo={expenseMemo} setExpenseMemo={setExpenseMemo} />
         <CategorySection category={category} setCategory={setCategory} />
+        {isFromReceipt && <ReceiptDetailSection items={receiptItems} />}
         <PaySection />
         <SplitSection />
       </div>

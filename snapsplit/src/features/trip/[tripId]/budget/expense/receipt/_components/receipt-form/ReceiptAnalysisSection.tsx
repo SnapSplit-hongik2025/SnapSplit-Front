@@ -2,6 +2,7 @@
 
 import RECEIPT_ITEMS from '@public/mocks/receipt-items.json';
 import { ReceiptItem } from '@/lib/zustand/useReceiptStore';
+import { useEffect } from 'react';
 
 type ReceiptAnalysisSectionProps = {
     items: ReceiptItem[];
@@ -9,7 +10,9 @@ type ReceiptAnalysisSectionProps = {
 }
 
 export default function ReceiptAnalysisSection({ items, setItems }: ReceiptAnalysisSectionProps) {
-  setItems(RECEIPT_ITEMS);
+  useEffect(() => {
+    setItems(RECEIPT_ITEMS);
+  }, [setItems]);
 
   const handleAddItem = () => {
     setItems([...items, { id: items.length + 1, name: '', amount: '' }]);

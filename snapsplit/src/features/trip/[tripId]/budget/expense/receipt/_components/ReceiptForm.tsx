@@ -24,7 +24,7 @@ export default function ReceiptForm() {
   const setItems = useReceiptStore((state) => state.setItems);
 
   const handleNext = () => {
-    router.push(`/trip/${tripId}/budget/expense`);
+    router.push(`/trip/${tripId}/budget/expense?from=receipt`);
   };
 
   return (
