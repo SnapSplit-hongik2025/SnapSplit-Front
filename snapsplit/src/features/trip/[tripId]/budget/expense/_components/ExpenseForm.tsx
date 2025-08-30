@@ -10,12 +10,7 @@ import PaySection from './expense-form/PaySection';
 import SplitSection from './expense-form/SplitSection';
 import Button from '@/shared/components/Button';
 
-import {
-  useExpenseStore,
-  Member,
-  selectIsValid,
-  selectIsInitialized,
-} from '@/lib/zustand/useExpenseStore';
+import { useExpenseStore, Member, selectIsValid, selectIsInitialized } from '@/lib/zustand/useExpenseStore';
 
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -97,22 +92,25 @@ export default function ExpenseForm() {
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
-      <ExpenseInputCard amount={amount} setAmount={setAmount} currency={currency} setCurrency={setCurrency} exchangeRates={exchangeRates}/>
+      <ExpenseInputCard
+        amount={amount}
+        setAmount={setAmount}
+        currency={currency}
+        setCurrency={setCurrency}
+        exchangeRates={exchangeRates}
+        mode="expense"
+      />
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         <TripDateSection date={date} setDate={setDate} />
         <PaymentMethodSection paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
         <NameSection expenseName={expenseName} setExpenseName={setExpenseName} />
-        <MemoSection expenseMemo={expenseMemo} setExpenseMemo={setExpenseMemo}/>
+        <MemoSection expenseMemo={expenseMemo} setExpenseMemo={setExpenseMemo} />
         <CategorySection category={category} setCategory={setCategory} />
         <PaySection />
         <SplitSection />
       </div>
       <div className="flex items-center justify-center w-full py-5">
-        <Button
-          label="추가하기"
-          onClick={handleSubmit}
-          enabled={isValid}
-        />
+        <Button label="추가하기" onClick={handleSubmit} enabled={isValid} />
       </div>
     </div>
   );
