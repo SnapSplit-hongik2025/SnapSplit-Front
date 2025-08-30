@@ -1,12 +1,15 @@
 import Link from 'next/link';
-import { PastTripListProps, AllPastTripListProps } from '../type/home-type';
+import { PastTripListProps, AllPastTripListProps } from '../types/home-type';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
+import Image from 'next/image';
 
-const PastTripItem = ({ tripId, tripName, startDate, endDate }: PastTripListProps) => {
+const PastTripItem = ({ tripId, tripName, startDate, endDate, tripImage }: PastTripListProps) => {
   return (
     <Link className="space-x-[14px] py-4" href={`trip/${tripId}/budget`}>
       <div className="flex flex-row gap-3">
-        <div className="w-10 h-10 bg-grey-350 rounded-xl"></div> {/* 여행 이미지 */}
+        {tripImage && (
+          <Image src={tripImage} alt="trip image" quality={10} width={40} height={40} className="rounded-xl" />
+        )}
         <div className="flex flex-col text-body-1">
           <p>{tripName}</p>
           <div className="flex flex-row text-grey-550 text-caption-1">
@@ -42,6 +45,7 @@ const AllPastTripList = ({ pastTrips }: AllPastTripListProps) => {
               startDate={trip.startDate}
               endDate={trip.endDate}
               countryNames={trip.countryNames}
+              tripImage={trip.tripImage}
             />
           ))}
       </section>

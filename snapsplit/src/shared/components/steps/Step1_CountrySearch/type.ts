@@ -11,7 +11,7 @@ export type CountrySearchSectionProps = {
 
 // Country List Props
 export type CountryListProps = {
-    countries: { countryId: number; countryName: string }[];
+    countries: Country[];
     selected: Country[];
     onToggle: (country: Country) => void;
     variant?: 'create' | 'edit';

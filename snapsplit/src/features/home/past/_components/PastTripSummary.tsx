@@ -1,11 +1,11 @@
-import { PastTripSummaryProps } from '../types';
+import { PastTripSummaryProps } from '../types/past-type';
 
-const PastTripSummary = ({ tripCount, countryCount }: PastTripSummaryProps) => {
+const PastTripSummary = ({ totalTrips, totalCountries }: PastTripSummaryProps) => {
   return (
     <main className="text-head-1 pt-2 pb-6">
-      지금까지 <span className="text-primary">{tripCount}</span>번의 여행,
+      지금까지 <span className="text-primary">{totalTrips}</span>번의 여행,
       <br />
-      <span className="text-primary">{countryCount}</span>개의 나라에 가봤어요!
+      <span className="text-primary">{totalCountries}</span>개의 나라에 가봤어요!
     </main>
   );
 };
