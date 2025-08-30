@@ -19,7 +19,8 @@ import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseIn
 import { expenseCreate } from '@/lib/api/expense';
 
 export default function ExpenseForm() {
-  const tripId = useParams().tripId as string | undefined;
+  const params = useParams();
+  const tripId = params.tripId as string;
 
   // value & setters
   const setMembers = useExpenseStore((s) => s.setMembers);
