@@ -107,7 +107,7 @@ export default function ExpenseForm() {
         <PaySection />
         <SplitSection />
       </div>
-      <div className="flex items-center justify-center w-full p-5">
+      <div className="flex items-center justify-center w-full py-5">
         <Button
           label="추가하기"
           onClick={handleSubmit}
