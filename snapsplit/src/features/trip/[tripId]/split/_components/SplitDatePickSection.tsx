@@ -10,8 +10,9 @@ import DatePickButtonSheet from './modal/DatePickBottomSheet';
 import { SplitDatePickSectionProps } from '../types/split-type';
 import { convertSelectableDateToDay } from '@/shared/utils/DatetoDay/convertSelectableDateToDay';
 import { useMemo, useState } from 'react';
+import { postSettlement } from '../api/split-api';
 
-export default function SplitDatePickSection({ selectableDates, tripStartDate }: SplitDatePickSectionProps) {
+export default function SplitDatePickSection({ tripId, selectableDates, tripStartDate }: SplitDatePickSectionProps) {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
@@ -45,6 +46,26 @@ export default function SplitDatePickSection({ selectableDates, tripStartDate }:
     : !hasExpenseInRange
       ? '선택된 기간에 등록된 지출 내역이 없어요'
       : null;
+
+  const handleSettlement = async () => {
+    if (startDayIndex === null || endDayIndex === null) {
+      alert('날짜를 선택해주세요.');
+      return;
+    }
+
+    try {
+      const startDate = tripDay[startDayIndex].date;
+      const endDate = tripDay[endDayIndex].date;
+
+      await postSettlement(tripId, startDate, endDate);
+
+      alert('정산이 완료되었습니다!');
+      setIsConfirmModalOpen(false);
+    } catch (e) {
+      alert('정산 요청에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      console.error(e);
+    }
+  };
 
   return (
     <div className="flex w-full flex-col">
@@ -114,12 +135,7 @@ export default function SplitDatePickSection({ selectableDates, tripStartDate }:
       />
 
       {/* 정산 확인 모달 */}
-      <OverlayModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => setIsConfirmModalOpen(false)}
-        position="center"
-        className="px-5"
-      >
+      <OverlayModal isOpen={isConfirmModalOpen} onClose={handleSettlement} position="center" className="px-5">
         <ConfirmSplitModal onClose={() => setIsConfirmModalOpen(false)} />
       </OverlayModal>
     </div>
