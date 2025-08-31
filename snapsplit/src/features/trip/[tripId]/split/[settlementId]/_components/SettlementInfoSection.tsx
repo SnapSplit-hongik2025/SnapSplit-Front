@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import arrow from '@public/svg/arrow-bottom-grey-450.svg';
-import { SettlementInfoSectionProps } from '../type';
+import { SettlementInfoSectionProps } from '../types/settlement-type';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import MemberPickBottomSheet from './MemberPickBottomSheet';
 import SettlementFlowCard from './SettlementFlowCard';
@@ -13,7 +13,7 @@ export default function SettlementInfoSection({
   startDay,
   endDay,
   members,
-  settlementDetails,
+  SettlementDetailDto: settlementDetails,
 }: SettlementInfoSectionProps) {
   // members가 있을 때만 0번째 멤버의 id로 초기화
   const [selectedMemberId, setSelectedMemberId] = useState<null | number>(
@@ -55,8 +55,8 @@ export default function SettlementInfoSection({
           />
         </BottomSheet>
       </div>
-      <SettlementFlowCard className="mb-3" settlementDetails={sendList} type="send" />
-      <SettlementFlowCard className="mb-4" settlementDetails={receiveList} type="receive" />
+      <SettlementFlowCard className="mb-3" SettlementDetailDto={sendList} type="send" />
+      <SettlementFlowCard className="mb-4" SettlementDetailDto={receiveList} type="receive" />
     </>
   );
 }

@@ -1,6 +1,10 @@
-import { SettlementFlowCardProps } from '../type';
+import { SettlementFlowCardProps } from '../types/settlement-type';
 
-export default function SettlementFlowCard({ className, settlementDetails, type }: SettlementFlowCardProps) {
+export default function SettlementFlowCard({
+  className,
+  SettlementDetailDto: settlementDetails,
+  type,
+}: SettlementFlowCardProps) {
   const label = type === 'send' ? '보낼 돈' : type === 'receive' ? '받을 돈' : '';
 
   return (

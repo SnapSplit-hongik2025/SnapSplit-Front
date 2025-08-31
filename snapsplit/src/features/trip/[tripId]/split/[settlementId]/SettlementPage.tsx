@@ -1,7 +1,7 @@
 import Button from '@/shared/components/Button';
 import SettlementHeader from './_components/SettlementHeader';
 import SettlementInfoSection from './_components/SettlementInfoSection';
-import { SettlementPageProps } from './type';
+import { SettlementPageProps } from './types/settlement-type';
 import Divider from '@/shared/components/Divider';
 import mock from '@public/mocks/split-settlement-mock.json';
 import PersonalExpensesList from './_components/PersonalExpensesList';
@@ -17,7 +17,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
           members={mock.data.members}
           endDay={endDay}
           startDay={startDay}
-          settlementDetails={mock.data.settlementDetails}
+          SettlementDetailDto={mock.data.settlementDetails}
         />
         <Button label="카카오톡으로 공유하기" />
       </section>
