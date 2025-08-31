@@ -9,7 +9,7 @@ import ConfirmSplitModal from './modal/ConfirmSplitModal';
 import arrowButtom from '@public/svg/arrow-bottom-grey-450.svg';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import DatePickButtonSheet from './modal/DatePickBottomSheet';
-import { SplitDatePickSectionProps } from '../type';
+import { SplitDatePickSectionProps } from '../types/split-type';
 import { convertSelectableDateToDay } from '@/shared/utils/DatetoDay/convertSelectableDateToDay';
 
 export default function SplitDatePickSection({ selectableDates, tripStartDate }: SplitDatePickSectionProps) {

@@ -2,7 +2,7 @@ import Divider from '@/shared/components/Divider';
 import TripHeader from '../../../../shared/components/TripHeader';
 import SplitDatePickSection from './_components/SplitDatePickSection';
 import SplitReciptCard from './_components/SplitReciptCard';
-import { SplitPageProps } from './type';
+import { SplitPageProps } from './types/split-type';
 import { getSplittableDateList } from '@/shared/utils/getSplittableDateList';
 import mock from '@public/mocks/split-mock.json';
 import { convertSettlementToDays } from '@/shared/utils/DatetoDay/convertSettlementToDays';
