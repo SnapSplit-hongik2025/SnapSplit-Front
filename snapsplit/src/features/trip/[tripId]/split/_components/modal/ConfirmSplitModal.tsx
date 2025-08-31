@@ -4,9 +4,10 @@ import Button from '@/shared/components/Button';
 
 export type ConfirmSplitModalProps = {
   onClose?: () => void;
+  onConfirm?: () => void;
 };
 
-export default function ConfirmSplitModal({ onClose }: ConfirmSplitModalProps) {
+export default function ConfirmSplitModal({ onClose, onConfirm }: ConfirmSplitModalProps) {
   return (
     <div className="bg-white flex flex-col p-5 rounded-xl w-full items-center justify-center">
       <button className="flex w-full justify-end cursor-pointer pb-2" onClick={onClose}>
@@ -18,7 +19,7 @@ export default function ConfirmSplitModal({ onClose }: ConfirmSplitModalProps) {
       <label className="text-body-2 text-grey-550 pb-6">더 이상 정산할 수 없습니다</label>
       <div className="flex w-full gap-3">
         <Button label="아니요" bg="bg-grey-650" onClick={onClose} />
-        <Button label="네" onClick={onClose /* 정산 영수증 생성 api post, 로딩 후 바로 리다이렉트 */} />
+        <Button label="네" onClick={onConfirm} />
       </div>
     </div>
   );

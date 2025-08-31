@@ -25,6 +25,7 @@ export function convertSelectableDateToDay(
     return {
       day: dayNumber,
       hasExpense,
+      date, // 원래 date 문자열도 함께 반환
     };
   });
 }
