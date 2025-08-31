@@ -11,7 +11,7 @@ export interface PersonalExpenseDto extends Member {
   memberType: 'user' | 'shared_fund'; // 'user'는 개인 지출, 'shared_fund'는 공동 경비
 }
 
-export interface GetSettlementResponseDto {
+export interface GetSettlementDto {
   id: number;
   members: Member[];
   settlementDetails: SettlementDetailDto[];
