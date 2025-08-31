@@ -7,7 +7,7 @@ export const deleteTrip = async (tripId: string) => {
         throw new Error('유효하지 않은 여행 ID입니다.');}
 
     try {
-        const finalPath = apiPath.trips.replace('{tripId}', tripId);
+        const finalPath = apiPath.trips.replace('{tripId}', encodeURIComponent(tripId));
         await privateInstance.delete(finalPath);
         return { success: true };
     } catch (error) {

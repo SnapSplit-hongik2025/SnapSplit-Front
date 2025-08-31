@@ -11,7 +11,7 @@ export const getSplitData = async (tripId: string): Promise<GetSplitDto> => {
   }
   
   try {
-    const finalPath = apiPath.split.replace('{tripId}', tripId);
+    const finalPath = apiPath.split.replace('{tripId}', encodeURIComponent(tripId));
     const res = await privateInstance.get<ApiEnvelope<GetSplitDto>>(finalPath);
     return res.data.data;
   } catch (error) {
@@ -24,17 +24,21 @@ export const postSettlement = async (
   tripId: string,
   startDate: string,
   endDate: string
-): Promise<PostSettlementResponseDto > => {
+): Promise<PostSettlementResponseDto> => {
+  if (!tripId) {
+      throw new Error('유효하지 않은 여행 ID입니다.');
+  }
+  
   if (!startDate || !endDate) {
     throw new Error('정산 시작 날짜와 종료 날짜를 모두 선택해주세요.');
   }
 
-if (isAfter(parseISO(startDate), parseISO(endDate))) {
-  throw new Error('정산 시작일은 종료일보다 이전이어야 합니다.');
-  }
+  if (isAfter(parseISO(startDate), parseISO(endDate))) {
+    throw new Error('정산 시작일은 종료일보다 이전이어야 합니다.');
+    }
 
   try {
-    const finalPath = apiPath.split.replace('{tripId}', tripId);
+    const finalPath = apiPath.split.replace('{tripId}', encodeURIComponent(tripId));
     const settlementData = { startDate, endDate };
     const res = await privateInstance.post<ApiEnvelope<PostSettlementResponseDto >>(finalPath, settlementData);
     return res.data.data;
