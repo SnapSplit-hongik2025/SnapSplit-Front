@@ -42,7 +42,7 @@ export const createTrip = async (tripData: CreateTripRequestDto): Promise<Create
         throw new Error('여행 생성에 필요한 모든 필드를 채워주세요.');
     }
     
-    if (new Date(tripData.startDate) >= new Date(tripData.endDate)) {
+    if (new Date(tripData.startDate) > new Date(tripData.endDate)) {
         throw new Error('여행 시작일은 종료일보다 이전이어야 합니다.');
     }
     

@@ -1,6 +1,6 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
-import { GetPastTripResponseDto } from '../types/past-type';
-import { apiPath } from '@/shared/constants/apiPath';
+import { GetPastTripResponseDto } from '../types/past-dto-type';
+import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 
 export const getPastTripData = async (signal?: AbortSignal): Promise<GetPastTripResponseDto> => {

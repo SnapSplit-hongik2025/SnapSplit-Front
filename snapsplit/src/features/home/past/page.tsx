@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import PastTripHeader from './_components/PastTripHeader';
 import PastTripList from './_components/PastTripList';
 import PastTripSummary from './_components/PastTripSummary';
-import { GetPastTripResponseDto } from './types/past-type';
+import { GetPastTripResponseDto } from './types/past-dto-type';
 import { getPastTripData } from './api/past-api';
 
 export default function PastTripPage() {

@@ -19,3 +19,12 @@ export interface GetSplitDto {
   completeSettlement: completeSettlementDto[];
   dailyExpenseStatus: DailyExpenseStatusDto[];
 }
+
+export type PostsettlementDto = {
+  startDate: string;
+  endDate: string;
+}; 
+
+export type PostsettlementResponseDto = {
+  settlementId: number;
+};
