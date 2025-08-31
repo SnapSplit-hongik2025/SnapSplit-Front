@@ -9,7 +9,7 @@ export const getSplitData = async (tripId: string): Promise<GetSplitDto> => {
   }
   
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId));
+    const finalPath = apiPath.split.replace('{tripId}', tripId);
     const res = await privateInstance.get<ApiEnvelope<GetSplitDto>>(finalPath);
     return res.data.data;
   } catch (error) {

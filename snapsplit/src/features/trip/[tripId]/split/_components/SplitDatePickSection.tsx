@@ -40,14 +40,14 @@ export default function SplitDatePickSection({ selectableDates, tripStartDate }:
   }, [startDayIndex, endDayIndex, tripDay, isValidDateRange]);
 
   // 2. 조건부 에러 메시지 로직 수정
-  const errorMessage = !hasExpenseInRange
-    ? '선택된 기간에 등록된 지출 내역이 없어요'
-    : !isValidDateRange
-      ? '날짜 범위가 잘못 선택됐어요'
+  const errorMessage = !isValidDateRange
+    ? '날짜 범위가 잘못 선택됐어요'
+    : !hasExpenseInRange
+      ? '선택된 기간에 등록된 지출 내역이 없어요'
       : null;
 
   return (
-    <div className="flex w-fulll flex-col">
+    <div className="flex w-full flex-col">
       <div className="flex w-full gap-2 items-center pb-2">
         <button
           aria-label="정산 시작 날짜 선택"
