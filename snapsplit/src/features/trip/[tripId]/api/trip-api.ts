@@ -3,10 +3,10 @@ import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 import { GetTripCodeDto } from '../types/trip-type';
 
-export const getTripCodeData = async (tripId: string): Promise<GetTripCodeDto> => {
+export const getTripCodeData = async (tripId: string, signal?: AbortSignal): Promise<GetTripCodeDto> => {
     try {
         const finalPath = apiPath.tripCode.replace('{tripId}', tripId);
-        const res = await privateInstance.get<ApiEnvelope<GetTripCodeDto>>(finalPath);
+        const res = await privateInstance.get<ApiEnvelope<GetTripCodeDto>>(finalPath, { signal });
         return res.data.data;
     } catch (error) {
         console.error(`[API Error] Failed to get trip Header for tripId ${tripId}:`, error);

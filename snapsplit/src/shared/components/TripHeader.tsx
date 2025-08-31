@@ -15,6 +15,7 @@ import Button from '@/shared/components/Button';
 
 import { getTripCodeData } from '@trip/[tripId]/api/trip-api';
 import { useQuery } from '@tanstack/react-query';
+import { GetTripCodeDto } from '@/features/trip/[tripId]/types/trip-type';
 
 // 케밥 메뉴 바텀 시트
 interface KebabMenuBottomSheetProps {
@@ -88,21 +89,17 @@ const TripHeader = ({ tripId }: TripHeaderProps) => {
   // 데이터 페칭
   const {
     data: tripCodeData,
-    isLoading,
+    isFetching, // isLoading 대신 isFetching 사용 (재요청 시에도 로딩 상태 표시)
     isError,
-    error,
-  } = useQuery({
+  } = useQuery<GetTripCodeDto, Error>({
     queryKey: ['tripCode', tripId],
-    queryFn: () => getTripCodeData(tripId),
+    queryFn: ({ signal }) => getTripCodeData(tripId, signal), // 3. signal 전달
+    // 4. 모달이 열렸을 때만 쿼리를 실행하도록 설정
+    enabled: isAddMemberModalOpen && !!tripId,
+    // 5. 캐싱 관련 옵션 추가 (성능 최적화)
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 30 * 60 * 1000, // 30분
   });
-
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (isError) {
-    return <div>에러가 발생했습니다: {error.message}</div>;
-  }
 
   return (
     <>
@@ -127,7 +124,12 @@ const TripHeader = ({ tripId }: TripHeaderProps) => {
 
       {/* 동행 추가 바텀시트 */}
       <OverlayModal isOpen={isAddMemberModalOpen} onClose={() => setIsAddMemberModalOpen(false)} position="bottom">
-        <AddMemberModal onClose={() => setIsAddMemberModalOpen(false)} tripCode={tripCodeData?.tripCode} />
+        <AddMemberModal
+          onClose={() => setIsAddMemberModalOpen(false)}
+          tripCode={tripCodeData?.tripCode}
+          isLoading={isFetching}
+          isError={isError}
+        />
       </OverlayModal>
 
       {/* 케밥 메뉴 바텀시트 */}
