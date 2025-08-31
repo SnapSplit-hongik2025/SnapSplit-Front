@@ -13,7 +13,7 @@ export default function SettlementInfoSection({
   startDay,
   endDay,
   members,
-  SettlementDetailDto: settlementDetails,
+  settlementDetails,
 }: SettlementInfoSectionProps) {
   // members가 있을 때만 0번째 멤버의 id로 초기화
   const [selectedMemberId, setSelectedMemberId] = useState<null | number>(
