@@ -1,4 +1,4 @@
-import { PastTripSummaryProps } from '../types/past-dto-type';
+import type { PastTripSummaryProps } from '../types/past-dto-type';
 
 const PastTripSummary = ({ totalTrips, totalCountries }: PastTripSummaryProps) => {
   return (

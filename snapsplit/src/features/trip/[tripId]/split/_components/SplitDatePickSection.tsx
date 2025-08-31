@@ -11,8 +11,11 @@ import { SplitDatePickSectionProps } from '../types/split-type';
 import { convertSelectableDateToDay } from '@/shared/utils/DatetoDay/convertSelectableDateToDay';
 import { useMemo, useState } from 'react';
 import { postSettlement } from '../api/split-api';
+import { useRouter } from 'next/navigation';
 
 export default function SplitDatePickSection({ tripId, selectableDates, tripStartDate }: SplitDatePickSectionProps) {
+  const router = useRouter();
+
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
@@ -29,27 +32,23 @@ export default function SplitDatePickSection({ tripId, selectableDates, tripStar
   // 날짜 유효성 검증
   const isValidDateRange = startDayIndex !== null && endDayIndex !== null && startDayIndex <= endDayIndex;
 
-  // 1. 선택된 범위 내에 지출이 있는지 동적으로 계산
+  // 선택된 범위 내에 지출이 있는지 동적으로 계산
   const hasExpenseInRange = useMemo(() => {
     if (!isValidDateRange || startDayIndex === null || endDayIndex === null) return false;
-
-    // tripDay 배열에서 선택된 범위만큼 자르기
     const selectedRange = tripDay.slice(startDayIndex, endDayIndex + 1);
-
-    // 해당 범위 내에 hasExpense가 true인 날이 하나라도 있는지 확인
     return selectedRange.some((day) => day.hasExpense);
   }, [startDayIndex, endDayIndex, tripDay, isValidDateRange]);
 
-  // 2. 조건부 에러 메시지 로직 수정
   const errorMessage = !isValidDateRange
     ? '날짜 범위가 잘못 선택됐어요'
     : !hasExpenseInRange
       ? '선택된 기간에 등록된 지출 내역이 없어요'
       : null;
 
+  // 정산하기 API 호출
   const handleSettlement = async () => {
-    if (startDayIndex === null || endDayIndex === null) {
-      alert('날짜를 선택해주세요.');
+    if (startDayIndex === null || endDayIndex === null || startDayIndex > endDayIndex) {
+      alert('날짜 범위가 잘못 선택됐어요.');
       return;
     }
 
@@ -57,10 +56,12 @@ export default function SplitDatePickSection({ tripId, selectableDates, tripStar
       const startDate = tripDay[startDayIndex].date;
       const endDate = tripDay[endDayIndex].date;
 
-      await postSettlement(tripId, startDate, endDate);
+      const { settlementId } = await postSettlement(tripId, startDate, endDate);
 
+      // 동작 순서 고민하기
       alert('정산이 완료되었습니다!');
       setIsConfirmModalOpen(false);
+      router.push(`/trips/${tripId}/split/${settlementId}`);
     } catch (e) {
       alert('정산 요청에 실패했습니다. 잠시 후 다시 시도해주세요.');
       console.error(e);
@@ -128,15 +129,17 @@ export default function SplitDatePickSection({ tripId, selectableDates, tripStar
 
       <Button
         label="정산하기"
-        // 3. enabled 조건에 동적으로 계산된 hasExpenseInRange 사용
         enabled={hasExpenseInRange && isValidDateRange}
         onClick={() => setIsConfirmModalOpen(true)}
         className="mt-4"
       />
-
-      {/* 정산 확인 모달 */}
-      <OverlayModal isOpen={isConfirmModalOpen} onClose={handleSettlement} position="center" className="px-5">
-        <ConfirmSplitModal onClose={() => setIsConfirmModalOpen(false)} />
+      <OverlayModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        position="center"
+        className="px-5"
+      >
+        <ConfirmSplitModal onClose={() => setIsConfirmModalOpen(false)} onConfirm={handleSettlement} />
       </OverlayModal>
     </div>
   );

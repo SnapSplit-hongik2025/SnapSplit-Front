@@ -24,7 +24,7 @@ export const getUserInfo = async (userCode: string): Promise<GetUserInfoDto> => 
     }
     
     try {
-        const finalPath = `${apiPath.users}${userCode}`;
+        const finalPath = apiPath.users.replace('{userCode}', userCode);
         const res = await privateInstance.get<ApiEnvelope<GetUserInfoDto>>(finalPath);
         if (!res.data.success) {
             throw new Error(res.data.message || '유저 정보 조회에 실패했습니다.');
@@ -42,7 +42,7 @@ export const createTrip = async (tripData: CreateTripRequestDto): Promise<Create
         throw new Error('여행 생성에 필요한 모든 필드를 채워주세요.');
     }
     
-    if (new Date(tripData.startDate) > new Date(tripData.endDate)) {
+    if (tripData.startDate > tripData.endDate) {
         throw new Error('여행 시작일은 종료일보다 이전이어야 합니다.');
     }
     

@@ -4,8 +4,7 @@ import { apiPath } from '@/shared/constants/apipath';
 // 여행 삭제 API
 export const deleteTrip = async (tripId: string) => {
     if (!tripId) {
-        throw new Error('유효하지 않은 여행 ID입니다.');
-    }
+        throw new Error('유효하지 않은 여행 ID입니다.');}
 
     try {
         const finalPath = apiPath.trips.replace('{tripId}', tripId);

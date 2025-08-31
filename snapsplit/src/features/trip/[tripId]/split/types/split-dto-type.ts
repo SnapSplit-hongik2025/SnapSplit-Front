@@ -20,6 +20,6 @@ export interface GetSplitDto {
   dailyExpenseStatus: DailyExpenseStatusDto[];
 }
 
-export type PostsettlementResponseDto = {
+export type PostSettlementResponseDto  = {
   settlementId: number;
 };
