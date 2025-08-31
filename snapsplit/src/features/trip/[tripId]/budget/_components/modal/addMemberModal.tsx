@@ -4,19 +4,18 @@ import Image from 'next/image';
 import { motion, useMotionValue, useDragControls, animate } from 'framer-motion';
 import grabber from '@public/svg/grabber.svg';
 
-const mock = 's4ks0d92';
-
 type AddMemberModalProps = {
   onClose?: () => void;
+  tripCode: string | undefined;
 };
 
-const AddMemberModal = ({ onClose }: AddMemberModalProps) => {
+const AddMemberModal = ({ onClose, tripCode }: AddMemberModalProps) => {
   const y = useMotionValue(0);
   const controls = useDragControls();
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(mock);
+      await navigator.clipboard.writeText(tripCode || '');
       alert('코드가 복사되었습니다!');
     } catch (err) {
       console.error('복사 실패:', err);
@@ -70,7 +69,7 @@ const AddMemberModal = ({ onClose }: AddMemberModalProps) => {
 
       <div className="flex pb-3 flex-col gap-1 items-center justify-center">
         <label className="text-grey-550 text-body-2">초대 코드</label>
-        <p className="text-title-1 py-2">{mock}</p>
+        <p className="text-title-1 py-2">{tripCode}</p>
       </div>
       <button
         onClick={handleCopy}

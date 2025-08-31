@@ -13,6 +13,9 @@ import BottomSheet from './bottom-sheet/BottomSheet';
 import close from '@public/svg/close-grey-550.svg';
 import Button from '@/shared/components/Button';
 
+import { getTripCodeData } from '@trip/[tripId]/api/trip-api';
+import { useQuery } from '@tanstack/react-query';
+
 // 케밥 메뉴 바텀 시트
 interface KebabMenuBottomSheetProps {
   onCloseMenu: () => void;
@@ -77,11 +80,29 @@ type TripHeaderProps = {
   tripId: string;
 };
 
-// 여행 공통 헤더
 const TripHeader = ({ tripId }: TripHeaderProps) => {
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
   const [isDeleteTripModalOpen, setIsDeleteTripModalOpen] = useState(false);
+
+  // 데이터 페칭
+  const {
+    data: tripCodeData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['tripCode', tripId],
+    queryFn: () => getTripCodeData(tripId),
+  });
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isError) {
+    return <div>에러가 발생했습니다: {error.message}</div>;
+  }
 
   return (
     <>
@@ -106,7 +127,7 @@ const TripHeader = ({ tripId }: TripHeaderProps) => {
 
       {/* 동행 추가 바텀시트 */}
       <OverlayModal isOpen={isAddMemberModalOpen} onClose={() => setIsAddMemberModalOpen(false)} position="bottom">
-        <AddMemberModal onClose={() => setIsAddMemberModalOpen(false)} />
+        <AddMemberModal onClose={() => setIsAddMemberModalOpen(false)} tripCode={tripCodeData?.tripCode} />
       </OverlayModal>
 
       {/* 케밥 메뉴 바텀시트 */}
