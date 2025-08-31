@@ -8,7 +8,7 @@ import Button from '@/shared/components/Button'; // Button 컴포넌트 사용�
 // 1. props 타입에 isLoading, isError 추가
 type AddMemberModalProps = {
   onClose?: () => void;
-  tripCode: string | undefined;
+  tripCode?: string;
   isLoading: boolean;
   isError: boolean;
 };
@@ -20,6 +20,10 @@ const AddMemberModal = ({ onClose, tripCode, isLoading, isError }: AddMemberModa
 
   const handleCopy = async () => {
     if (!tripCode) return; // tripCode가 없을 때 복사 방지
+    if (!window.isSecureContext || !navigator.clipboard) {
+      alert('현재 환경에서 복사가 지원되지 않습니다. HTTPS 환경 또는 최신 브라우저에서 시도해 주세요.');
+      return;
+    }
     try {
       await navigator.clipboard.writeText(tripCode);
       alert('코드가 복사되었습니다!');
