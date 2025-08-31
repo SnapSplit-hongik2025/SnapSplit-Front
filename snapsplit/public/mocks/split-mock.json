@@ -1,22 +1,67 @@
 {
   "status": 200,
   "success": true,
-  "message": "",
+  "message": "정산 페이지 조회 성공",
   "data": {
     "trip": {
-      "startDate": "2025-05-21",
-      "endDate": "2025-05-30"
+      "startDate": "2025-08-20",
+      "endDate": "2025-08-30"
     },
     "completeSettlement": [
       {
-        "id": 1,
-        "startDate": "2025-05-20",
-        "endDate": "2025-05-23"
+        "id": 2,
+        "startDate": "2025-08-19",
+        "endDate": "2025-08-22"
+      }
+    ],
+    "dailyExpenseStatus": [
+      {
+        "date": "2025-08-19",
+        "hasExpense": true
       },
       {
-        "id": 2,
-        "startDate": "2025-05-24",
-        "endDate": "2025-05-26"
+        "date": "2025-08-20",
+        "hasExpense": true
+      },
+      {
+        "date": "2025-08-21",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-22",
+        "hasExpense": true
+      },
+      {
+        "date": "2025-08-23",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-24",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-25",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-26",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-27",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-28",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-29",
+        "hasExpense": false
+      },
+      {
+        "date": "2025-08-30",
+        "hasExpense": true
       }
     ]
   }

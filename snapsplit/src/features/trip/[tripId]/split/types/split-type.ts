@@ -3,11 +3,6 @@ export interface SplitPageProps {
 }
 
 export interface SplitDatePickSectionProps {
-  selectableDates: { date: string; selectable: boolean }[];
+  selectableDates: { date: string; hasExpense: boolean }[]; 
   tripStartDate: string;
-}
-
-export interface TripDateInfo {
-  startDate: string;
-  endDate: string;
 }

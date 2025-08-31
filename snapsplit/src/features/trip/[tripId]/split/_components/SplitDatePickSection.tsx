@@ -1,6 +1,4 @@
 'use client';
-
-import { useState } from 'react';
 import alertCircleRed from '@public/svg/alert-circle-red.svg';
 import Image from 'next/image';
 import Button from '@/shared/components/Button';
@@ -11,31 +9,39 @@ import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import DatePickButtonSheet from './modal/DatePickBottomSheet';
 import { SplitDatePickSectionProps } from '../types/split-type';
 import { convertSelectableDateToDay } from '@/shared/utils/DatetoDay/convertSelectableDateToDay';
+import { useMemo, useState } from 'react';
 
 export default function SplitDatePickSection({ selectableDates, tripStartDate }: SplitDatePickSectionProps) {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
 
-  // 예시용 지출 여부 상태 (추후 API 연동 시 수정)
-  const hasExpense = true;
-
-  // 정산 영수증 날짜 선택 가능 범위 Date -> Day 리스트
+  // API에서 받은 selectableDates를 날짜 정보가 포함된 형태로 변환
   const tripDay = convertSelectableDateToDay(tripStartDate, selectableDates);
 
-  // 선택된 날짜 인덱스 상태 관리
-  const firstSelectableIndex = tripDay.findIndex((d) => d.selectable);
+  const firstSelectableIndex = tripDay.findIndex((d) => d.hasExpense);
   const [startDayIndex, setStartDayIndex] = useState<number | null>(
     firstSelectableIndex !== -1 ? firstSelectableIndex : null
   );
   const [endDayIndex, setEndDayIndex] = useState<number | null>(tripDay.length > 0 ? tripDay.length - 1 : null);
-  const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
 
   // 날짜 유효성 검증
   const isValidDateRange = startDayIndex !== null && endDayIndex !== null && startDayIndex <= endDayIndex;
 
-  // 조건부 에러 메시지
-  const errorMessage = !hasExpense
-    ? '등록된 지출 내역이 없어요'
+  // 1. 선택된 범위 내에 지출이 있는지 동적으로 계산
+  const hasExpenseInRange = useMemo(() => {
+    if (!isValidDateRange || startDayIndex === null || endDayIndex === null) return false;
+
+    // tripDay 배열에서 선택된 범위만큼 자르기
+    const selectedRange = tripDay.slice(startDayIndex, endDayIndex + 1);
+
+    // 해당 범위 내에 hasExpense가 true인 날이 하나라도 있는지 확인
+    return selectedRange.some((day) => day.hasExpense);
+  }, [startDayIndex, endDayIndex, tripDay, isValidDateRange]);
+
+  // 2. 조건부 에러 메시지 로직 수정
+  const errorMessage = !hasExpenseInRange
+    ? '선택된 기간에 등록된 지출 내역이 없어요'
     : !isValidDateRange
       ? '날짜 범위가 잘못 선택됐어요'
       : null;
@@ -101,7 +107,8 @@ export default function SplitDatePickSection({ selectableDates, tripStartDate }:
 
       <Button
         label="정산하기"
-        enabled={hasExpense && isValidDateRange}
+        // 3. enabled 조건에 동적으로 계산된 hasExpenseInRange 사용
+        enabled={hasExpenseInRange && isValidDateRange}
         onClick={() => setIsConfirmModalOpen(true)}
         className="mt-4"
       />

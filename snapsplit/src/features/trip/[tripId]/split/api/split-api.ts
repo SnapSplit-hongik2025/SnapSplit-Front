@@ -3,7 +3,7 @@ import { ApiEnvelope } from "@/lib/api/type";
 import { apiPath } from "@/shared/constants/apipath";
 import { GetSplitDto } from "../types/split-dto-type";
 
-export const getTripBudgetData = async (tripId: number): Promise<GetSplitDto> => {
+export const getSplitData = async (tripId: string): Promise<GetSplitDto> => {
   if (!tripId) {
     throw new Error('유효하지 않은 여행 ID입니다.');
   }
