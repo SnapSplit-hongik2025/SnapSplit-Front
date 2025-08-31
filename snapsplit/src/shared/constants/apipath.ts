@@ -6,6 +6,6 @@ export const enum apiPath {
   split = "/trips/{tripId}/settlements",
   users = "/users/code",
   budget = "/trips/{tripId}/expenses",
-  trips = "/trips",
   tripCode = "/trips/{tripId}/tripcode",
+  trips = "/trips/{tripId}",
 }

@@ -36,7 +36,13 @@ const SplitPage = ({ tripId }: SplitPageProps) => {
           <br /> 정산 영수증을 뽑아드릴게요!
         </h1>
         <label className="pb-6 text-grey-550 text-body-2">영수증은 선택한 기간에 대해 1번만 생성 가능합니다</label>
-        {data && <SplitDatePickSection selectableDates={data.dailyExpenseStatus} tripStartDate={data.trip.startDate} />}
+        {data && (
+          <SplitDatePickSection
+            tripId={tripId}
+            selectableDates={data.dailyExpenseStatus}
+            tripStartDate={data.trip.startDate}
+          />
+        )}
       </section>
       <Divider />
       <section className="flex flex-col gap-3 p-5">
