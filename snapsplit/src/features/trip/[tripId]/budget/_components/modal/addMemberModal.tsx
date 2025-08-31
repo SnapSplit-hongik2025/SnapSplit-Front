@@ -15,7 +15,11 @@ const AddMemberModal = ({ onClose, tripCode }: AddMemberModalProps) => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(tripCode || '');
+      if (!tripCode) {
+        alert('초대 코드가 아직 준비되지 않았습니다. 새로고침 후 다시 시도해 주세요.');
+        return;
+      }
+      await navigator.clipboard.writeText(tripCode);
       alert('코드가 복사되었습니다!');
     } catch (err) {
       console.error('복사 실패:', err);
