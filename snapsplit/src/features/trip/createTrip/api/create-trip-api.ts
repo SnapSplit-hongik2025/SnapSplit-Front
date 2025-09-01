@@ -1,5 +1,5 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
-import { apiPath } from '@/shared/constants/apipath';
+import { apiPath } from '@/shared/constants/apiPath';
 import { ApiEnvelope } from '@/lib/api/type';
 import { CreateTripRequestDto, CreateTripResponseDto, GetCountryTripDto, GetUserCodeDto as GetUserInfoDto } from '../types/type';
 

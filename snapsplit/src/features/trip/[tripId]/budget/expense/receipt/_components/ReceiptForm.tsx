@@ -9,6 +9,10 @@ import ReceiptAnalysisSection from '@/features/trip/[tripId]/budget/expense/rece
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import ReceiptThumbnail from './receipt-form/ReceiptThumbnail';
+import { useState } from 'react';
+import FullScreenModal from '@/shared/components/modal/FullScreenModal';
+import ZoomModal from './receipt-form/ZoomModal';
 
 export default function ReceiptForm() {
   const router = useRouter();
@@ -23,6 +27,8 @@ export default function ReceiptForm() {
   const items = useReceiptStore((state) => state.items);
   const setItems = useReceiptStore((state) => state.setItems);
 
+  const [zoomOpen, setZoomOpen] = useState(false);
+
   const handleNext = () => {
     router.push(`/trip/${tripId}/budget/expense?from=receipt`);
   };
@@ -31,7 +37,7 @@ export default function ReceiptForm() {
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
       <div className="text-title-1 w-full pb-4">영수증 정보가 맞나요?</div>
       <div className="flex flex-col items-center w-full gap-6">
-        <div className="bg-grey-250 w-full h-50 rounded-xl"></div>
+        <ReceiptThumbnail setZoomOpen={setZoomOpen} />
         <ExpenseInputCard
           amount={amount}
           setAmount={setAmount}
@@ -40,7 +46,7 @@ export default function ReceiptForm() {
           exchangeRates={exchangeRates}
           mode="receipt"
         />
-        <ReceiptAnalysisSection items={items} setItems={setItems}/>
+        <ReceiptAnalysisSection items={items} setItems={setItems} />
         <PaySection />
         <SplitSection />
       </div>
@@ -48,6 +54,12 @@ export default function ReceiptForm() {
       <div className="flex items-center justify-center w-full py-5">
         <Button label="다음으로" onClick={handleNext} enabled={true} />
       </div>
+
+      {zoomOpen && (
+        <FullScreenModal>
+          <ZoomModal onClose={() => setZoomOpen(false)} />
+        </FullScreenModal>
+      )}
     </div>
   );
 }
