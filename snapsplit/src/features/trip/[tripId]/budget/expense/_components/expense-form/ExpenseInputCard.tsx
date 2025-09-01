@@ -8,7 +8,7 @@ import ReceiptRegisterButton from '@/features/trip/[tripId]/budget/expense/_comp
 
 type Props = {
   amount: number | null;
-  setAmount: (amount: number) => void;
+  setAmount: (amount: number | null) => void;
   exchangeRates: Record<string, number>;
   currency: string;
   setCurrency: (currency: string) => void;
@@ -38,6 +38,7 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
 
   const exchangeAmount = (KRWAmount: number, currency: string) => {
     const exchangeRate = exchangeRates[currency];
+    if (exchangeRate === null || !Number.isFinite(exchangeRate)) return 0;
     return KRWAmount * exchangeRate;
   };
 

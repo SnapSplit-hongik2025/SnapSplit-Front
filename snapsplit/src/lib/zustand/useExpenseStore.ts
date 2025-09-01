@@ -51,7 +51,7 @@ export type ExpenseState = {
   setInitialized: (v: boolean) => void;
 
   // setters
-  setAmount: (amount: number) => void;
+  setAmount: (amount: number | null) => void;
   setCurrency: (currency: string) => void;
   setDate: (date: string) => void;
   setExchangeRate: (exchangeRate: number) => void;

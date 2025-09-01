@@ -24,6 +24,7 @@ export default function ReceiptForm() {
   const currency = useExpenseStore((state) => state.currency);
   const setCurrency = useExpenseStore((state) => state.setCurrency);
   const exchangeRates = useExpenseInitStore((state) => state.exchangeRates);
+  
   const items = useReceiptStore((state) => state.items);
   const setItems = useReceiptStore((state) => state.setItems);
 

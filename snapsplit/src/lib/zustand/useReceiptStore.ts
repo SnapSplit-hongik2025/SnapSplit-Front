@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+const isClient = typeof window !== 'undefined';
+
 export type ReceiptItem = {
   id: number;
   name: string;
@@ -20,7 +22,7 @@ export const useReceiptStore = create<ReceiptState>()(
     }),
     {
       name: 'receipt-storage',
-      storage: createJSONStorage(() => localStorage),
+      storage: isClient ? createJSONStorage(() => localStorage) : undefined,
     }
   )
 );

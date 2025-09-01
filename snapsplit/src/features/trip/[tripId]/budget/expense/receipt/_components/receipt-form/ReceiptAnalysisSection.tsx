@@ -10,6 +10,7 @@ type ReceiptAnalysisSectionProps = {
 }
 
 export default function ReceiptAnalysisSection({ items, setItems }: ReceiptAnalysisSectionProps) {
+  // TODO: Mock data DB에 들어가면 store 접근 로직 lift
   useEffect(() => {
     setItems(RECEIPT_ITEMS);
   }, [setItems]);
@@ -32,9 +33,9 @@ export default function ReceiptAnalysisSection({ items, setItems }: ReceiptAnaly
         <div className="flex-2">상품명</div>
         <div className="flex-1">금액</div>
       </div>
-      {items.map((item, index) => (
+      {items.map((item) => (
         <ReceiptAnalysisItem
-          key={index}
+          key={item.id}
           id={item.id}
           name={item.name}
           amount={item.amount}

@@ -92,10 +92,12 @@ export default function ExpenseForm() {
     }
   }, [tripId, setExpenseInitData, setCurrency, setDate, setMembers, setInitialized, reset]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const data = getData();
     if (!tripId) return;
-    expenseCreate(tripId, data);
+    // TODO: Mock data DB에 들어가면 수정
+    const res = await expenseCreate(tripId, data);
+    console.log('res : ', res);
   };
 
   if (!isInitialized) return null;
