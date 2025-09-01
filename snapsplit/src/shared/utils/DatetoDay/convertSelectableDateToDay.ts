@@ -2,8 +2,8 @@ import { parseISO, differenceInCalendarDays, isValid } from 'date-fns';
 
 export function convertSelectableDateToDay(
   tripStartDate: string,
-  selectableDates: { date: string; selectable: boolean }[]
-): { day: number; selectable: boolean }[] {
+  selectableDates: { date: string; hasExpense: boolean }[]
+) {
   
   // tripStartDate 파싱 & 검증
   const tripStart = parseISO(tripStartDate);
@@ -11,7 +11,7 @@ export function convertSelectableDateToDay(
     throw new Error('Invalid tripStartDate format');
   }
 
-  return selectableDates.map(({ date, selectable }) => {
+  return selectableDates.map(({ date, hasExpense }) => {
     // date 파싱 & 검증
     const parsedDate = parseISO(date);
     if (!isValid(parsedDate)) {
@@ -24,7 +24,8 @@ export function convertSelectableDateToDay(
 
     return {
       day: dayNumber,
-      selectable,
+      hasExpense,
+      date, // 원래 date 문자열도 함께 반환
     };
   });
 }
