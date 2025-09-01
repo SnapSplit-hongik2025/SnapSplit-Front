@@ -3,14 +3,20 @@
 import { useState } from 'react';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import CurrencyBottomSheet from '@/features/trip/[tripId]/budget/shared/_components/CurrencyBottomSheet';
-import CurrencyButton from '@/features/trip/[tripId]/budget/expense/_components/CurrencyButton';
+import CurrencyButton from '@/features/trip/[tripId]/budget/expense/_components/expense-form/input-card/CurrencyButton';
 import ReceiptRegisterButton from '@/features/trip/[tripId]/budget/expense/_components/ReceiptRegisterButton';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
-export default function ExpenseInputCard() {
+type Props = {
+  amount: number | null;
+  setAmount: (amount: number | null) => void;
+  exchangeRates: Record<string, number>;
+  currency: string;
+  setCurrency: (currency: string) => void;
+  mode: 'receipt' | 'expense';
+};
+
+export default function ExpenseInputCard({amount, setAmount, exchangeRates, currency, setCurrency, mode}: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const amount = useExpenseStore((s) => s.amount);
-  const setAmount = useExpenseStore((s) => s.setAmount);
 
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -30,6 +36,11 @@ export default function ExpenseInputCard() {
     // 입력이 무시됩니다.
   };
 
+  const exchangeAmount = (KRWAmount: number, currency: string) => {
+    const exchangeRate = exchangeRates[currency];
+    if (exchangeRate === null || !Number.isFinite(exchangeRate)) return 0;
+    return KRWAmount * exchangeRate;
+  };
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-5 py-4 rounded-xl bg-grey-150">
@@ -44,14 +55,14 @@ export default function ExpenseInputCard() {
             value={amount || ''}
           />
           <div className="text-body-3 text-grey-550">
-            {'='}
-            {amount}원
+            {'= '}
+            {exchangeAmount(amount || 0, currency).toLocaleString()}원
           </div>
         </div>
       </div>
-      <ReceiptRegisterButton />
+      {mode === 'expense' ? <ReceiptRegisterButton /> : null}
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <CurrencyBottomSheet onClose={() => setIsOpen(false)} />
+        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} setCurrency={setCurrency} />
       </BottomSheet>
     </div>
   );

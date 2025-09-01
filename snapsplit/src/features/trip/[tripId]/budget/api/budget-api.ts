@@ -1,7 +1,7 @@
 import privateInstance from "@/lib/api/instance/privateInstance";
 import { GetTripBudgetDto } from "../types/budget-dto-type";
 import { ApiEnvelope } from "@/lib/api/type";
-import { apiPath } from "@/shared/constants/apipath";
+import { apiPath } from "@/shared/constants/apiPath";
 
 export const getTripBudgetData = async (tripId: number): Promise<GetTripBudgetDto> => {
   if (!tripId) {
