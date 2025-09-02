@@ -9,4 +9,5 @@ export const enum apiPath {
   tripCode = "/trips/{tripId}/tripcode",
   trips = "/trips/{tripId}",
   myPage = "/home/myPage",
+  logOut = "/auth/kakao/logout",
 }

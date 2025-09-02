@@ -11,6 +11,7 @@ type AuthState = {
   clearUser: () => void;
   setToken: (accessToken: string, refreshToken: string) => void;
   getToken: () => { accessToken: string | null; refreshToken: string | null };
+  logOut: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -48,6 +49,14 @@ export const useAuthStore = create<AuthState>()(
           accessToken: get().accessToken,
           refreshToken: get().refreshToken,
         };
+      },
+      logOut: () => {
+        set({
+          user: null,
+          isLoggedIn: false,
+          accessToken: null,
+          refreshToken: null,
+        });
       },
     }),
     {
