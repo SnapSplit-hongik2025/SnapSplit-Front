@@ -8,4 +8,5 @@ export const enum apiPath {
   budget = "/trips/{tripId}/expenses",
   tripCode = "/trips/{tripId}/tripcode",
   trips = "/trips/{tripId}",
+  myPage = "/home/myPage",
 }
