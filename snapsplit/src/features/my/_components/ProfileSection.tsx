@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import { useRef, useState } from 'react';
+import { updateMyData } from '@/features/my/api/my-api';
 
 type ProfileSectionProps = {
   name: string;
@@ -7,15 +9,80 @@ type ProfileSectionProps = {
 };
 
 export default function ProfileSection({ name, profileImage, userCode }: ProfileSectionProps) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState<number | null>(null);
+
+  // TODO: 지워야 됨
+  console.log('submitting:', submitting);
+  console.log('progress:', progress);
+
+  const onPick = () => {
+    fileRef.current?.click();
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    if (file.size > 1024 * 1024 * 5) {
+      alert('이미지 파일 크기는 5MB 이하만 가능합니다.');
+      return;
+    }
+
+    setFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const onSubmit = async () => {
+    if (!name && !file) return alert('이름과 프로필 이미지 중 하나는 필수입니다.');
+
+    try {
+      setSubmitting(true);
+      setProgress(0);
+
+      console.log('이름:', name);
+      console.log('프로필 이미지:', file);
+      await updateMyData({
+        name: name || undefined,
+        profileImage: file || undefined,
+        onProgress: (p) => setProgress(p),
+      });
+    } catch (e) {
+      console.error('프로필 업데이트 실패:', e);
+      setPreview(null);
+    } finally {
+      setSubmitting(false);
+      setProgress(null);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
   return (
     <div className="flex flex-col items-center gap-2 pt-3 pb-10">
       <div className="relative">
         <div className="rounded-full w-22.5 h-22.5 overflow-hidden">
-          <Image src={profileImage} alt="profile" width={100} height={100} className="object-cover" priority />
+          <Image
+            src={preview || profileImage}
+            alt="profile"
+            width={100}
+            height={100}
+            className="object-cover"
+            priority
+          />
         </div>
-        <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full overflow-hidden">
-          <Image src="/svg/edit-green.svg" alt="profile" width={100} height={100} className="object-cover" />
-        </div>
+        <button onClick={!preview ? onPick : onSubmit} className="absolute bottom-0 right-0 w-6 h-6 rounded-full overflow-hidden">
+          <Image src={!preview ? "/svg/edit-green.svg" : "/svg/check-green.svg"} alt="profile" width={100} height={100} className="object-cover" />
+        </button>
+
+        <input type="file" accept="image/*" ref={fileRef} onChange={onFileChange} className="hidden" />
       </div>
       <div className="flex flex-col items-center gap-1">
         <p className="text-head-0">{name}</p>
