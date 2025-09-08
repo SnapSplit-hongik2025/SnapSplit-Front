@@ -1,16 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 type Props = {
   name: string;
+  category: string;
+  setCategory: (category: string) => void;
 };
 
-export default function CategoryItem({ name }: Props) {
-  const category = useExpenseStore((s) => s.category);
-  const setCategory = useExpenseStore((s) => s.setCategory);
-
+export default function CategoryItem({ name, category, setCategory }: Props) {
   const toggleCategory = () => {
     if (category === name) {
       setCategory('');

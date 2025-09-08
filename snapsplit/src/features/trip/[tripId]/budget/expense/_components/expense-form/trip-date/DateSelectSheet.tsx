@@ -1,8 +1,9 @@
 import Image from 'next/image';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
 type Props = {
   onClose: () => void;
+  date: string;
+  setDate: (date: string) => void;
 };
 
 const DATE_OPTIONS = [
@@ -14,8 +15,7 @@ const DATE_OPTIONS = [
   { value: 'Day 6', label: 'Day 6' },
 ];
 
-export default function DateSelectSheet({ onClose }: Props) {
-  const { date, setDate } = useExpenseStore();
+export default function DateSelectSheet({ onClose, date, setDate }: Props) {
 
   return (
     <div className="flex flex-col items-center w-full">

@@ -1,12 +1,13 @@
 'use client';
 
 import { useCallback, type ChangeEvent } from 'react';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
-export default function NameSection() {
-  const expenseName = useExpenseStore((s) => s.expenseName);
-  const setExpenseName = useExpenseStore((s) => s.setExpenseName);
+type Props = {
+  expenseName: string;
+  setExpenseName: (expenseName: string) => void;
+}
 
+export default function NameSection({ expenseName, setExpenseName }: Props) {
   const onChangeName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setExpenseName(e.target.value);
   }, [setExpenseName]);
