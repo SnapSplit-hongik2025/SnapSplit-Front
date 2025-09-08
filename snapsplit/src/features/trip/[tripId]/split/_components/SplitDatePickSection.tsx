@@ -61,7 +61,7 @@ export default function SplitDatePickSection({ tripId, selectableDates, tripStar
       // 동작 순서 고민하기
       alert('정산이 완료되었습니다!');
       setIsConfirmModalOpen(false);
-      router.push(`/trips/${tripId}/split/${settlementId}`);
+      router.push(`/trip/${tripId}/split/${settlementId}`);
     } catch (e) {
       alert('정산 요청에 실패했습니다. 잠시 후 다시 시도해주세요.');
       console.error(e);
