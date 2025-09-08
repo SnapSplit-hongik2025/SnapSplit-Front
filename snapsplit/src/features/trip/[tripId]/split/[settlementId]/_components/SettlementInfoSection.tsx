@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 import arrow from '@public/svg/arrow-bottom-grey-450.svg';
-import { SettlementInfoSectionProps } from '../type';
+import { SettlementInfoSectionProps } from '../types/settlement-type';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import MemberPickBottomSheet from './MemberPickBottomSheet';
 import SettlementFlowCard from './SettlementFlowCard';
