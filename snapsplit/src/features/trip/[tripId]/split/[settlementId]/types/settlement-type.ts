@@ -21,6 +21,6 @@ export interface SettlementInfoSectionProps {
 
 export interface SettlementFlowCardProps {
     className?: string;
-    SettlementDetailDto?: SettlementDetailDto[];
+    settlementDetails?: SettlementDetailDto[];
     type?: 'send' | 'receive';
 }

@@ -55,8 +55,8 @@ export default function SettlementInfoSection({
           />
         </BottomSheet>
       </div>
-      <SettlementFlowCard className="mb-3" SettlementDetailDto={sendList} type="send" />
-      <SettlementFlowCard className="mb-4" SettlementDetailDto={receiveList} type="receive" />
+      <SettlementFlowCard className="mb-3" settlementDetails={sendList} type="send" />
+      <SettlementFlowCard className="mb-4" settlementDetails={receiveList} type="receive" />
     </>
   );
 }

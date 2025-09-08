@@ -43,7 +43,6 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
             <Button label="카카오톡으로 공유하기" />
           </>
         )}
-        <Button label="카카오톡으로 공유하기" />
       </section>
       {isSuccess && data && (
         <>
