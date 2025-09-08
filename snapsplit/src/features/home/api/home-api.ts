@@ -1,6 +1,6 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
 import { GetHomeResponseDto } from '../types/home-type';
-import { apiPath } from '@/shared/constants/apiPath';
+import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 
 export const getHomeData = async (): Promise<GetHomeResponseDto> => {
