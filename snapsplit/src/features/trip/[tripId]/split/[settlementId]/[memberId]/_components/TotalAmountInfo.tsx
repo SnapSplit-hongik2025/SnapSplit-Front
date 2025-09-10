@@ -1,4 +1,4 @@
-import { TotalAmountInfoProps } from '../type';
+import { TotalAmountInfoProps } from '../types/settlement-member-type';
 
 export default function TotalAmountInfo({ name, totalAmount }: TotalAmountInfoProps) {
   return (

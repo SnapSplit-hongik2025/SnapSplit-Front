@@ -1,7 +1,7 @@
 import SettlementDetailHeader from './_components/SettlementDetailHeader';
 import TotalAmountInfo from './_components/TotalAmountInfo';
 import DetailExpenses from './_components/DetailExpenses';
-import { SettlementDetailPageProps } from './type';
+import { SettlementDetailPageProps } from './types/settlement-member-type';
 import mock from '@public/mocks/split-settlement-detail.json';
 
 const SettlementDetailPage = ({ name }: SettlementDetailPageProps) => {

@@ -2,7 +2,7 @@
 
 import { parseISO, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { DetailExpensesProps, ExpenseDetail } from '../type';
+import { DetailExpensesProps, ExpenseDetail } from '../types/settlement-member-type';
 
 interface ExpenseItemProps {
   expense: ExpenseDetail;
