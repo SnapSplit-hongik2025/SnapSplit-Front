@@ -1,5 +1,11 @@
+'use client';
+
 import Image from 'next/image';
 import { UploadedImage } from '../type';
+import { useState } from 'react';
+import FullScreenModal from '@/shared/components/modal/FullScreenModal';
+import Modal from '@/shared/components/modal/Modal';
+import PhotoDeleteModalContent from './photo-grid/PhotoDeleteModalContent';
 
 type PhotoGridProps = {
   images: UploadedImage[];
@@ -9,6 +15,8 @@ type PhotoGridProps = {
 };
 
 export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, onToggleSelect }: PhotoGridProps) {
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   return (
     <div className="grid grid-cols-3 gap-2 pb-15">
       {images.map((image) => {
@@ -23,6 +31,8 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
               onClick={() => {
                 if (isSelectionMode && onToggleSelect) {
                   onToggleSelect(image.id);
+                } else if (isSelectionMode === false || !isSelectionMode) {
+                  setIsPhotoModalOpen(true);
                 }
               }}
               className="object-cover rounded-xl"
@@ -40,6 +50,33 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
           </div>
         );
       })}
+
+      {isPhotoModalOpen && (
+        <FullScreenModal>
+          <div className="w-full h-full flex flex-col items-center bg-white">
+            <div className="absolute top-0 flex items-center justify-between w-full h-12 px-4">
+              <button onClick={() => setIsDeleteModalOpen(true)}>
+                <Image src="/svg/trash-black.svg" alt="삭제" width={24} height={24} />
+              </button>
+              <button onClick={() => setIsPhotoModalOpen(false)}>
+                <Image src="/svg/exit-grey-1000.svg" alt="닫기" width={24} height={24} />
+              </button>
+            </div>
+            <div className="w-full m-auto">
+              <Image src={images[3].src} alt="uploaded" width={1000} height={1000} className="object-contain" />
+            </div>
+          </div>
+        </FullScreenModal>
+      )}
+
+      {isDeleteModalOpen && (
+        <Modal layer="toast">
+          <PhotoDeleteModalContent
+            onClose={() => setIsDeleteModalOpen(false)}
+            onClickDelete={() => setIsDeleteModalOpen(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 }
