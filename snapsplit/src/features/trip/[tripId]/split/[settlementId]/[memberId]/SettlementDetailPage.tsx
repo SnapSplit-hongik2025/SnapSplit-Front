@@ -1,37 +1,33 @@
+'use client';
+
 import SettlementDetailHeader from './_components/SettlementDetailHeader';
 import TotalAmountInfo from './_components/TotalAmountInfo';
 import DetailExpenses from './_components/DetailExpenses';
 import { SettlementDetailPageProps } from './types/settlement-member-type';
 import { getSettlementMemberData } from './api/settlement-member-api';
 import { GetSettlementMemberDto } from './types/settlement-member-dto-type';
-import getQueryClient from '@/lib/tanstack/getQueryClient';
-import { cookies } from 'next/headers';
-function isExpired(jwt?: string) {
-  if (!jwt) return true;
-  try {
-    const payload = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64').toString('utf8'));
-    const now = Math.floor(Date.now() / 1000);
-    return typeof payload.exp === 'number' && payload.exp <= now;
-  } catch {
-    return true; // 형식 깨지면 만료 취급
-  }
-}
+import { useQuery } from '@tanstack/react-query';
 
-const SettlementDetailPage = async ({ name, tripId, settlementId, memberId }: SettlementDetailPageProps) => {
-  // 1. 서버 환경에서 쿠키를 읽어옵니다.
-  const accessToken = cookies().get('refreshToken')?.value;
-  console.log('[DEBUG] Access Token from cookies:', accessToken?.slice(0, 10) + '...');
-  console.log('[DEBUG] SettlementDetailPage props:', { name, tripId, settlementId, memberId });
-
-  // 디버그용 로그
-
-  const queryClient = getQueryClient();
-  const queryKey = ['settlementMember', tripId, settlementId, memberId];
-
-  const data = await queryClient.fetchQuery({
-    queryKey: queryKey,
-    queryFn: () => getSettlementMemberData(tripId, settlementId, memberId, accessToken),
+const SettlementDetailPage = ({ name, tripId, settlementId, memberId }: SettlementDetailPageProps) => {
+  const { data, isLoading, isError, error } = useQuery<GetSettlementMemberDto, Error>({
+    queryKey: ['settlement', tripId, settlementId],
+    queryFn: () => getSettlementMemberData(tripId, settlementId, memberId),
+    enabled: !!tripId && !!settlementId && !!memberId,
   });
+
+  if (isLoading) {
+    return <div>정산 내역을 불러오는 중입니다...</div>;
+  }
+
+  if (isError) {
+    return <div>오류가 발생했습니다: {error.message}</div>;
+  }
+
+  if (!data) {
+    return <div>데이터가 없습니다.</div>;
+  }
+
+  console.log('응답 데이터: ', data);
 
   return (
     <div className="h-screen w-full flex flex-col overflow-y-auto scrollbar-hide">

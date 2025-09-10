@@ -6,40 +6,28 @@ import createAxiosInstance from '@/lib/api/instance/base';
 export const getSettlementMemberData = async (
   tripId: string,
   settlementId: string,
-  memberId: string,
-  accessToken: string | undefined // 토큰을 인자로 받음
+  memberId: string
 ): Promise<GetSettlementMemberDto> => {
-  if (!accessToken) {
-    throw new Error('Access token is required for this request.');
+  if (!tripId) {
+    throw new Error('유효하지 않은 여행 ID입니다.');
+  }
+  if (!settlementId) {
+    throw new Error('유효하지 않은 정산 ID입니다.');
+  }
+  if (!memberId) {
+    throw new Error('유효하지 않은 멤버 ID입니다.');
   }
 
-  const serverInstance = createAxiosInstance();
-
   try {
-    const finalPath = apiPath.settlement
+    const finalPath = apiPath.settlementMember
       .replace('{tripId}', encodeURIComponent(tripId))
       .replace('{settlementId}', encodeURIComponent(settlementId))
       .replace('{n}', encodeURIComponent(memberId));
 
-    console.log('[DEBUG] Final API Path:', finalPath);
-    console.log('[DEBUG] Sending Authorization Header:', `Bearer ${accessToken?.slice(0, 10)}...`);
-
-    const res = await serverInstance.get<ApiEnvelope<GetSettlementMemberDto>>(finalPath, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    console.log('[DEBUG] API Response Status:', res.status);
-    console.log('[DEBUG] API Response Data:', res.data);
-
+    const res = await createAxiosInstance().get<ApiEnvelope<GetSettlementMemberDto>>(finalPath);
     return res.data.data;
-  } catch (error: any) {
-    console.error('[API Error] 개별 지출 금액 조회 실패:', {
-      tripId,
-      status: error.response?.status,
-      data: error.response?.data,
-    });
+  } catch (error) {
+    console.error(`[API Error] (tripId: ${tripId})의 getSettlementMemberData API 실패`, error);
     throw new Error('개별 지출 금액을 불러오는 데 실패했습니다.');
   }
 };
