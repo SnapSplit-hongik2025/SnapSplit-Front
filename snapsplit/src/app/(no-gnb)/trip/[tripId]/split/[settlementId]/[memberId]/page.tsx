@@ -1,11 +1,15 @@
 import SettlementDetailPage from '@trip/[tripId]/split/[settlementId]/[memberId]/SettlementDetailPage';
 
 export default async function Settlement({
+  params,
   searchParams,
 }: {
-  searchParams: Promise<{ name?: string; memberId?: string; settlementId?: string; tripId?: string }>;
+  params: Promise<{ memberId: string; settlementId: string; tripId: string }>;
+  searchParams: Promise<{ name?: string }>;
 }) {
-  const { name, memberId, tripId, settlementId } = await searchParams;
+  const { tripId, settlementId, memberId } = await params;
+
+  const { name } = await searchParams;
   const safeName = name ?? '';
   const safeMemberId = memberId ?? '';
   const safeTripId = tripId ?? '';
