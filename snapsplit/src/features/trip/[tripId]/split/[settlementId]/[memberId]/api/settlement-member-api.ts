@@ -1,20 +1,31 @@
-import privateInstance from '@/lib/api/instance/privateInstance';
 import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 import { GetSettlementMemberDto } from '../types/settlement-member-dto-type';
+import createAxiosInstance from '@/lib/api/instance/base';
 
 export const getSettlementMemberData = async (
   tripId: string,
   settlementId: string,
-  memberId: string
+  memberId: string,
+  accessToken: string | undefined // 토큰을 인자로 받음
 ): Promise<GetSettlementMemberDto> => {
+  if (!accessToken) {
+    throw new Error('Access token is required for this request.');
+  }
+
+  const serverInstance = createAxiosInstance();
+
   try {
     const finalPath = apiPath.settlement
       .replace('{tripId}', encodeURIComponent(tripId))
       .replace('{settlementId}', encodeURIComponent(settlementId))
       .replace('{n}', encodeURIComponent(memberId));
 
-    const res = await privateInstance.get<ApiEnvelope<GetSettlementMemberDto>>(finalPath);
+    const res = await serverInstance.get<ApiEnvelope<GetSettlementMemberDto>>(finalPath, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // 헤더에 토큰 추가
+      },
+    });
 
     return res.data.data;
   } catch (error) {

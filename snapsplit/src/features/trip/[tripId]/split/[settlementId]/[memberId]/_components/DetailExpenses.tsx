@@ -1,5 +1,3 @@
-'use client';
-
 import { parseISO, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { DetailExpensesProps } from '../types/settlement-member-type';
