@@ -18,7 +18,7 @@ export const getSettlementMemberData = async (
 
     return res.data.data;
   } catch (error) {
-    console.error(`[API Error] Failed to get trip Header for tripId ${tripId}:`, error);
-    throw new Error('여행 코드를 불러오는데 실패했습니다.');
+    console.error(`[API Error] 개별 지출 금액 조회 실패, 여행 아이디: ${tripId}:`, error);
+    throw new Error('개별 지출 금액을 불러오는 데 실패했습니다.');
   }
 };

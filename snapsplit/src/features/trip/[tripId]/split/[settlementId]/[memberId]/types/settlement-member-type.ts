@@ -1,5 +1,10 @@
+import { settlementDetailsByMemberDto } from './settlement-member-dto-type';
+
 export interface SettlementDetailPageProps {
   name: string;
+  tripId: string;
+  settlementId: string;
+  memberId: string;
 }
 
 export interface TotalAmountInfoProps {
@@ -7,19 +12,6 @@ export interface TotalAmountInfoProps {
   totalAmount: number;
 }
 
-export type ExpenseDetail = {
-  expenseName: string;
-  expenseMemo: string;
-  amount: number;
-  amountKRW: number;
-  expenseCurrency: string;
-};
-
-export type SharedBudgetDetail = {
-  date: string;               // "2025-04-09"
-  items: ExpenseDetail[];
-};
-
 export interface DetailExpensesProps {
-  sharedBudgetDetails: SharedBudgetDetail[];
+  settlementDetailsByMember: settlementDetailsByMemberDto[];
 }
