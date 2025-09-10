@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -10,6 +11,8 @@ import AddMemberSection from '@/shared/components/steps/Step3_AddMember';
 import InputTripNameSection from '@/shared/components/steps/Step4_InputTripName';
 import { routerPath } from '@/shared/constants/routePath';
 import { Country } from '@/shared/types/country';
+import { useQuery } from '@tanstack/react-query';
+import { getCountryTrip } from './api/create-trip-api';
 
 // steps로 단계별 컴포넌트를 랜더링해주는 Multi Step Form 페이지
 export default function CreateTripPage() {
@@ -56,11 +59,28 @@ export default function CreateTripPage() {
   };
   const handlePrevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['countryList'],
+    queryFn: () => getCountryTrip(),
+  });
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isError) {
+    return <div>에러 발생: {error.message}</div>;
+  }
+
+  if (!data) {
+    return <div>데이터가 없습니다.</div>;
+  }
+
   // 스탭마다 랜더링 할 컴포넌트들을 배열로 관리
   const steps = [
     <CountrySearchSection
       key="step1"
-      countries={countries}
+      countries={data?.countries}
       selected={selectedCountries}
       onToggle={toggleCountry}
       onClick={handleNextStep}
