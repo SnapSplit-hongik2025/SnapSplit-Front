@@ -12,22 +12,29 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
   return (
     <div className="grid grid-cols-3 gap-2 pb-15">
       {images.map((image) => {
-        const isSelected = selectedImageIds?.includes(image.id);
+        const isSelected = isSelectionMode && selectedImageIds?.includes(image.id);
         return (
-          <div
-            key={image.id}
-            className="relative aspect-square rounded-xl"
-          >
-            <Image src={image.src} alt="uploaded" width={100} height={100} onClick={() => {
-              if(isSelectionMode && onToggleSelect) {
-                onToggleSelect(image.id);
-              }}} className="object-cover rounded-xl" />
+          <div key={image.id} className="relative aspect-square rounded-xl">
+            <Image
+              src={image.src}
+              alt="uploaded"
+              width={100}
+              height={100}
+              onClick={() => {
+                if (isSelectionMode && onToggleSelect) {
+                  onToggleSelect(image.id);
+                }
+              }}
+              className="object-cover rounded-xl"
+            />
             {isSelected && (
-              <div className="absolute flex items-center justify-center top-0 left-0 w-full h-full rounded-xl bg-primary/10 border border-primary">
-                <Image src="/svg/check-green.svg" alt="check" width={32} height={32}
+              <div
                 onClick={() => {
                   onToggleSelect?.(image.id);
-                }} className="object-contain" />
+                }}
+                className="absolute flex items-center justify-center top-0 left-0 w-full h-full rounded-xl bg-primary/10 border border-primary"
+              >
+                <Image src="/svg/check-green.svg" alt="check" width={32} height={32} className="object-contain" />
               </div>
             )}
           </div>

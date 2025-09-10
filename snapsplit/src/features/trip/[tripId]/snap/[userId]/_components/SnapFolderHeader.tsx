@@ -2,11 +2,12 @@
 import Image from 'next/image';
 type SnapFolderHeaderProps = {
     onClose: () => void;
-    setIsSelectionMode?: (value: boolean) => void;
     isSelectionMode?: boolean;
+    setIsSelectionMode?: (value: boolean) => void;
+    setSelectedImageIds?: (ids: string[]) => void;
 }
 
-function SnapFolderHeader({ onClose, setIsSelectionMode, isSelectionMode }: SnapFolderHeaderProps) {
+function SnapFolderHeader({ onClose, setIsSelectionMode, isSelectionMode, setSelectedImageIds }: SnapFolderHeaderProps) {
   return (
     <div className="flex justify-between items-center w-full h-12 px-5 py-3">
       <Image 
@@ -16,7 +17,7 @@ function SnapFolderHeader({ onClose, setIsSelectionMode, isSelectionMode }: Snap
         height={24}
         onClick={onClose}
       />
-      <div onClick={() => setIsSelectionMode?.(!isSelectionMode)} className="text-body-3 text-grey-1000">
+      <div onClick={() => {setIsSelectionMode?.(!isSelectionMode); setSelectedImageIds?.([])}} className="text-body-3 text-grey-1000">
         {isSelectionMode ? '취소' : '사진 선택'}
       </div>
     </div>
