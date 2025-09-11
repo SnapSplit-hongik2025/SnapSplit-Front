@@ -24,8 +24,9 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
   const tripDay = convertSelectableDateToDay(tripStartDate, dailyExpenseStatus);
 
   // 선택 가능한 첫 번째 날과 마지막 날의 인덱스 찾기
-  const firstSelectableIndex = tripDay.findIndex((d) => d.settled);
-  const lastSelectableIndex = tripDay.length - 1 - [...tripDay].reverse().findIndex((d) => d.settled);
+  const firstSelectableIndex = tripDay.findIndex((d) => !d.settled);
+  const reversedIdx = [...tripDay].reverse().findIndex((d) => !d.settled);
+  const lastSelectableIndex = reversedIdx === -1 ? -1 : tripDay.length - 1 - reversedIdx;
 
   // 정산 시작일과 종료일의 인덱스 상태 관리
   const [startDayIndex, setStartDayIndex] = useState<number | null>(
@@ -47,11 +48,16 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
     return selectedRange.some((day) => day.hasExpense);
   }, [startDayIndex, endDayIndex, tripDay, isValidDateRange]);
 
-  const errorMessage = !isValidDateRange
-    ? '날짜 범위가 잘못 선택됐어요'
-    : !hasExpenseInRange
-      ? '선택된 기간에 등록된 지출 내역이 없어요'
-      : null;
+  // 에러 메시지 결정
+  let errorMessage: string | null = null;
+
+  if (startDayIndex === null || endDayIndex === null) {
+    errorMessage = '정산할 날짜가 없어요!';
+  } else if (!isValidDateRange) {
+    errorMessage = '날짜 범위가 잘못 선택됐어요!';
+  } else if (!hasExpenseInRange) {
+    errorMessage = '선택된 기간에 등록된 지출 내역이 없어요!';
+  }
 
   // 정산하기 API 호출
   const handleSettlement = async () => {
