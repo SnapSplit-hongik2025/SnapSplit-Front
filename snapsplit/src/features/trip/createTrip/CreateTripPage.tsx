@@ -28,6 +28,24 @@ export default function CreateTripPage() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+  // 국가 목록 조회 API
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['countryList'],
+    queryFn: () => getCountryTrip(),
+  });
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isError) {
+    return <div>에러 발생: {error.message}</div>;
+  }
+
+  if (!data) {
+    return <div>데이터가 없습니다.</div>;
+  }
+
   // 국가 선택/해제 토글
   const toggleCountry = (country: { countryId: number; countryName: string }) => {
     setSelectedCountries((prev) =>
@@ -50,24 +68,6 @@ export default function CreateTripPage() {
     }
   };
   const handlePrevStep = () => setStep((prev) => Math.max(prev - 1, 1));
-
-  // 국가 목록 조회 API
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['countryList'],
-    queryFn: () => getCountryTrip(),
-  });
-
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (isError) {
-    return <div>에러 발생: {error.message}</div>;
-  }
-
-  if (!data) {
-    return <div>데이터가 없습니다.</div>;
-  }
 
   // 스탭마다 랜더링 할 컴포넌트들을 배열로 관리
   const steps = [

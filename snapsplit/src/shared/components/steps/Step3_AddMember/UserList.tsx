@@ -1,7 +1,6 @@
 import { UserInfoDto } from '@/features/trip/createTrip/types/type';
 import SelectButton from '@/shared/components/SelectButton';
 import { UserListProps } from './type';
-import Image from 'next/image';
 
 const UserItem = ({
   user,

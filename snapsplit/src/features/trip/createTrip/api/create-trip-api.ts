@@ -50,7 +50,7 @@ export const createTrip = async (tripData: CreateTripRequestDto): Promise<Create
   }
 
   try {
-    const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(apiPath.trips, tripData);
+    const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(apiPath.createTrip, tripData);
     return res.data.data;
   } catch (error) {
     console.error('[API Error] Failed to create trip:', error);
