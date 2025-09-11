@@ -3,7 +3,7 @@ export type TripDto = {
   tripName: string;
   startDate: string;
   endDate: string;
-  countryNames: string[];
+  countries: string[];
   tripImage?: string;
 };
 
@@ -13,7 +13,7 @@ export type GetHomeResponseDto = {
   pastTrips: TripDto[];
 };
 
-export interface CreateTripSectionProps{
+export interface CreateTripSectionProps {
   upcomingTrips?: TripDto[];
   ongoingTrips?: TripDto[];
 }
@@ -37,10 +37,9 @@ export interface PastTripImgCardListProps {
 export type PastTripCardProp = {
   tripName: string;
   tripDate: string;
-}
+};
 
 export type PastTripListProps = TripDto;
-
 
 export interface AllPastTripListProps {
   pastTrips: TripDto[];

@@ -8,7 +8,14 @@ const PastTripItem = ({ tripId, tripName, startDate, endDate, tripImage }: PastT
     <Link className="space-x-[14px] py-4" href={`trip/${tripId}/budget`}>
       <div className="flex flex-row gap-3">
         {tripImage && (
-          <Image src={tripImage} alt="trip image" quality={10} width={40} height={40} className="rounded-xl w-10 h-10 object-cover" />
+          <Image
+            src={tripImage}
+            alt="trip image"
+            quality={10}
+            width={40}
+            height={40}
+            className="rounded-xl w-10 h-10 object-cover"
+          />
         )}
         <div className="flex flex-col text-body-1">
           <p>{tripName}</p>
@@ -44,7 +51,7 @@ const AllPastTripList = ({ pastTrips }: AllPastTripListProps) => {
               tripName={trip.tripName}
               startDate={trip.startDate}
               endDate={trip.endDate}
-              countryNames={trip.countryNames}
+              countries={trip.countries}
               tripImage={trip.tripImage}
             />
           ))}
