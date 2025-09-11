@@ -1,11 +1,10 @@
-'use client';
-
 import { parseISO, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { DetailExpensesProps, ExpenseDetail } from '../type';
+import { DetailExpensesProps } from '../types/settlement-member-type';
+import { expenseItemDto } from '../types/settlement-member-dto-type';
 
 interface ExpenseItemProps {
-  expense: ExpenseDetail;
+  expense: expenseItemDto;
 }
 
 const ExpenseItem = ({ expense }: ExpenseItemProps) => {
@@ -25,10 +24,10 @@ const ExpenseItem = ({ expense }: ExpenseItemProps) => {
   );
 };
 
-export default function DetailExpenses({ sharedBudgetDetails }: DetailExpensesProps) {
+export default function DetailExpenses({ settlementDetailsByMember }: DetailExpensesProps) {
   return (
     <div className="space-y-[16px] px-5 w-full">
-      {sharedBudgetDetails.map((dayDetail, dayIdx) => {
+      {settlementDetailsByMember.map((dayDetail, dayIdx) => {
         // 날짜 파싱 & 포맷: 2025-04-09 → "4.9/수"
         const dt = parseISO(dayDetail.date);
         const monthDay = format(dt, 'M.d', { locale: ko });

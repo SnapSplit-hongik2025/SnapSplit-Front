@@ -7,6 +7,7 @@ export interface completeSettlementDto {
 export interface DailyExpenseStatusDto {
   date: string;
   hasExpense: boolean;
+  settled: boolean;
 }
 
 export interface TripDateDto {
@@ -20,6 +21,6 @@ export interface GetSplitDto {
   dailyExpenseStatus: DailyExpenseStatusDto[];
 }
 
-export type PostSettlementResponseDto  = {
+export type PostSettlementResponseDto = {
   settlementId: number;
 };
