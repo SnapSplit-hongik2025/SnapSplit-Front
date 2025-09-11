@@ -14,8 +14,8 @@ export const joinTripByCode = async (code: string): Promise<void> => {
   try {
     const res = await privateInstance.post<ApiEnvelope<null>>(apiPath.joinTrip, { code });
 
-    if (!res.data.success){
-      throw new Error(res.data.message || '여행 참여에 실패했습니다.');
+    if (!res.data.success) {
+      throw new Error(res.data.message);
     }
     // 성공 시에는 아무것도 반환하지 않음
     return;
@@ -25,7 +25,7 @@ export const joinTripByCode = async (code: string): Promise<void> => {
     if (error instanceof Error) {
       throw error; // 메시지가 담긴 에러를 그대로 다시 던져서 컴포넌트에서 잡도록 함
     }
-    
+
     // axios 에러 등 다른 타입의 에러 처리
     throw new Error('여행 참여 중 알 수 없는 오류가 발생했습니다.');
   }

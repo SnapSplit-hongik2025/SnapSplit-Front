@@ -9,7 +9,7 @@ export interface GetTripBudgetDto {
   countries: string[];
   memberProfileImages: string[];
   sharedFund: SharedFundDto;
-  topCategoryExpense: TopCategoryExpenseDto;
+  topCategoryExpense?: TopCategoryExpenseDto;
   dailyExpenses: DailyExpenseDto[];
   totalExpense: number;
 }
