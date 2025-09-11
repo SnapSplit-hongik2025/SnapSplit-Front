@@ -1,5 +1,5 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
-import { GetPastTripResponseDto } from '../types/past-type';
+import { GetPastTripResponseDto } from '../types/past-dto-type';
 import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 

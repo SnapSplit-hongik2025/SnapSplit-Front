@@ -1,10 +1,11 @@
 import { Member } from "@/shared/types/member";
+import { SettlementDetailDto } from "./settlement-dto-type";
 
 export interface SettlementPageProps{
     tripId: string;
     settlementId: string;
-    startDay?: number | null;
-    endDay?: number | null;
+    startDay?: number;
+    endDay?: number;
 }
 
 export interface SettlementHeaderProps {
@@ -13,19 +14,13 @@ export interface SettlementHeaderProps {
 
 export interface SettlementInfoSectionProps {
     members?: Member[];
-    startDay?: number | null;
-    endDay?: number | null;
-    settlementDetails?: settlementDetail[];
-}
-
-export type settlementDetail = {
-    sender: Member;
-    receiver: Member;
-    amount: number;
+    startDay?: number;
+    endDay?: number;
+    settlementDetails?: SettlementDetailDto[];
 }
 
 export interface SettlementFlowCardProps {
     className?: string;
-    settlementDetails?: settlementDetail[];
+    settlementDetails?: SettlementDetailDto[];
     type?: 'send' | 'receive';
 }

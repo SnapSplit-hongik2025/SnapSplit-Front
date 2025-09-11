@@ -73,7 +73,7 @@ const CurrentTripList = ({ upcomingTrips, ongoingTrips }: CurrentTripListProps) 
             tripName={trip.tripName}
             startDate={trip.startDate}
             endDate={trip.endDate}
-            countryNames={trip.countryNames}
+            countryNames={trip.countries}
           />
         ))}
       {hasUpcoming &&
@@ -84,7 +84,7 @@ const CurrentTripList = ({ upcomingTrips, ongoingTrips }: CurrentTripListProps) 
             tripName={trip.tripName}
             startDate={trip.startDate}
             endDate={trip.endDate}
-            countryNames={trip.countryNames}
+            countryNames={trip.countries}
           />
         ))}
     </div>

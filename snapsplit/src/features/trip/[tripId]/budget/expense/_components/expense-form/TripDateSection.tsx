@@ -4,11 +4,15 @@ import Image from 'next/image';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import { useState } from 'react';
 import DateSelectSheet from './trip-date/DateSelectSheet';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
-export default function TripDateSection() {
+type Props = {
+  date: string;
+  setDate: (date: string) => void;
+}
+
+export default function TripDateSection({ date, setDate }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const date = useExpenseStore((s) => s.date);
+
   return (
     <div className="flex flex-col items-start w-full gap-3">
       <div className="text-body-3">여행 일자</div>
@@ -21,7 +25,7 @@ export default function TripDateSection() {
         <Image src="/svg/arrow-bottom-grey-450.svg" alt="열기" width={24} height={24} />
       </button>
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <DateSelectSheet onClose={() => setIsOpen(false)} />
+        <DateSelectSheet onClose={() => setIsOpen(false)} date={date} setDate={setDate} />
       </BottomSheet>
     </div>
   );

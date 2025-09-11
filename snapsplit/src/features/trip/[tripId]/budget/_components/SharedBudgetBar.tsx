@@ -1,6 +1,6 @@
 'use client';
 
-import { SharedBudgetBarProps } from '../type';
+import { SharedBudgetBarProps } from '../types/budget-type';
 import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
 import rightArrow from '@public/svg/rightArrow.svg';
 import Image from 'next/image';
@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { mapCategoryToKor } from '@/shared/utils/useCategoryMapper';
 
 const SharedBudgetBar = ({ tripId, sharedFund, topExpense }: SharedBudgetBarProps) => {
-  const Currencysymbol = useCurrencySymbol(sharedFund.defaultCurrency);
+  const symbol = useCurrencySymbol(sharedFund.defaultCurrency);
 
   if (!sharedFund) {
     return <div>예산 정보를 불러올 수 없습니다.</div>;
@@ -29,7 +29,7 @@ const SharedBudgetBar = ({ tripId, sharedFund, topExpense }: SharedBudgetBarProp
           </div>
           <div className="flex flex-row w-full items-center">
             <p className="text-head-0 text-black">
-              {Currencysymbol}
+              {symbol}
               {sharedFund.balance.toLocaleString()}
             </p>
             <Link href={`/trip/${tripId}/budget/shared`}>

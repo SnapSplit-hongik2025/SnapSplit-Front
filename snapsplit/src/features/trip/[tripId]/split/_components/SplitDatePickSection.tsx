@@ -1,6 +1,4 @@
 'use client';
-
-import { useState } from 'react';
 import alertCircleRed from '@public/svg/alert-circle-red.svg';
 import Image from 'next/image';
 import Button from '@/shared/components/Button';
@@ -9,39 +7,84 @@ import ConfirmSplitModal from './modal/ConfirmSplitModal';
 import arrowButtom from '@public/svg/arrow-bottom-grey-450.svg';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import DatePickButtonSheet from './modal/DatePickBottomSheet';
-import { SplitDatePickSectionProps } from '../type';
+import { SplitDatePickSectionProps } from '../types/split-type';
 import { convertSelectableDateToDay } from '@/shared/utils/DatetoDay/convertSelectableDateToDay';
+import { useMemo, useState } from 'react';
+import { postSettlement } from '../api/split-api';
+import { useRouter } from 'next/navigation';
 
-export default function SplitDatePickSection({ selectableDates, tripStartDate }: SplitDatePickSectionProps) {
+export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripStartDate }: SplitDatePickSectionProps) {
+  const router = useRouter();
+
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
 
-  // 예시용 지출 여부 상태 (추후 API 연동 시 수정)
-  const hasExpense = true;
+  // date기반 여행 데이터를 day기반 데이터로 변환
+  const tripDay = convertSelectableDateToDay(tripStartDate, dailyExpenseStatus);
 
-  // 정산 영수증 날짜 선택 가능 범위 Date -> Day 리스트
-  const tripDay = convertSelectableDateToDay(tripStartDate, selectableDates);
+  // 선택 가능한 첫 번째 날과 마지막 날의 인덱스 찾기
+  const firstSelectableIndex = tripDay.findIndex((d) => !d.settled);
+  const reversedIdx = [...tripDay].reverse().findIndex((d) => !d.settled);
+  const lastSelectableIndex = reversedIdx === -1 ? -1 : tripDay.length - 1 - reversedIdx;
 
-  // 선택된 날짜 인덱스 상태 관리
-  const firstSelectableIndex = tripDay.findIndex((d) => d.selectable);
+  // 정산 시작일과 종료일의 인덱스 상태 관리
   const [startDayIndex, setStartDayIndex] = useState<number | null>(
     firstSelectableIndex !== -1 ? firstSelectableIndex : null
   );
-  const [endDayIndex, setEndDayIndex] = useState<number | null>(tripDay.length > 0 ? tripDay.length - 1 : null);
-  const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
+  const [endDayIndex, setEndDayIndex] = useState<number | null>(
+    lastSelectableIndex !== -1 ? lastSelectableIndex : null
+  );
 
   // 날짜 유효성 검증
   const isValidDateRange = startDayIndex !== null && endDayIndex !== null && startDayIndex <= endDayIndex;
 
-  // 조건부 에러 메시지
-  const errorMessage = !hasExpense
-    ? '등록된 지출 내역이 없어요'
-    : !isValidDateRange
-      ? '날짜 범위가 잘못 선택됐어요'
-      : null;
+  // 선택된 범위 내에 지출이 있는지 계산
+  const hasExpenseInRange = useMemo(() => {
+    if (!isValidDateRange) return false;
+
+    // 배열 슬라이싱 후 하나라도 지출을 가진 날이 있는지 확인
+    const selectedRange = tripDay.slice(startDayIndex, endDayIndex + 1);
+    return selectedRange.some((day) => day.hasExpense);
+  }, [startDayIndex, endDayIndex, tripDay, isValidDateRange]);
+
+  // 에러 메시지 결정
+  let errorMessage: string | null = null;
+
+  if (startDayIndex === null || endDayIndex === null) {
+    errorMessage = '정산할 날짜가 없어요!';
+  } else if (!isValidDateRange) {
+    errorMessage = '날짜 범위가 잘못 선택됐어요!';
+  } else if (!hasExpenseInRange) {
+    errorMessage = '선택된 기간에 등록된 지출 내역이 없어요!';
+  }
+
+  // 정산하기 API 호출
+  const handleSettlement = async () => {
+    if (startDayIndex === null || endDayIndex === null || startDayIndex > endDayIndex) {
+      alert('날짜 범위가 잘못 선택됐어요.');
+      return;
+    }
+
+    try {
+      const startDate = tripDay[startDayIndex].date;
+      const endDate = tripDay[endDayIndex].date;
+
+      const { settlementId } = await postSettlement(tripId, startDate, endDate);
+
+      // 동작 순서 고민하기
+      alert('정산이 완료되었습니다!');
+      setIsConfirmModalOpen(false);
+      // day 정보 같이 전달해주는 것 고려하기
+      router.push(`/trip/${tripId}/split/${settlementId}`);
+    } catch (e) {
+      alert('정산 요청에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      console.error(e);
+    }
+  };
 
   return (
-    <div className="flex w-fulll flex-col">
+    <div className="flex w-full flex-col">
       <div className="flex w-full gap-2 items-center pb-2">
         <button
           aria-label="정산 시작 날짜 선택"
@@ -101,19 +144,17 @@ export default function SplitDatePickSection({ selectableDates, tripStartDate }:
 
       <Button
         label="정산하기"
-        enabled={hasExpense && isValidDateRange}
+        enabled={hasExpenseInRange && isValidDateRange}
         onClick={() => setIsConfirmModalOpen(true)}
         className="mt-4"
       />
-
-      {/* 정산 확인 모달 */}
       <OverlayModal
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         position="center"
         className="px-5"
       >
-        <ConfirmSplitModal onClose={() => setIsConfirmModalOpen(false)} />
+        <ConfirmSplitModal onClose={() => setIsConfirmModalOpen(false)} onConfirm={handleSettlement} />
       </OverlayModal>
     </div>
   );

@@ -10,39 +10,61 @@ import PaySection from './expense-form/PaySection';
 import SplitSection from './expense-form/SplitSection';
 import Button from '@/shared/components/Button';
 
-import {
-  useExpenseStore,
-  Member,
-  selectIsValid,
-  selectIsInitialized,
-  selectHasPayer,
-} from '@/lib/zustand/useExpenseStore';
+import { useExpenseStore, Member, selectIsValid, selectIsInitialized } from '@/lib/zustand/useExpenseStore';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import EXPENSE_INIT_DATA from '@public/mocks/expense-init.json';
 import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseInitStore';
+import { expenseCreate } from '@/lib/api/expense';
+import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
+import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 
 export default function ExpenseForm() {
-  const tripId = useParams().tripId as string | undefined;
+  // tripId
+  const params = useParams();
+  const tripId = params.tripId as string;
 
-  // setters
-  const setCurrency = useExpenseStore((s) => s.setCurrency);
-  const setDate = useExpenseStore((s) => s.setDate);
+  // value & setters
   const setMembers = useExpenseStore((s) => s.setMembers);
-  const setInitialized = useExpenseStore((s) => s.setInitialized);
+  const amount = useExpenseStore((s) => s.amount);
+  const setAmount = useExpenseStore((s) => s.setAmount);
+  const currency = useExpenseStore((s) => s.currency);
+  const setCurrency = useExpenseStore((s) => s.setCurrency);
+  const date = useExpenseStore((s) => s.date);
+  const setDate = useExpenseStore((s) => s.setDate);
+  const paymentMethod = useExpenseStore((s) => s.paymentMethod);
+  const setPaymentMethod = useExpenseStore((s) => s.setPaymentMethod);
+  const expenseName = useExpenseStore((s) => s.expenseName);
+  const setExpenseName = useExpenseStore((s) => s.setExpenseName);
+  const expenseMemo = useExpenseStore((s) => s.expenseMemo);
+  const setExpenseMemo = useExpenseStore((s) => s.setExpenseMemo);
+  const category = useExpenseStore((s) => s.category);
+  const setCategory = useExpenseStore((s) => s.setCategory);
+
+  const exchangeRates = useExpenseInitStore((s) => s.exchangeRates);
 
   // derived & lifecycle
   const isInitialized = useExpenseStore(selectIsInitialized);
+  const setInitialized = useExpenseStore((s) => s.setInitialized);
   const isValid = useExpenseStore(selectIsValid);
-  const hasPayer = useExpenseStore(selectHasPayer);
+  const reset = useExpenseStore((s) => s.reset);
 
   const { setExpenseInitData } = useExpenseInitStore();
 
-  useEffect(() => {
-    if (!tripId) return;
+  const getData = useExpenseStore((s) => s.getData);
 
-    setInitialized(false);
+  // receipt
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from');
+  const isFromReceipt = from === 'receipt';
+  const receiptItems = useReceiptStore((s) => s.items);
+
+  useEffect(() => {
+    // reset
+    reset();
+
+    if (!tripId) return;
 
     try {
       // TODO: API 반환 데이터로 대체
@@ -68,30 +90,40 @@ export default function ExpenseForm() {
     } finally {
       setInitialized(true);
     }
-  }, [tripId, setExpenseInitData, setCurrency, setDate, setMembers, setInitialized]);
+  }, [tripId, setExpenseInitData, setCurrency, setDate, setMembers, setInitialized, reset]);
+
+  const handleSubmit = async () => {
+    const data = getData();
+    if (!tripId) return;
+    // TODO: Mock data DB에 들어가면 수정
+    const res = await expenseCreate(tripId, data);
+    console.log('res : ', res);
+  };
 
   if (!isInitialized) return null;
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
-      <ExpenseInputCard />
+      <ExpenseInputCard
+        amount={amount}
+        setAmount={setAmount}
+        currency={currency}
+        setCurrency={setCurrency}
+        exchangeRates={exchangeRates}
+        mode="expense"
+      />
       <div className="flex flex-col items-center gap-7 w-full pt-6">
-        <TripDateSection />
-        <PaymentMethodSection />
-        <NameSection />
-        <MemoSection />
-        <CategorySection />
+        <TripDateSection date={date} setDate={setDate} />
+        <PaymentMethodSection paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
+        <NameSection expenseName={expenseName} setExpenseName={setExpenseName} />
+        <MemoSection expenseMemo={expenseMemo} setExpenseMemo={setExpenseMemo} />
+        <CategorySection category={category} setCategory={setCategory} />
+        {isFromReceipt && <ReceiptDetailSection items={receiptItems} />}
         <PaySection />
-        {hasPayer && <SplitSection />}
+        <SplitSection />
       </div>
-      <div className="flex items-center justify-center w-full p-5">
-        <Button
-          label="추가하기"
-          onClick={() => {
-            /* TODO: submit handler */
-          }}
-          enabled={isValid}
-        />
+      <div className="flex items-center justify-center w-full py-5">
+        <Button label="추가하기" onClick={handleSubmit} enabled={isValid} />
       </div>
     </div>
   );

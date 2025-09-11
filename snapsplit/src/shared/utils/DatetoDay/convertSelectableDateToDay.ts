@@ -1,17 +1,14 @@
+import { DailyExpenseStatusDto } from '@/features/trip/[tripId]/split/types/split-dto-type';
 import { parseISO, differenceInCalendarDays, isValid } from 'date-fns';
 
-export function convertSelectableDateToDay(
-  tripStartDate: string,
-  selectableDates: { date: string; selectable: boolean }[]
-): { day: number; selectable: boolean }[] {
-  
+export function convertSelectableDateToDay(tripStartDate: string, selectableDates: DailyExpenseStatusDto[]) {
   // tripStartDate 파싱 & 검증
   const tripStart = parseISO(tripStartDate);
   if (!isValid(tripStart)) {
     throw new Error('Invalid tripStartDate format');
   }
 
-  return selectableDates.map(({ date, selectable }) => {
+  return selectableDates.map(({ date, hasExpense, settled }) => {
     // date 파싱 & 검증
     const parsedDate = parseISO(date);
     if (!isValid(parsedDate)) {
@@ -24,7 +21,9 @@ export function convertSelectableDateToDay(
 
     return {
       day: dayNumber,
-      selectable,
+      hasExpense,
+      settled,
+      date, // 원래 date 문자열도 함께 반환
     };
   });
 }

@@ -1,12 +1,13 @@
 'use client';
 
 import { EXPENSE_METHOD } from '@/shared/constants/expense';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 
-export default function PaymentMethodSection() {
-  const paymentMethod = useExpenseStore((s) => s.paymentMethod);
-  const setPaymentMethod = useExpenseStore((s) => s.setPaymentMethod);
+type Props = {
+  paymentMethod: string;
+  setPaymentMethod: (paymentMethod: string) => void;
+}
 
+export default function PaymentMethodSection({ paymentMethod, setPaymentMethod }: Props) {
   return (
     <div className="flex flex-col items-start w-full gap-3">
       <div className="text-body-3">지불 방법</div>

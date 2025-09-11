@@ -1,12 +1,13 @@
 'use client';
 
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 import { useCallback, type ChangeEvent } from 'react';
 
-export default function MemoSection() {
-  const expenseMemo = useExpenseStore((s) => s.expenseMemo);
-  const setExpenseMemo = useExpenseStore((s) => s.setExpenseMemo);
+type Props = {
+  expenseMemo: string;
+  setExpenseMemo: (expenseMemo: string) => void;
+}
 
+export default function MemoSection({ expenseMemo, setExpenseMemo }: Props) {
   const onChangeMemo = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setExpenseMemo(e.target.value);
   }, [setExpenseMemo]);
