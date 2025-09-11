@@ -5,40 +5,44 @@ import SearchBar from '@/shared/components/SearchBar';
 import BottomCTAButton from '@/shared/components/BottomCTAButton';
 import UserList from './UserList';
 import { AddMemberSectionProps, UserItemProps } from './type';
-
-const mockUsers: UserItemProps[] = [
-  { userId: '39E24', name: '김지구', avatarUrl: 'https://placehold.co/44x44' },
-  { userId: '48D12', name: '박지수', avatarUrl: 'https://placehold.co/44x44' },
-  { userId: '59F91', name: '윤재', avatarUrl: 'https://placehold.co/44x44' },
-  { userId: '23A77', name: '민지', avatarUrl: 'https://placehold.co/44x44' },
-  { userId: '85B62', name: '성민', avatarUrl: 'https://placehold.co/44x44' },
-];
+import { useQuery } from '@tanstack/react-query';
+import { getUserInfo } from '@/features/trip/createTrip/api/create-trip-api';
 
 const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) => {
   const [searchId, setSearchId] = useState('');
   const [filteredUsers, setFilteredUsers] = useState<UserItemProps[]>([]);
-  const [error, setError] = useState('');
+  const [searchError, setSearchError] = useState('');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
-  const handleSearch = () => {
-    if (!searchId.trim()) {
-      setError('검색어를 입력해주세요.');
+  const handleSearch = async () => {
+    const keyword = searchId.trim();
+    if (!keyword) {
+      setSearchError('검색어를 입력해주세요.');
       setFilteredUsers([]);
       return;
     }
 
-    setError('');
-    const found = mockUsers.filter(
-      (user) =>
-        user.userId.toLowerCase().includes(searchId.trim().toLowerCase()) ||
-        user.name.toLowerCase().includes(searchId.trim().toLowerCase())
-    );
+    setSearchError('');
+    setIsLoading(true);
 
-    if (found.length === 0) {
-      setError('검색 결과가 없습니다.');
+    try {
+      // ▶︎ API 호출: 유저코드 기준 조회
+      const user = await getUserInfo(keyword);
+
+      // 성공 시 1명만 반환된다고 가정 → 리스트에 1개로 넣어줌
+      const found: UserItemProps[] = user ? [mapToUserItem(user)] : [];
+
+      if (found.length === 0) {
+        setSearchError('검색 결과가 없습니다.');
+      }
+      setFilteredUsers(found);
+    } catch (e: any) {
+      // API 에러 메시지 노출
+      setFilteredUsers([]);
+      setSearchError(e?.message || '검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
-
-    setFilteredUsers(found);
   };
 
   const toggleSelectUser = (userId: string) => {
@@ -62,7 +66,7 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
             value={searchId}
             onChange={(e) => {
               setSearchId(e.target.value);
-              setError('');
+              setSearchError('');
             }}
           />
           <button
@@ -72,7 +76,7 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
             확인
           </button>
         </div>
-        {error && <p className="text-caption-1 text-red-500 pt-2">{error}</p>}
+        {searchError && <p className="text-caption-1 text-red-500 pt-2">{searchError}</p>}
         <UserList users={filteredUsers} selectedUserIds={selectedUserIds} onToggle={toggleSelectUser} />
       </div>
       <BottomCTAButton label="다음으로" onClick={handleNextStep} />
@@ -81,3 +85,6 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
 };
 
 export default AddMemberSection;
+function setIsLoading(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}

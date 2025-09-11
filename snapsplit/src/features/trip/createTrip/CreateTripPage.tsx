@@ -22,19 +22,11 @@ export default function CreateTripPage() {
   const [step, setStep] = useState(1);
 
   // 국가 데이터 상태
-  const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
   // 여행 날짜 상태
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-
-  // JSON에서 국가 목록 로딩
-  useEffect(() => {
-    fetch('/mocks/countries.json')
-      .then((res) => res.json())
-      .then((json) => setCountries(json.data));
-  }, []);
 
   // 국가 선택/해제 토글
   const toggleCountry = (country: { countryId: number; countryName: string }) => {
