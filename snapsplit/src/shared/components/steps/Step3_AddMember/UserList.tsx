@@ -15,15 +15,15 @@ const UserItem = ({
   return (
     <div className="w-full flex items-center gap-3 bg-white rounded-xl">
       <div className="w-[11px] h-[11px] bg-grey-250 rounded-full" />
-      <Image
+      {/* <Image
         src={user.profileImage}
         alt={user.name}
         width={11}
         height={11}
         className="w-11 h-11 rounded-full object-cover"
-      />
+      /> */}
       <div className="flex-1 text-body-1 text-black">{user.name}</div>
-      <SelectButton isSelected={isSelected} onClick={() => onToggle(user)} label={isSelected ? '선택됨' : '추가'} />
+      <SelectButton isSelected={isSelected} onClick={() => onToggle(user)} label={isSelected ? '취소' : '추가'} />
     </div>
   );
 };
