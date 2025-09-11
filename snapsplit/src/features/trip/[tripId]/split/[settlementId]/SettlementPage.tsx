@@ -52,6 +52,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
               settlementId={settlementId}
               expenses={data.personalExpenses}
               totalAmount={data.totalAmount}
+              tripId={tripId}
             />
           </section>
         </>
