@@ -13,7 +13,7 @@ import { useMemo, useState } from 'react';
 import { postSettlement } from '../api/split-api';
 import { useRouter } from 'next/navigation';
 
-export default function SplitDatePickSection({ tripId, selectableDates, tripStartDate }: SplitDatePickSectionProps) {
+export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripStartDate }: SplitDatePickSectionProps) {
   const router = useRouter();
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -21,7 +21,7 @@ export default function SplitDatePickSection({ tripId, selectableDates, tripStar
   const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
 
   // API에서 받은 selectableDates를 날짜 정보가 포함된 형태로 변환
-  const tripDay = convertSelectableDateToDay(tripStartDate, selectableDates);
+  const tripDay = convertSelectableDateToDay(tripStartDate, dailyExpenseStatus);
 
   const firstSelectableIndex = tripDay.findIndex((d) => d.hasExpense);
   const [startDayIndex, setStartDayIndex] = useState<number | null>(

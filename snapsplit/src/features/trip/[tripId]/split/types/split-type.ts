@@ -1,9 +1,11 @@
+import { DailyExpenseStatusDto } from './split-dto-type';
+
 export interface SplitPageProps {
-    tripId: string;
+  tripId: string;
 }
 
 export interface SplitDatePickSectionProps {
   tripId: string;
-  selectableDates: { date: string; hasExpense: boolean }[]; 
+  dailyExpenseStatus: DailyExpenseStatusDto[];
   tripStartDate: string;
 }

@@ -39,7 +39,7 @@ const SplitPage = ({ tripId }: SplitPageProps) => {
         {data && (
           <SplitDatePickSection
             tripId={tripId}
-            selectableDates={data.dailyExpenseStatus}
+            dailyExpenseStatus={data.dailyExpenseStatus}
             tripStartDate={data.trip.startDate}
           />
         )}
