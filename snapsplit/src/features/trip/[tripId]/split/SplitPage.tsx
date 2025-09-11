@@ -25,7 +25,9 @@ const SplitPage = ({ tripId }: SplitPageProps) => {
   }
 
   // API에서 받은 정산 완료 내역을 날짜 정보가 포함된 형태로 변환
-  const convertedSettlements = data ? convertSettlementToDays(data.trip.startDate, data.completeSettlement) : [];
+  const convertedSettlements = data?.completeSettlement
+    ? convertSettlementToDays(data.trip.startDate, data.completeSettlement)
+    : [];
 
   return (
     <div className="h-screen w-full flex flex-col bg-light_grey">
@@ -45,18 +47,24 @@ const SplitPage = ({ tripId }: SplitPageProps) => {
         )}
       </section>
       <Divider />
-      <section className="flex flex-col gap-3 p-5">
+      <section className="flex flex-col gap-3 p-5 h-full">
         <h2 className="text-label-1">완료된 정산 영수증</h2>
-        {convertedSettlements.map((settlement) => (
-          <SplitReciptCard
-            key={settlement.id}
-            settlementId={settlement.id}
-            startDate={settlement.startDate}
-            endDate={settlement.endDate}
-            startDay={settlement.startDay}
-            endDay={settlement.endDay}
-          />
-        ))}
+        {convertedSettlements && convertedSettlements.length > 0 ? (
+          convertedSettlements.map((settlement) => (
+            <SplitReciptCard
+              key={settlement.id}
+              settlementId={settlement.id}
+              startDate={settlement.startDate}
+              endDate={settlement.endDate}
+              startDay={settlement.startDay}
+              endDay={settlement.endDay}
+            />
+          ))
+        ) : (
+          <p className="flex flex-1 h-full w-full justify-center items-center text-grey-550 pb-14">
+            아직 정산 내역이 없어요!
+          </p>
+        )}
       </section>
     </div>
   );
