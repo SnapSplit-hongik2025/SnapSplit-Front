@@ -21,7 +21,6 @@ export default function DatePickButtonSheet({
   setSelectedIndex,
   onClose,
 }: DatePickButtonSheetProps) {
-  console.log('tripDay : ' + tripDay);
   return (
     <div className="flex w-full flex-col justify-start">
       {tripDay?.map(({ day, settled }, idx) => (
@@ -29,9 +28,9 @@ export default function DatePickButtonSheet({
           className="flex w-full gap-1 justify-start py-3 cursor-pointer disabled:cursor-default"
           key={day}
           aria-label="날짜 선택"
-          disabled={!settled}
+          disabled={settled}
           onClick={() => {
-            if (!settled) return;
+            if (settled) return;
             setSelectedIndex(idx);
             if (onClose) onClose();
           }}
@@ -39,7 +38,7 @@ export default function DatePickButtonSheet({
           <Image src={selectedIndex === idx ? CheckedIcon : unCheckedIcon} alt="Check Icon" />
           <span
             className={
-              !settled ? 'text-grey-450 cursor-not-allowed' : selectedIndex === idx ? 'text-primary' : 'text-grey-1000'
+              settled ? 'text-grey-450 cursor-not-allowed' : selectedIndex === idx ? 'text-primary' : 'text-grey-1000'
             }
           >
             {day === 0 ? '여행 준비' : `Day ${day}`}
