@@ -1,12 +1,7 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
 import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
-import {
-  CreateTripRequestDto,
-  CreateTripResponseDto,
-  GetCountryTripDto,
-  GetUserCodeDto as GetUserInfoDto,
-} from '../types/type';
+import { CreateTripRequestDto, CreateTripResponseDto, GetCountryTripDto, UserInfoDto } from '../types/type';
 
 // 국가 목록 조회
 export const getCountryTrip = async (): Promise<GetCountryTripDto> => {
@@ -23,19 +18,22 @@ export const getCountryTrip = async (): Promise<GetCountryTripDto> => {
 };
 
 // 유저 코드로 유저 정보 조회
-export const getUserInfo = async (userCode: string): Promise<GetUserInfoDto> => {
+export const getUserInfo = async (userCode: string): Promise<UserInfoDto> => {
   if (!userCode) {
-    throw new Error('유저 코드가 존재하지 않습니다.');
+    alert('유저 코드가 존재하지 않습니다.');
   }
 
   try {
     const finalPath = apiPath.users.replace('{userCode}', userCode);
-    const res = await privateInstance.get<ApiEnvelope<GetUserInfoDto>>(finalPath);
+    const res = await privateInstance.get<ApiEnvelope<UserInfoDto>>(finalPath);
     if (!res.data.success) {
+      alert(res.data.message || '유저 정보 조회에 실패했습니다.');
+      console.log('error', res.data.message);
       throw new Error(res.data.message || '유저 정보 조회에 실패했습니다.');
     }
     return res.data.data;
   } catch (error) {
+    alert('유저 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     console.error(`[API Error] Failed to get user info for code ${userCode}:`, error);
     throw new Error('유저 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }

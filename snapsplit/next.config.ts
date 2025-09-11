@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
@@ -8,8 +8,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'snapsplit-assets.s3.ap-northeast-2.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'img1.kakaocdn.net',
+      },
     ],
-   },
- };
+  },
+};
 
 export default nextConfig;

@@ -4,49 +4,56 @@ import { useState } from 'react';
 import SearchBar from '@/shared/components/SearchBar';
 import BottomCTAButton from '@/shared/components/BottomCTAButton';
 import UserList from './UserList';
-import { AddMemberSectionProps, UserItemProps } from './type';
-import { useQuery } from '@tanstack/react-query';
-import { getUserInfo } from '@/features/trip/createTrip/api/create-trip-api';
+import { AddMemberSectionProps } from './type';
+import { useMutation } from '@tanstack/react-query';
+import { getUserInfo } from '@trip/createTrip/api/create-trip-api';
+import { UserInfoDto } from '@trip/createTrip/types/type';
 
 const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) => {
   const [searchId, setSearchId] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState<UserItemProps[]>([]);
-  const [searchError, setSearchError] = useState('');
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<UserInfoDto[]>([]);
+  const [searchedUser, setSearchedUser] = useState<UserInfoDto>();
 
-  const handleSearch = async () => {
+  // 유저 검색 API 요청 뮤테이션
+  const {
+    mutate: searchUser,
+    // isPending,
+    // error,
+  } = useMutation({
+    mutationFn: (keyword: string) => getUserInfo(keyword),
+    onSuccess: (searchedUser) => {
+      setSearchedUser(searchedUser ?? undefined);
+    },
+  });
+
+  // 유저 검색 핸들러
+  const handleSearch = () => {
+    console.log('검색어:', searchId);
+
+    // 공백 제거 후 빈 문자열이면 경고창
     const keyword = searchId.trim();
     if (!keyword) {
-      setSearchError('검색어를 입력해주세요.');
-      setFilteredUsers([]);
+      alert('검색어를 입력해주세요.');
       return;
     }
 
-    setSearchError('');
-    setIsLoading(true);
-
-    try {
-      // ▶︎ API 호출: 유저코드 기준 조회
-      const user = await getUserInfo(keyword);
-
-      // 성공 시 1명만 반환된다고 가정 → 리스트에 1개로 넣어줌
-      const found: UserItemProps[] = user ? [mapToUserItem(user)] : [];
-
-      if (found.length === 0) {
-        setSearchError('검색 결과가 없습니다.');
-      }
-      setFilteredUsers(found);
-    } catch (e: any) {
-      // API 에러 메시지 노출
-      setFilteredUsers([]);
-      setSearchError(e?.message || '검색 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    } finally {
-      setIsLoading(false);
-    }
+    // 검색 API 호출
+    searchUser(keyword);
   };
 
-  const toggleSelectUser = (userId: string) => {
-    setSelectedUserIds((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]));
+  // 유저 선택 토글
+  const toggleSelectUser = (userToToggle: UserInfoDto) => {
+    setSelectedUsers((prevSelectedUsers) => {
+      const isAlreadySelected = prevSelectedUsers.some((selectedUser) => selectedUser.id === userToToggle.id);
+
+      if (isAlreadySelected) {
+        // 이미 선택되었다면, 해당 유저를 배열에서 제거
+        return prevSelectedUsers.filter((selectedUser) => selectedUser.id !== userToToggle.id);
+      } else {
+        // 선택되지 않았다면, 새로운 유저를 배열에 추가
+        return [...prevSelectedUsers, userToToggle];
+      }
+    });
   };
 
   return (
@@ -66,7 +73,6 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
             value={searchId}
             onChange={(e) => {
               setSearchId(e.target.value);
-              setSearchError('');
             }}
           />
           <button
@@ -76,8 +82,8 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
             확인
           </button>
         </div>
-        {searchError && <p className="text-caption-1 text-red-500 pt-2">{searchError}</p>}
-        <UserList users={filteredUsers} selectedUserIds={selectedUserIds} onToggle={toggleSelectUser} />
+        {/* {searchError && <p className="text-caption-1 text-red-500 pt-2">{searchError}</p>} */}
+        <UserList searchedUser={searchedUser} selectedUsers={selectedUsers} onToggle={toggleSelectUser} />
       </div>
       <BottomCTAButton label="다음으로" onClick={handleNextStep} />
     </div>
@@ -85,6 +91,3 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
 };
 
 export default AddMemberSection;
-function setIsLoading(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
