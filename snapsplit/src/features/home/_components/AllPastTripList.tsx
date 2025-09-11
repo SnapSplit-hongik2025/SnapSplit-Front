@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const PastTripItem = ({ tripId, tripName, startDate, endDate, tripImage }: PastTripListProps) => {
   return (
-    <Link className="space-x-[14px] py-4" href={`trip/${tripId}/budget`}>
+    <Link className="space-x-[14px] py-4" href={`/trip/${tripId}/budget`}>
       <div className="flex flex-row gap-3">
         {tripImage && (
           <Image
