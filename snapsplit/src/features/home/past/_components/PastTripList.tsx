@@ -51,7 +51,7 @@ const PastTripList = ({ trips }: PastTripListProps) => {
           tripName={trip.tripName}
           startDate={trip.startDate}
           endDate={trip.endDate}
-          countryNames={trip.countryNames}
+          countryNames={trip.countries}
           tripId={trip.tripId}
         />
       ))}
