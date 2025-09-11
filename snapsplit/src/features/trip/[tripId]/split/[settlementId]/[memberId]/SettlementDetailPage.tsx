@@ -9,8 +9,13 @@ import { GetSettlementMemberDto } from './types/settlement-member-dto-type';
 import { useQuery } from '@tanstack/react-query';
 
 const SettlementDetailPage = ({ name, tripId, settlementId, memberId }: SettlementDetailPageProps) => {
-  const { data, isLoading, isError, error } = useQuery<GetSettlementMemberDto, Error>({
-    queryKey: ['settlement', tripId, settlementId],
+  const {
+    data: settlementByMemberData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<GetSettlementMemberDto, Error>({
+    queryKey: ['settlementMember', tripId, settlementId, memberId],
     queryFn: () => getSettlementMemberData(tripId, settlementId, memberId),
     enabled: !!tripId && !!settlementId && !!memberId,
   });
@@ -23,17 +28,17 @@ const SettlementDetailPage = ({ name, tripId, settlementId, memberId }: Settleme
     return <div>오류가 발생했습니다: {error.message}</div>;
   }
 
-  if (!data) {
+  if (!settlementByMemberData) {
     return <div>데이터가 없습니다.</div>;
   }
 
-  console.log('응답 데이터: ', data);
+  console.log('응답 데이터: ', settlementByMemberData);
 
   return (
     <div className="h-screen w-full flex flex-col overflow-y-auto scrollbar-hide">
       <SettlementDetailHeader />
-      <TotalAmountInfo name={name} totalAmount={data.totalKRW} />
-      <DetailExpenses settlementDetailsByMember={data.settlementDetailsByMember} />
+      <TotalAmountInfo name={name} totalAmount={settlementByMemberData.totalKRW} />
+      <DetailExpenses settlementDetailsByMember={settlementByMemberData.settlementDetailsByMember} />
     </div>
   );
 };
