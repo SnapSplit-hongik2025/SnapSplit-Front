@@ -9,5 +9,5 @@ export const enum apiPath {
   tripCode = '/trips/{tripId}/tripcode',
   trips = '/trips/{tripId}',
   settlement = '/trips/{tripId}/settlements/{settlementId}',
-  settlementMember = '/trips/{tripId}/settlements/{settlementId}/expenses?memberId={n}',
+  settlementMember = '/trips/{tripId}/settlements/{settlementId}/expenses?memberId={memberId}',
 }

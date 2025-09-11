@@ -22,7 +22,7 @@ export const getSettlementMemberData = async (
     const finalPath = apiPath.settlementMember
       .replace('{tripId}', encodeURIComponent(tripId))
       .replace('{settlementId}', encodeURIComponent(settlementId))
-      .replace('{n}', encodeURIComponent(memberId));
+      .replace('{memberId}', encodeURIComponent(memberId));
 
     const res = await createAxiosInstance().get<ApiEnvelope<GetSettlementMemberDto>>(finalPath);
     return res.data.data;
