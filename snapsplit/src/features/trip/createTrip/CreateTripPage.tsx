@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import StepProgressBar from '@trip/createTrip/_components/StepProgressBar';
@@ -51,6 +51,7 @@ export default function CreateTripPage() {
   };
   const handlePrevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
+  // 국가 목록 조회 API
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['countryList'],
     queryFn: () => getCountryTrip(),
@@ -72,7 +73,7 @@ export default function CreateTripPage() {
   const steps = [
     <CountrySearchSection
       key="step1"
-      countries={data?.countries}
+      countries={data ?? []}
       selected={selectedCountries}
       onToggle={toggleCountry}
       onClick={handleNextStep}
