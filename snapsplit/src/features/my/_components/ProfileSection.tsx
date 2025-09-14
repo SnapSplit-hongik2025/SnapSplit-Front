@@ -12,12 +12,6 @@ export default function ProfileSection({ name, profileImage, userCode }: Profile
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [progress, setProgress] = useState<number | null>(null);
-
-  // TODO: 지워야 됨
-  console.log('submitting:', submitting);
-  console.log('progress:', progress);
 
   const onPick = () => {
     fileRef.current?.click();
@@ -45,22 +39,14 @@ export default function ProfileSection({ name, profileImage, userCode }: Profile
     if (!name && !file) return alert('이름과 프로필 이미지 중 하나는 필수입니다.');
 
     try {
-      setSubmitting(true);
-      setProgress(0);
-
-      console.log('이름:', name);
-      console.log('프로필 이미지:', file);
       await updateMyData({
         name: name || undefined,
         profileImage: file || undefined,
-        onProgress: (p) => setProgress(p),
       });
     } catch (e) {
       console.error('프로필 업데이트 실패:', e);
       setPreview(null);
     } finally {
-      setSubmitting(false);
-      setProgress(null);
       if (fileRef.current) fileRef.current.value = '';
     }
   };
