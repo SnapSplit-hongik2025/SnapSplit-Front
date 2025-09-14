@@ -13,37 +13,51 @@ import { useMemo, useState } from 'react';
 import { postSettlement } from '../api/split-api';
 import { useRouter } from 'next/navigation';
 
-export default function SplitDatePickSection({ tripId, selectableDates, tripStartDate }: SplitDatePickSectionProps) {
+export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripStartDate }: SplitDatePickSectionProps) {
   const router = useRouter();
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [datePickType, setDatePickType] = useState<'start' | 'end' | null>(null);
 
-  // API에서 받은 selectableDates를 날짜 정보가 포함된 형태로 변환
-  const tripDay = convertSelectableDateToDay(tripStartDate, selectableDates);
+  // date기반 여행 데이터를 day기반 데이터로 변환
+  const tripDay = convertSelectableDateToDay(tripStartDate, dailyExpenseStatus);
 
-  const firstSelectableIndex = tripDay.findIndex((d) => d.hasExpense);
+  // 선택 가능한 첫 번째 날과 마지막 날의 인덱스 찾기
+  const firstSelectableIndex = tripDay.findIndex((d) => !d.settled);
+  const reversedIdx = [...tripDay].reverse().findIndex((d) => !d.settled);
+  const lastSelectableIndex = reversedIdx === -1 ? -1 : tripDay.length - 1 - reversedIdx;
+
+  // 정산 시작일과 종료일의 인덱스 상태 관리
   const [startDayIndex, setStartDayIndex] = useState<number | null>(
     firstSelectableIndex !== -1 ? firstSelectableIndex : null
   );
-  const [endDayIndex, setEndDayIndex] = useState<number | null>(tripDay.length > 0 ? tripDay.length - 1 : null);
+  const [endDayIndex, setEndDayIndex] = useState<number | null>(
+    lastSelectableIndex !== -1 ? lastSelectableIndex : null
+  );
 
   // 날짜 유효성 검증
   const isValidDateRange = startDayIndex !== null && endDayIndex !== null && startDayIndex <= endDayIndex;
 
-  // 선택된 범위 내에 지출이 있는지 동적으로 계산
+  // 선택된 범위 내에 지출이 있는지 계산
   const hasExpenseInRange = useMemo(() => {
-    if (!isValidDateRange || startDayIndex === null || endDayIndex === null) return false;
+    if (!isValidDateRange) return false;
+
+    // 배열 슬라이싱 후 하나라도 지출을 가진 날이 있는지 확인
     const selectedRange = tripDay.slice(startDayIndex, endDayIndex + 1);
     return selectedRange.some((day) => day.hasExpense);
   }, [startDayIndex, endDayIndex, tripDay, isValidDateRange]);
 
-  const errorMessage = !isValidDateRange
-    ? '날짜 범위가 잘못 선택됐어요'
-    : !hasExpenseInRange
-      ? '선택된 기간에 등록된 지출 내역이 없어요'
-      : null;
+  // 에러 메시지 결정
+  let errorMessage: string | null = null;
+
+  if (startDayIndex === null || endDayIndex === null) {
+    errorMessage = '정산할 날짜가 없어요!';
+  } else if (!isValidDateRange) {
+    errorMessage = '날짜 범위가 잘못 선택됐어요!';
+  } else if (!hasExpenseInRange) {
+    errorMessage = '선택된 기간에 등록된 지출 내역이 없어요!';
+  }
 
   // 정산하기 API 호출
   const handleSettlement = async () => {
@@ -61,6 +75,7 @@ export default function SplitDatePickSection({ tripId, selectableDates, tripStar
       // 동작 순서 고민하기
       alert('정산이 완료되었습니다!');
       setIsConfirmModalOpen(false);
+      // day 정보 같이 전달해주는 것 고려하기
       router.push(`/trip/${tripId}/split/${settlementId}`);
     } catch (e) {
       alert('정산 요청에 실패했습니다. 잠시 후 다시 시도해주세요.');

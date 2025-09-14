@@ -1,5 +1,5 @@
-import { GroupedExpenses } from "@/shared/utils/groupExpenses";
-import { ExpenseDto, TopCategoryExpenseDto, SharedFundDto } from "./budget-dto-type";
+import { GroupedExpenses } from '@/shared/utils/groupExpenses';
+import { ExpenseDto, TopCategoryExpenseDto, SharedFundDto } from './budget-dto-type';
 
 export type BudgetPageProps = {
   tripId: string;
@@ -15,7 +15,7 @@ export type TripInfoProps = {
 export type SharedBudgetBarProps = {
   tripId: number;
   sharedFund: SharedFundDto;
-  topExpense: TopCategoryExpenseDto;
+  topExpense?: TopCategoryExpenseDto;
 };
 
 export type TripDateFilterBarProps = {
@@ -46,4 +46,3 @@ export type DailyExpenseListProps = {
 export type ExpenseDateBarProps = {
   label: string;
 };
-
