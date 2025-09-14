@@ -8,12 +8,12 @@ export const getMyData = async (): Promise<GetMyResponseDto> => {
   return res.data.data;
 };
 
-export const logOut = async () => {
+export const logOut = async (): Promise<null> => {
   const res = await privateInstance.post<ApiEnvelope<null>>(apiPath.logOut);
   return res.data.data;
 };
 
-export const updateMyData = async ({ name, profileImage, onProgress }: UpdateMyRequestDto) => {
+export const updateMyData = async ({ name, profileImage, onProgress }: UpdateMyRequestDto): Promise<null> => {
   if (!name && !profileImage) {
     throw new Error('이름과 프로필 이미지 중 하나는 필수입니다.');
   }
@@ -30,5 +30,5 @@ export const updateMyData = async ({ name, profileImage, onProgress }: UpdateMyR
     },
   });
 
-  return res.data;
+  return res.data.data;
 };
