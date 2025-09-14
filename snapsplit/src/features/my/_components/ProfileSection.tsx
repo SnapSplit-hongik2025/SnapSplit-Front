@@ -12,9 +12,12 @@ export default function ProfileSection({ name, profileImage, userCode }: Profile
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string>(name);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const onPick = () => {
     fileRef.current?.click();
+    setIsEditing(true);
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,16 +39,18 @@ export default function ProfileSection({ name, profileImage, userCode }: Profile
   };
 
   const onSubmit = async () => {
-    if (!name && !file) return alert('이름과 프로필 이미지 중 하나는 필수입니다.');
+    setIsEditing(false);
+    setPreview(null);
+    setFile(null);
+    if (!profileName && !file) return alert('이름과 프로필 이미지 중 하나는 필수입니다.');
 
     try {
       await updateMyData({
-        name: name || undefined,
+        name: profileName || undefined,
         profileImage: file || undefined,
       });
     } catch (e) {
       console.error('프로필 업데이트 실패:', e);
-      setPreview(null);
     } finally {
       if (fileRef.current) fileRef.current.value = '';
     }
@@ -71,7 +76,7 @@ export default function ProfileSection({ name, profileImage, userCode }: Profile
         <input type="file" accept="image/*" ref={fileRef} onChange={onFileChange} className="hidden" />
       </div>
       <div className="flex flex-col items-center gap-1">
-        <p className="text-head-0">{name}</p>
+        <input value={profileName} onChange={(e) => setProfileName(e.target.value)} className="text-head-0 text-center" disabled={!isEditing}/>
         <p className="text-body-3 text-green">{userCode}</p>
       </div>
     </div>
