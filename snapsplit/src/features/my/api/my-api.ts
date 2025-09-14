@@ -14,9 +14,6 @@ export const logOut = async () => {
 };
 
 export const updateMyData = async ({ name, profileImage, onProgress }: UpdateMyRequestDto) => {
-  const headers = {
-    'Content-Type': undefined,
-  };
   if (!name && !profileImage) {
     throw new Error('이름과 프로필 이미지 중 하나는 필수입니다.');
   }
@@ -31,7 +28,6 @@ export const updateMyData = async ({ name, profileImage, onProgress }: UpdateMyR
       const percent = e.total ? Math.round((e.loaded * 100) / e.total) : 0;
       onProgress(percent);
     },
-    headers,
   });
 
   return res.data;
