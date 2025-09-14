@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 
 export default function MenuSection() {
   const [isLogOutModalOpen, setIsLogOutModalOpen] = useState(false);
-  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const { logOut: logOutStore } = useAuthStore();
   const router = useRouter();
 
@@ -19,11 +18,6 @@ export default function MenuSection() {
     router.push('/');
   };
 
-  const handleWithdraw = async () => {
-    // await withdraw();
-    // TODO: 회원탈퇴 후 페이지 이동
-  };
-
   return (
     <div className="flex flex-col w-full gap-8 px-4">
       {/* Account Menu */}
@@ -31,9 +25,6 @@ export default function MenuSection() {
         <p className="text-body-3 text-grey-550">내 계정</p>
         <button className="cursor-pointer" onClick={() => setIsLogOutModalOpen(true)}>
           로그아웃
-        </button>
-        <button className="cursor-pointer" onClick={() => setIsWithdrawModalOpen(true)}>
-          회원탈퇴
         </button>
       </div>
       {/* Terms Menu */}
@@ -46,10 +37,6 @@ export default function MenuSection() {
 
       <OverlayModal isOpen={isLogOutModalOpen} onClose={() => setIsLogOutModalOpen(false)} position="center">
         <MyPageModal mode="logOut" onClose={() => setIsLogOutModalOpen(false)} onConfirm={handleLogOut} />
-      </OverlayModal>
-
-      <OverlayModal isOpen={isWithdrawModalOpen} onClose={() => setIsWithdrawModalOpen(false)} position="center">
-        <MyPageModal mode="withdraw" onClose={() => setIsWithdrawModalOpen(false)} onConfirm={handleWithdraw} />
       </OverlayModal>
     </div>
   );
