@@ -13,9 +13,15 @@ export default function MenuSection() {
   const router = useRouter();
 
   const handleLogOut = async () => {
-    await logOutApi();
-    logOutStore();
-    router.push('/');
+    try {
+      await logOutApi();
+    } catch (e) {
+      console.error('로그아웃 실패:', e);
+      alert('로그아웃 실패');
+    } finally {
+      logOutStore();
+      router.push('/');
+    }
   };
 
   return (
@@ -36,7 +42,7 @@ export default function MenuSection() {
       </div>
 
       <OverlayModal isOpen={isLogOutModalOpen} onClose={() => setIsLogOutModalOpen(false)} position="center">
-        <MyPageModal mode="logOut" onClose={() => setIsLogOutModalOpen(false)} onConfirm={handleLogOut} />
+        <MyPageModal onClose={() => setIsLogOutModalOpen(false)} onConfirm={handleLogOut} />
       </OverlayModal>
     </div>
   );
