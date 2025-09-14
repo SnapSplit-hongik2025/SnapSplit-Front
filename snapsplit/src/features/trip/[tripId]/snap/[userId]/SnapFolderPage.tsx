@@ -44,8 +44,9 @@ const SnapFolderPage = () => {
           onClose={() => {
             router.back();
           }}
-          setIsSelectionMode={setIsSelectionMode}
           isSelectionMode={isSelectionMode}
+          setIsSelectionMode={setIsSelectionMode}
+          setSelectedImageIds={setSelectedImageIds}
         />
         <SnapFolderInfo />
       </div>

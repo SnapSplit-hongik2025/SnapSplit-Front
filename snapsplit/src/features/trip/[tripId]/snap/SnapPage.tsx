@@ -42,7 +42,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         {!isScrolled && (
           <TripInfo
             tripName={tripInfo.tripName}
-            countries={tripInfo.countries}
+            countries={tripInfo.countries.map((c) => c.countryName)}
             startDate={tripInfo.startDate}
             endDate={tripInfo.endDate}
           />
