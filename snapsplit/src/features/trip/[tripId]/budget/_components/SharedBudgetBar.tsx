@@ -36,9 +36,11 @@ const SharedBudgetBar = ({ tripId, sharedFund, topExpense }: SharedBudgetBarProp
               <Image alt=">" src={rightArrow} width={25} height={25} />
             </Link>
           </div>
-          <p className="text-body-2 text-grey-550 w-full">
-            지금까지 [{mapCategoryToKor(topExpense.category)}]에 {topExpense.amountKRW.toLocaleString()}원 썼어요!
-          </p>
+          {topExpense && (
+            <p className="text-body-2 text-grey-550 w-full">
+              지금까지 [{mapCategoryToKor(topExpense.category)}]에 {topExpense.amountKRW.toLocaleString()}원 썼어요!
+            </p>
+          )}
         </div>
       </div>
     </div>

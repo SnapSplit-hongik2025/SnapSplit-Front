@@ -14,14 +14,16 @@ export interface PersonalExpensesListProps {
   settlementId: string;
   expenses: Expense[];
   totalAmount: number;
+  tripId: string;
 }
 
 export interface PersonalExpensesItemProps {
   settlementId: string;
   expense: Expense;
+  tripId: string;
 }
 
-const PersonalExpensesItem = ({ expense, settlementId }: PersonalExpensesItemProps) => {
+const PersonalExpensesItem = ({ expense, settlementId, tripId }: PersonalExpensesItemProps) => {
   return (
     <div className="flex justify-between items-center">
       <span>{expense.name}</span>
@@ -29,8 +31,8 @@ const PersonalExpensesItem = ({ expense, settlementId }: PersonalExpensesItemPro
         <p>{expense.amount?.toLocaleString()}원</p>
         <Link
           href={{
-            pathname: `${settlementId}/${expense.memberId}`,
-            query: { name: expense.name },
+            pathname: `trip/${tripId}/split/${settlementId}/${expense.memberId}`,
+            query: { name: expense.name, tripId: tripId },
           }}
           className="cursor-pointer"
         >
@@ -45,13 +47,14 @@ export default function PersonalExpensesList({
   settlementId,
   expenses = [],
   totalAmount = 0,
+  tripId,
 }: PersonalExpensesListProps) {
   return (
     <>
       <h2 className="text-label-1">개별 지출 금액</h2>
       <div className="flex flex-col gap-3 w-full bg-white p-4 rounded-xl">
         {expenses.map((expense, idx) => (
-          <PersonalExpensesItem key={idx} expense={expense} settlementId={settlementId} />
+          <PersonalExpensesItem key={idx} expense={expense} settlementId={settlementId} tripId={tripId} />
         ))}
 
         <Divider p="py-[0.5px]" className="my-1" />

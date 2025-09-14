@@ -13,7 +13,11 @@ export default async function Settlement({
       ? null
       : Number((await searchParams).startDay)
     : null;
-  const endDay = (await searchParams).endDay ? (isNaN(Number((await searchParams).endDay)) ? null : Number((await searchParams).endDay)) : null;
+  const endDay = (await searchParams).endDay
+    ? isNaN(Number((await searchParams).endDay))
+      ? null
+      : Number((await searchParams).endDay)
+    : null;
 
   return <SettlementPage settlementId={settlementId} tripId={tripId} startDay={startDay} endDay={endDay} />;
 }

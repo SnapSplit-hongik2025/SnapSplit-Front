@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import arrow from '@public/svg/arrow-left-grey-1000.svg';
 import Link from 'next/link';
-import { SettlementHeaderProps } from '../type';
+import { SettlementHeaderProps } from '../types/settlement-type';
 
 export default function SettlementHeader({ tripId }: SettlementHeaderProps) {
   return (

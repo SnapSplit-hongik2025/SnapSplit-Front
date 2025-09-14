@@ -5,6 +5,7 @@ import CheckedIcon from '@public/svg/check-green.svg';
 type TripDay = {
   day: number;
   hasExpense: boolean;
+  settled: boolean;
 };
 
 export interface DatePickButtonSheetProps {
@@ -13,23 +14,23 @@ export interface DatePickButtonSheetProps {
   setSelectedIndex: (idx: number) => void;
   onClose?: () => void;
 }
+
 export default function DatePickButtonSheet({
   tripDay,
   selectedIndex,
   setSelectedIndex,
   onClose,
 }: DatePickButtonSheetProps) {
-  console.log('tripDay : ' + tripDay);
   return (
     <div className="flex w-full flex-col justify-start">
-      {tripDay?.map(({ day, hasExpense }, idx) => (
+      {tripDay?.map(({ day, settled }, idx) => (
         <button
           className="flex w-full gap-1 justify-start py-3 cursor-pointer disabled:cursor-default"
-          key={idx}
+          key={day}
           aria-label="날짜 선택"
-          disabled={!hasExpense}
+          disabled={settled}
           onClick={() => {
-            if (!hasExpense) return;
+            if (settled) return;
             setSelectedIndex(idx);
             if (onClose) onClose();
           }}
@@ -37,11 +38,7 @@ export default function DatePickButtonSheet({
           <Image src={selectedIndex === idx ? CheckedIcon : unCheckedIcon} alt="Check Icon" />
           <span
             className={
-              !hasExpense
-                ? 'text-grey-450 cursor-not-allowed'
-                : selectedIndex === idx
-                  ? 'text-primary'
-                  : 'text-grey-1000'
+              settled ? 'text-grey-450 cursor-not-allowed' : selectedIndex === idx ? 'text-primary' : 'text-grey-1000'
             }
           >
             {day === 0 ? '여행 준비' : `Day ${day}`}

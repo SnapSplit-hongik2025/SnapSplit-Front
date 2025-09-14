@@ -11,6 +11,7 @@ export const getTripBudgetData = async (tripId: number): Promise<GetTripBudgetDt
   try {
     const finalPath = apiPath.budget.replace('{tripId}', String(tripId));
     const res = await privateInstance.get<ApiEnvelope<GetTripBudgetDto>>(finalPath);
+    console.log(`[API] Fetched trip budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
   } catch (error) {
     console.error(`[API Error] Failed to get trip budget for tripId ${tripId}:`, error);
