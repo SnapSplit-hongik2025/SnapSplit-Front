@@ -24,6 +24,45 @@ type SnapPageProps = {
   tripId: string;
 };
 
+type MemberData = {
+  memberId: number;
+  name: string;
+  profileImageUrl?: string;
+  hasFaceData: boolean;
+};
+
+const FaceEnrollButton = ({}) => {
+  return (
+    <button className="flex cursor-pointer whitespace-nowrap items-center justify-center w-16 h-7 text-body-2 text-white bg-primary rounded-lg">
+      등록하기
+    </button>
+  );
+};
+
+type FaceEnrollmentSectionProps = {
+  members: MemberData[];
+};
+
+const FaceEnrollmentSection = ({ members }: FaceEnrollmentSectionProps) => {
+  return (
+    <div className="flex flex-col h-full w-full itesm-center justify-center text-center p-10 pb-40">
+      <span className="text-grey-450 text-label-1">전원 얼굴 등록 이후</span>
+      <span className="text-grey-450 text-label-1 pb-10">SNAP 기능을 사용할 수 있어요!</span>
+      <div className="space-y-5 bg-white rounded-2xl p-5 max-h-72 overflow-y-auto scrollbar-hide">
+        {members.map((member) => (
+          <div key={member.memberId} className="flex items-center justify-between">
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-10 h-10 bg-grey-450 rounded-full"></div>
+              <span className="text-body-1 whitespace-nowrap text-grey-850">{member.name}</span>
+            </div>
+            <FaceEnrollButton />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default function FaceTestPage({ tripId }: SnapPageProps) {
   const isAllMemberHasFace = false;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,8 +90,18 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
       </div>
       <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* 컨텐츠 영역 */}
-      {activeTab === '전체' ? (
+      {!isAllMemberHasFace ? (
+        <FaceEnrollmentSection
+          members={[
+            { memberId: 1, name: '김연아', profileImageUrl: 'https://i.pravatar.cc/150?img=1', hasFaceData: false },
+            { memberId: 2, name: '박지성', profileImageUrl: 'https://i.pravatar.cc/150?img=2', hasFaceData: false },
+            { memberId: 3, name: '손흥민', profileImageUrl: '', hasFaceData: false },
+            { memberId: 4, name: '김민재', profileImageUrl: '', hasFaceData: false },
+            { memberId: 5, name: '황희찬', profileImageUrl: '', hasFaceData: false },
+            { memberId: 6, name: '이강인', profileImageUrl: '', hasFaceData: false },
+          ]}
+        />
+      ) : activeTab === '전체' ? (
         <BaseTabView setIsScrolled={setIsScrolled} setScrollToTop={setScrollToTop} />
       ) : (
         <FolderTabView />
@@ -70,11 +119,6 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
           if (file) alert(`파일 선택됨: ${file.name}`);
         }}
       />
-
-      {/* <div className="flex flex-col itesm-center justify-center">
-        <span>모든 멤버가 등록해야</span>
-        <span>SNAP 기능을 사용할 수 있어요!</span>
-      </div> */}
     </div>
   );
 }
