@@ -9,8 +9,7 @@ import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 import TripHeader from '@/shared/components/TripHeader';
 import TripInfo from '../../budget/_components/TripInfo';
-
-import clsx from 'clsx';
+import { EnrollmentMemberItem } from './_components/EnrollmentMemberItem';
 
 const tripInfo = {
   tripName: '스냅스플릿 연구팟',
@@ -27,46 +26,13 @@ type SnapPageProps = {
   tripId: string;
 };
 
-type MemberData = {
+// SNAP 페이지에서 추가로 필요한 멤버 데이터 타입
+export type MemberData = {
   memberId: number;
   name: string;
   profileImageUrl?: string;
   hasFaceData: boolean;
   isCurrentUser: boolean;
-};
-
-type FaceEnrollButtonProps = {
-  hasFaceData?: boolean;
-  isCurrentUser?: boolean;
-};
-
-const FaceEnrollButton = ({ hasFaceData, isCurrentUser }: FaceEnrollButtonProps) => {
-  return (
-    <button
-      disabled={hasFaceData || !isCurrentUser}
-      className={clsx('flex items-center justify-center w-16 h-7 rounded-lg text-body-2', {
-        'bg-white text-grey-450 border border-grey-250': hasFaceData,
-        'bg-primary text-white': !hasFaceData && isCurrentUser,
-        'bg-grey-350 text-white': !hasFaceData && !isCurrentUser,
-      })}
-    >
-      {hasFaceData ? '등록완료' : isCurrentUser ? '등록하기' : '미등록'}
-    </button>
-  );
-};
-
-const EnrollmentMemberItem = ({ member }: { member: MemberData }) => {
-  return (
-    <div key={member.memberId} className="flex items-center justify-between">
-      <div className="flex items-center justify-center gap-3">
-        <div className="w-10 h-10 bg-grey-450 rounded-full"></div>
-        <span className="text-body-1 whitespace-nowrap text-grey-850">
-          {member.isCurrentUser ? '(나)' : member.name}
-        </span>
-      </div>
-      <FaceEnrollButton hasFaceData={member.hasFaceData} isCurrentUser={member.isCurrentUser} />
-    </div>
-  );
 };
 
 type FaceEnrollmentSectionProps = {
@@ -115,6 +81,7 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
       <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {!isAllMemberHasFace ? (
+        // 추가한 코드
         <FaceEnrollmentSection
           members={[
             { memberId: 1, name: '김스냅', hasFaceData: false, isCurrentUser: true },
@@ -124,7 +91,8 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
             { memberId: 5, name: '정개발', hasFaceData: false, isCurrentUser: false },
           ]}
         />
-      ) : activeTab === '전체' ? (
+      ) : // 추가한 코드 끝
+      activeTab === '전체' ? (
         <BaseTabView setIsScrolled={setIsScrolled} setScrollToTop={setScrollToTop} />
       ) : (
         <FolderTabView />
