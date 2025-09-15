@@ -41,7 +41,7 @@ type FaceEnrollmentSectionProps = {
 
 const FaceEnrollmentSection = ({ members }: FaceEnrollmentSectionProps) => {
   return (
-    <div className="flex flex-col h-full w-full itesm-center justify-center text-center p-10 pb-40">
+    <div className="flex flex-col h-full w-full justify-center text-center p-10 pb-40">
       <span className="text-grey-450 text-label-1">전원 얼굴 등록 이후</span>
       <span className="text-grey-450 text-label-1 pb-10">SNAP 기능을 사용할 수 있어요!</span>
       <div className="relative">
