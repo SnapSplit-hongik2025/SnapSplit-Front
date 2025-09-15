@@ -10,7 +10,7 @@ export const FaceEnrollButton = ({ hasFaceData, isCurrentUser }: FaceEnrollButto
     <button
       disabled={hasFaceData || !isCurrentUser}
       className={
-        clsx('flex items-center justify-center w-16 h-7 rounded-lg text-body-2', {
+        clsx('flex items-center justify-center min-w-16 h-7 rounded-lg text-body-2', {
           'bg-white text-grey-450 border border-grey-250': hasFaceData,
           'bg-primary text-white': !hasFaceData && isCurrentUser,
           'bg-grey-350 text-white': !hasFaceData && !isCurrentUser,

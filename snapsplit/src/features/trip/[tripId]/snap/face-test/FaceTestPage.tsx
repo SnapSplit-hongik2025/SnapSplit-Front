@@ -44,10 +44,15 @@ const FaceEnrollmentSection = ({ members }: FaceEnrollmentSectionProps) => {
     <div className="flex flex-col h-full w-full itesm-center justify-center text-center p-10 pb-40">
       <span className="text-grey-450 text-label-1">전원 얼굴 등록 이후</span>
       <span className="text-grey-450 text-label-1 pb-10">SNAP 기능을 사용할 수 있어요!</span>
-      <div className="space-y-5 bg-white rounded-2xl p-5 max-h-72 overflow-y-auto scrollbar-hide">
-        {members.map((member) => (
-          <EnrollmentMemberItem key={member.memberId} member={member} />
-        ))}
+      <div className="relative">
+        <div className="space-y-5 bg-white rounded-2xl p-5 max-h-72 overflow-y-auto scrollbar-hide">
+          {members.map((m) => (
+            <EnrollmentMemberItem key={m.memberId} member={m} />
+          ))}
+        </div>
+        {/* 상/하 스크롤 힌트 그라데이션 */}
+        <div className="pointer-events-none absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white to-transparent rounded-t-2xl" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent rounded-b-2xl" />
       </div>
     </div>
   );
@@ -88,7 +93,10 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
             { memberId: 2, name: '이스플릿', hasFaceData: true, isCurrentUser: false },
             { memberId: 3, name: '박연구', hasFaceData: true, isCurrentUser: false },
             { memberId: 4, name: '최테스트', hasFaceData: false, isCurrentUser: false },
-            { memberId: 5, name: '정개발', hasFaceData: false, isCurrentUser: false },
+            { memberId: 5, name: '홍길동', hasFaceData: false, isCurrentUser: false },
+            { memberId: 6, name: '고길동', hasFaceData: true, isCurrentUser: false },
+            { memberId: 7, name: '장길동', hasFaceData: false, isCurrentUser: false },
+            { memberId: 8, name: '임꺽정', hasFaceData: true, isCurrentUser: false },
           ]}
         />
       ) : // 추가한 코드 끝
