@@ -42,8 +42,15 @@ type FaceEnrollButtonProps = {
 
 const FaceEnrollButton = ({ hasFaceData, isCurrentUser }: FaceEnrollButtonProps) => {
   return (
-    <button className="flex cursor-pointer whitespace-nowrap items-center justify-center w-16 h-7 text-body-2 text-white bg-primary rounded-lg">
-      등록하기
+    <button
+      disabled={hasFaceData || !isCurrentUser}
+      className={clsx('flex items-center justify-center w-16 h-7 rounded-lg text-body-2', {
+        'bg-white text-grey-450 border border-grey-250': hasFaceData,
+        'bg-primary text-white': !hasFaceData && isCurrentUser,
+        'bg-grey-350 text-white': !hasFaceData && !isCurrentUser,
+      })}
+    >
+      {hasFaceData ? '등록완료' : isCurrentUser ? '등록하기' : '미등록'}
     </button>
   );
 };
@@ -57,7 +64,7 @@ const EnrollmentMemberItem = ({ member }: { member: MemberData }) => {
           {member.isCurrentUser ? '(나)' : member.name}
         </span>
       </div>
-      <FaceEnrollButton />
+      <FaceEnrollButton hasFaceData={member.hasFaceData} isCurrentUser={member.isCurrentUser} />
     </div>
   );
 };
@@ -110,9 +117,9 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
       {!isAllMemberHasFace ? (
         <FaceEnrollmentSection
           members={[
-            { memberId: 1, name: '김스냅', hasFaceData: true, isCurrentUser: true },
-            { memberId: 2, name: '이스플릿', hasFaceData: false, isCurrentUser: false },
-            { memberId: 3, name: '박연구', hasFaceData: false, isCurrentUser: false },
+            { memberId: 1, name: '김스냅', hasFaceData: false, isCurrentUser: true },
+            { memberId: 2, name: '이스플릿', hasFaceData: true, isCurrentUser: false },
+            { memberId: 3, name: '박연구', hasFaceData: true, isCurrentUser: false },
             { memberId: 4, name: '최테스트', hasFaceData: false, isCurrentUser: false },
             { memberId: 5, name: '정개발', hasFaceData: false, isCurrentUser: false },
           ]}
