@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useRef } from 'react';
 import TabSelector from '@/features/trip/[tripId]/snap/_components/TabSelector';
 import UploadButton from '@/features/trip/[tripId]/snap/_components/UploadButton';
@@ -8,6 +9,8 @@ import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 import TripHeader from '@/shared/components/TripHeader';
 import TripInfo from '../../budget/_components/TripInfo';
+
+import clsx from 'clsx';
 
 const tripInfo = {
   tripName: '스냅스플릿 연구팟',
@@ -29,13 +32,33 @@ type MemberData = {
   name: string;
   profileImageUrl?: string;
   hasFaceData: boolean;
+  isCurrentUser: boolean;
 };
 
-const FaceEnrollButton = ({}) => {
+type FaceEnrollButtonProps = {
+  hasFaceData?: boolean;
+  isCurrentUser?: boolean;
+};
+
+const FaceEnrollButton = ({ hasFaceData, isCurrentUser }: FaceEnrollButtonProps) => {
   return (
     <button className="flex cursor-pointer whitespace-nowrap items-center justify-center w-16 h-7 text-body-2 text-white bg-primary rounded-lg">
       등록하기
     </button>
+  );
+};
+
+const EnrollmentMemberItem = ({ member }: { member: MemberData }) => {
+  return (
+    <div key={member.memberId} className="flex items-center justify-between">
+      <div className="flex items-center justify-center gap-3">
+        <div className="w-10 h-10 bg-grey-450 rounded-full"></div>
+        <span className="text-body-1 whitespace-nowrap text-grey-850">
+          {member.isCurrentUser ? '(나)' : member.name}
+        </span>
+      </div>
+      <FaceEnrollButton />
+    </div>
   );
 };
 
@@ -50,13 +73,7 @@ const FaceEnrollmentSection = ({ members }: FaceEnrollmentSectionProps) => {
       <span className="text-grey-450 text-label-1 pb-10">SNAP 기능을 사용할 수 있어요!</span>
       <div className="space-y-5 bg-white rounded-2xl p-5 max-h-72 overflow-y-auto scrollbar-hide">
         {members.map((member) => (
-          <div key={member.memberId} className="flex items-center justify-between">
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-10 h-10 bg-grey-450 rounded-full"></div>
-              <span className="text-body-1 whitespace-nowrap text-grey-850">{member.name}</span>
-            </div>
-            <FaceEnrollButton />
-          </div>
+          <EnrollmentMemberItem key={member.memberId} member={member} />
         ))}
       </div>
     </div>
@@ -93,12 +110,11 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
       {!isAllMemberHasFace ? (
         <FaceEnrollmentSection
           members={[
-            { memberId: 1, name: '김연아', profileImageUrl: 'https://i.pravatar.cc/150?img=1', hasFaceData: false },
-            { memberId: 2, name: '박지성', profileImageUrl: 'https://i.pravatar.cc/150?img=2', hasFaceData: false },
-            { memberId: 3, name: '손흥민', profileImageUrl: '', hasFaceData: false },
-            { memberId: 4, name: '김민재', profileImageUrl: '', hasFaceData: false },
-            { memberId: 5, name: '황희찬', profileImageUrl: '', hasFaceData: false },
-            { memberId: 6, name: '이강인', profileImageUrl: '', hasFaceData: false },
+            { memberId: 1, name: '김스냅', hasFaceData: true, isCurrentUser: true },
+            { memberId: 2, name: '이스플릿', hasFaceData: false, isCurrentUser: false },
+            { memberId: 3, name: '박연구', hasFaceData: false, isCurrentUser: false },
+            { memberId: 4, name: '최테스트', hasFaceData: false, isCurrentUser: false },
+            { memberId: 5, name: '정개발', hasFaceData: false, isCurrentUser: false },
           ]}
         />
       ) : activeTab === '전체' ? (
