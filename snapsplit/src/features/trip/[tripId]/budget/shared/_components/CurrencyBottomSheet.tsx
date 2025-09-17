@@ -7,14 +7,13 @@ type CurrencyBottomSheetProps = {
   onClose?: () => void;
   selectedCurrency: string;
   setCurrency: (currency: string) => void;
+  availableCurrencies: string[];
 };
 
-const availCurrencies = ['USD', 'EUR', 'JPY'];
-
-const CurrencyBottomSheet = ({ onClose, selectedCurrency, setCurrency }: CurrencyBottomSheetProps) => {
+const CurrencyBottomSheet = ({ onClose, selectedCurrency, setCurrency, availableCurrencies }: CurrencyBottomSheetProps) => {
   return (
     <div className="flex flex-col w-full">
-      {availCurrencies.map((currency) => (
+      {availableCurrencies.map((currency) => (
         <button
           key={currency}
           onClick={() => {

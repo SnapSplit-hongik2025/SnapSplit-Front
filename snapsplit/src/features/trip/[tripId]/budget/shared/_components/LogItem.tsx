@@ -1,5 +1,7 @@
+import { getSymbol } from "@/shared/utils/currency";
+
 type LogItemProps = {
-  type: 'budget' | 'expense';
+  type: 'deposit' | 'expense';
   label: string;
   detail: string | null;
   amount: number;
@@ -18,7 +20,7 @@ const LogItem = ({ type, label, detail, amount, currency, krwEquivalent }: LogIt
         <div className={`text-label-1 text-end ${type === 'expense' ? 'text-grey-1000' : amount > 0 ? 'text-green' : 'text-[#FD7564]'}`}>
           {amount > 0 ? '+' : ''}
           {amount}
-          {currency}
+          {getSymbol(currency)}
         </div>
         <div className="text-caption-1 text-end text-grey-550">{krwEquivalent}원</div>
       </div>
