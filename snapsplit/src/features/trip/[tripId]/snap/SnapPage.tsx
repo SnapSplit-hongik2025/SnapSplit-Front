@@ -9,7 +9,7 @@ import FolderTabView from '@/features/trip/[tripId]/snap/_components/tabView/Fol
 import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 import { GetTripDataDto } from './types/snap-dto-types';
-import { getTripData } from './api/snap-api';
+import { getTripData, uploadImage } from './api/snap-api';
 
 type SnapPageProps = {
   tripId: string;
@@ -23,6 +23,13 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
   const [data, setData] = useState<GetTripDataDto | null>(null);
   const [error, setError] = useState<Error | null>(null);
+
+  const imageSubmit = (file: File) => {
+    console.log("[SnapPage.imageSubmit]: file ->", file);
+    uploadImage(Number(tripId), file)
+      .then((res) => console.log(res))
+      .catch((e) => console.log(e));
+  };
 
   useEffect(() => {
     getTripData(Number(tripId))
@@ -69,7 +76,8 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         style={{ display: 'none' }}
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) alert(`파일 선택됨: ${file.name}`);
+          console.log(file);
+          if (file) imageSubmit(file);
         }}
       />
     </div>

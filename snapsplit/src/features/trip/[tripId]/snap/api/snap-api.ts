@@ -2,6 +2,7 @@ import privateInstance from '@/lib/api/instance/privateInstance';
 import { GetTripDataDto } from '../types/snap-dto-types';
 import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
+import { UploadImageDto } from '../types/snap-dto-types';
 
 export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
   if (!tripId) {
@@ -17,3 +18,18 @@ export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
     throw new Error('여행 정보를 불러오는 데 실패했습니다.');
   }
 };
+
+export const uploadImage = async (tripId: number, file: File) => {
+  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/photos';
+  const formData = new FormData();
+  console.log("[UploadImage API] file ->", file);
+  formData.append('images', file);
+  try {
+    const res = await privateInstance.post<ApiEnvelope<UploadImageDto>>(finalPath, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    console.log(`[API] Fetched trip data for tripId ${tripId}:`, res.data.data);
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API Error] Failed to get trip data for tripId ${tripId}:`, error);
+    throw new Error('이미지를 업로드하는 데 실패했습니다.');
+  }
+}
