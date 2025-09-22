@@ -37,10 +37,8 @@ export default function JoinTripByCodeModal({ onClose }: JoinTripByCodeModalProp
         onClick={async () => {
           try {
             await joinTripByCode(code);
-            alert('여행에 성공적으로 참여했습니다!');
           } catch (error) {
             console.error('여행 참여 실패:', error);
-            alert('유효하지 않은 코드입니다.\n다시 시도해주세요.');
           }
         }}
       >
