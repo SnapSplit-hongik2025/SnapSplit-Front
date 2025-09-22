@@ -11,15 +11,14 @@ export const getHomeData = async (): Promise<GetHomeResponseDto> => {
 };
 
 // 코드로 여행 참가
-export const joinTripByCode = async (code: string): Promise<void> => {
+export const joinTripByCode = async (inviteCode: string): Promise<void> => {
   try {
-    await privateInstance.post<ApiEnvelope<null>>(apiPath.joinTrip, { code });
+    await privateInstance.post<ApiEnvelope<null>>(apiPath.joinTrip, { inviteCode });
     alert('여행에 성공적으로 참여했습니다!');
     return;
   } catch (error) {
     // 4xx, 5xx 에러는 모두 여기서 처리합니다.
     if (axios.isAxiosError(error) && error.response?.data) {
-      console.log('서버 응답 데이터:', error.response.data);
       alert(error.response.data.message || '알 수 없는 서버 오류가 발생했습니다.');
       throw new Error(error.response.data.message || '알 수 없는 서버 오류가 발생했습니다.');
     }
