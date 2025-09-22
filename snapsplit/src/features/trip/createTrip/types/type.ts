@@ -1,9 +1,7 @@
 import { Country } from "@/shared/types/country";
 
 // STEP1 - 국가 목록 조회 API 응답 타입
-export type GetCountryTripDto = {
-  countries: Country[];
-}
+export type GetCountryTripDto = Country[];
 
 // STEP3 - 유저 검색 API 응답 타입
 export interface GetUserCodeDto {

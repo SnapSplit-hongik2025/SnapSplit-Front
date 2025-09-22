@@ -16,9 +16,9 @@ const CountrySearchSection = ({
 }: CountrySearchSectionProps) => {
   // 검색 관리
   const [searchKeyword, setSearchKeyword] = useState('');
-  const filteredCountries = countries.filter(({ countryName }) =>
-    countryName.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
+  const filteredCountries = Array.isArray(countries)
+    ? countries.filter(({ countryName }) => countryName.toLowerCase().includes(searchKeyword.toLowerCase()))
+    : [];
 
   const isEdit = variant === 'edit';
 
