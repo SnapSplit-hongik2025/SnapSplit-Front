@@ -3,6 +3,7 @@ import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
 import { GetSplitDto, PostSettlementResponseDto } from '../types/split-dto-type';
 import { isAfter, parseISO } from 'date-fns';
+import axios from 'axios';
 
 // 여행 정산 정보 조회
 export const getSplitData = async (tripId: string): Promise<GetSplitDto> => {
@@ -44,7 +45,11 @@ export const postSettlement = async (
     const res = await privateInstance.post<ApiEnvelope<PostSettlementResponseDto>>(finalPath, settlementData);
     return res.data.data;
   } catch (error) {
-    console.error('[API Error] postSettlement:', error);
+    if (axios.isAxiosError(error) && error.response?.data) {
+      alert(error.response.data.message || '알 수 없는 서버 오류가 발생했습니다.');
+      throw new Error(error.response.data.message || '알 수 없는 서버 오류가 발생했습니다.');
+    }
+    console.log(error);
     throw new Error('정산 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
 };
