@@ -28,16 +28,11 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
 
   // 유저 검색 핸들러
   const handleSearch = () => {
-    console.log('검색어:', searchId);
-
-    // 공백 제거 후 빈 문자열이면 경고창
     const keyword = searchId.trim();
     if (!keyword) {
-      alert('검색어를 입력해주세요.');
+      alert('코드를 정확하게 입력해주세요.');
       return;
     }
-
-    // 검색 API 호출
     searchUser(keyword);
   };
 
@@ -47,10 +42,8 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
       const isAlreadySelected = prevSelectedUsers.some((selectedUser) => selectedUser.id === userToToggle.id);
 
       if (isAlreadySelected) {
-        // 이미 선택되었다면, 해당 유저를 배열에서 제거
         return prevSelectedUsers.filter((selectedUser) => selectedUser.id !== userToToggle.id);
       } else {
-        // 선택되지 않았다면, 새로운 유저를 배열에 추가
         return [...prevSelectedUsers, userToToggle];
       }
     });
@@ -82,7 +75,6 @@ const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) =>
             확인
           </button>
         </div>
-        {/* {searchError && <p className="text-caption-1 text-red-500 pt-2">{searchError}</p>} */}
         <UserList searchedUser={searchedUser} selectedUsers={selectedUsers} onToggle={toggleSelectUser} />
       </div>
       <BottomCTAButton label="다음으로" onClick={handleNextStep} />

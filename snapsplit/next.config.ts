@@ -16,6 +16,17 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 't1.kakaocdn.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'k.kakaocdn.net',
+      },
+    ],
+    domains: [
+      'i1.sndcdn.com',
+      'snapsplit-assets.s3.ap-northeast-2.amazonaws.com',
+      'img1.kakaocdn.net',
+      't1.kakaocdn.net',
+      'k.kakaocdn.net',
     ],
   },
 };

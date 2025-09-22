@@ -31,6 +31,7 @@ export const getUserInfo = async (userCode: string): Promise<UserInfoDto> => {
       console.log('error', res.data.message);
       throw new Error(res.data.message || '유저 정보 조회에 실패했습니다.');
     }
+
     return res.data.data;
   } catch (error) {
     alert('유저 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
