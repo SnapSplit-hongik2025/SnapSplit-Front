@@ -1,10 +1,13 @@
 export type InputTripNameSectionProps = {
     onClick: () => void
     tripName?: string;
-    tripImage?: string;
+    setTripName: (name: string) => void;
+    tripImageUrl: string | null;
+    setTripImageUrl: (url: string) => void;
     variant?: 'create' | 'edit';
 };
  
 export interface TripImageUploaderProps {
-  initialImage?: string;
+  tripImageUrl: string | null;
+  setTripImageUrl: (url: string) => void;
 }

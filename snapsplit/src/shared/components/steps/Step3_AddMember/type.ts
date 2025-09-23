@@ -1,6 +1,10 @@
 import { UserInfoDto } from '@trip/createTrip/types/type';
 
-export type AddMemberSectionProps = { onClick: () => void };
+export type AddMemberSectionProps = {
+  onClick: () => void;
+  selectedUsers: UserInfoDto[];
+  setSelectedUsers: React.Dispatch<React.SetStateAction<UserInfoDto[]>>;
+ };
 
 export type UserListProps = {
   searchedUser?: UserInfoDto;

@@ -9,17 +9,12 @@ import { useMutation } from '@tanstack/react-query';
 import { getUserInfo } from '@trip/createTrip/api/create-trip-api';
 import { UserInfoDto } from '@trip/createTrip/types/type';
 
-const AddMemberSection = ({ onClick: handleNextStep }: AddMemberSectionProps) => {
+const AddMemberSection = ({ onClick: handleNextStep, selectedUsers, setSelectedUsers }: AddMemberSectionProps) => {
   const [searchId, setSearchId] = useState('');
-  const [selectedUsers, setSelectedUsers] = useState<UserInfoDto[]>([]);
   const [searchedUser, setSearchedUser] = useState<UserInfoDto>();
 
-  // 유저 검색 API 요청 뮤테이션
-  const {
-    mutate: searchUser,
-    // isPending,
-    // error,
-  } = useMutation({
+  // 유저 검색 API 뮤테이션
+  const { mutate: searchUser } = useMutation({
     mutationFn: (keyword: string) => getUserInfo(keyword),
     onSuccess: (searchedUser) => {
       setSearchedUser(searchedUser ?? undefined);

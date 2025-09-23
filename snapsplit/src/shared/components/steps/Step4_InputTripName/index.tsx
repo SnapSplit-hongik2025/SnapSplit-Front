@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import SearchBar from '@/shared/components/SearchBar';
 import TripImageUploader from './TripImageUploader';
 import BottomCTAButton from '@/shared/components/BottomCTAButton';
@@ -9,10 +8,11 @@ import { InputTripNameSectionProps } from './type';
 const InputTripNameSection = ({
   onClick: handleNextStep,
   tripName = '',
-  tripImage = '',
+  setTripName,
+  tripImageUrl,
+  setTripImageUrl,
   variant = 'create',
 }: InputTripNameSectionProps) => {
-  const [name, setName] = useState<string>(tripName);
   const isEdit = variant === 'edit';
 
   return (
@@ -36,9 +36,9 @@ const InputTripNameSection = ({
           </p>
         </div>
 
-        <TripImageUploader initialImage={tripImage} />
+        <TripImageUploader tripImageUrl={tripImageUrl} setTripImageUrl={setTripImageUrl} />
 
-        <SearchBar placeholder="여행명을 입력해주세요" value={name} onChange={(e) => setName(e.target.value)} />
+        <SearchBar placeholder="여행명을 입력해주세요" value={tripName} onChange={(e) => setTripName(e.target.value)} />
       </div>
 
       <BottomCTAButton label="다음으로" onClick={handleNextStep} />
