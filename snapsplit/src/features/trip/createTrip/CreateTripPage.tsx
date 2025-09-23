@@ -34,6 +34,7 @@ export default function CreateTripPage() {
 
   const [tripName, setTripName] = useState<string>('');
   const [tripImageUrl, setTripImageUrl] = useState<string | null>(null);
+  const [tripImageFile, setTripImageFile] = useState<File | null>(null);
 
   // 국가 목록 조회 API
   const { data, isLoading, isError, error } = useQuery({
@@ -104,6 +105,7 @@ export default function CreateTripPage() {
       setTripName={setTripName}
       tripImageUrl={tripImageUrl}
       setTripImageUrl={setTripImageUrl}
+      setTripImageFile={setTripImageFile}
     />,
   ];
 

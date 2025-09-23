@@ -3,9 +3,7 @@ import Image from 'next/image';
 import { useRef } from 'react';
 import { TripImageUploaderProps } from './type';
 
-const TripImageUploader = ({ tripImageUrl, setTripImageUrl }: TripImageUploaderProps) => {
-  // 초기값으로 mock 이미지를 사용
-
+const TripImageUploader = ({ tripImageUrl, setTripImageUrl, setTripImageFile }: TripImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const openFileInputRef = () => {
     fileInputRef.current?.click();
@@ -18,6 +16,11 @@ const TripImageUploader = ({ tripImageUrl, setTripImageUrl }: TripImageUploaderP
     if (file) {
       const uploadedImageUrl = URL.createObjectURL(file);
       setTripImageUrl(uploadedImageUrl);
+      setTripImageFile(file);
+    } else {
+      // 파일 선택이 취소된 경우
+      setTripImageUrl(null);
+      setTripImageFile(null);
     }
   };
 

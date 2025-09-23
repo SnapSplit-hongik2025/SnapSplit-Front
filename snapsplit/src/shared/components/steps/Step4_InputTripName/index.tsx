@@ -11,6 +11,7 @@ const InputTripNameSection = ({
   setTripName,
   tripImageUrl,
   setTripImageUrl,
+  setTripImageFile,
   variant = 'create',
 }: InputTripNameSectionProps) => {
   const isEdit = variant === 'edit';
@@ -36,7 +37,11 @@ const InputTripNameSection = ({
           </p>
         </div>
 
-        <TripImageUploader tripImageUrl={tripImageUrl} setTripImageUrl={setTripImageUrl} />
+        <TripImageUploader
+          tripImageUrl={tripImageUrl}
+          setTripImageUrl={setTripImageUrl}
+          setTripImageFile={setTripImageFile}
+        />
 
         <SearchBar placeholder="여행명을 입력해주세요" value={tripName} onChange={(e) => setTripName(e.target.value)} />
       </div>
