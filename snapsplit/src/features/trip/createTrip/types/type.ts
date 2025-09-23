@@ -32,3 +32,11 @@ export type CreateTripResponseDto = {
   tripId: number;
   createdAt: string;
 };
+
+export interface CreateTripRequestDto {
+  tripName: string;
+  countries: { countryId: number; countryName: string }[];
+  startDate: string; // ISO 8601 형식의 날짜 문자열
+  endDate: string; // ISO 8601 형식의 날짜 문자열
+  usersId: number[];
+}

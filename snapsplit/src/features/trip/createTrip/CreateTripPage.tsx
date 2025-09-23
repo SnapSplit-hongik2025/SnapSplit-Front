@@ -12,7 +12,7 @@ import InputTripNameSection from '@/shared/components/steps/Step4_InputTripName'
 import { routerPath } from '@/shared/constants/routePath';
 import { Country } from '@/shared/types/country';
 import { useQuery } from '@tanstack/react-query';
-import { getCountryTrip } from './api/create-trip-api';
+import { createTrip, getCountryTrip } from './api/create-trip-api';
 import { UserInfoDto } from './types/type';
 
 // steps로 단계별 컴포넌트를 랜더링해주는 Multi Step Form 페이지
@@ -67,8 +67,23 @@ export default function CreateTripPage() {
   const handleNextStep = () => {
     if (step === 4) {
       // 마지막 단계라면 여행 생성하고 생성된 여행 홈으로 이동
-      const TripId = 1;
-      router.push(`${routerPath.trip.href(TripId)}/budget`);
+      createTrip(
+        {
+          tripName,
+          countries: selectedCountries,
+          startDate: startDate ? startDate.toISOString().split('T')[0] : '',
+          endDate: endDate ? endDate.toISOString().split('T')[0] : '',
+          usersId: selectedUsers.map((user) => user.id),
+        },
+        tripImageFile
+      )
+        .then((res) => {
+          const TripId = res.tripId;
+          router.push(`${routerPath.trip.href(TripId)}/budget`);
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
     } else {
       setStep((prev) => prev + 1);
     }

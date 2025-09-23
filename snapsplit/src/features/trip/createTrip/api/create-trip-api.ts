@@ -2,6 +2,7 @@ import privateInstance from '@/lib/api/instance/privateInstance';
 import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 import { CreateTripRequestDto, CreateTripResponseDto, GetCountryTripDto, UserInfoDto } from '../types/type';
+import axios from 'axios';
 
 // 국가 목록 조회
 export const getCountryTrip = async (): Promise<GetCountryTripDto> => {
@@ -40,21 +41,44 @@ export const getUserInfo = async (userCode: string): Promise<UserInfoDto> => {
   }
 };
 
-// 여행 생성
-export const createTrip = async (tripData: CreateTripRequestDto): Promise<CreateTripResponseDto> => {
-  if (!tripData.tripName || tripData.countries.length === 0 || !tripData.startDate || !tripData.endDate) {
-    throw new Error('여행 생성에 필요한 모든 필드를 채워주세요.');
-  }
+/**
+ * 여행 생성 (이미지 및 JSON 데이터 포함)
+ * @param request - 여행 정보가 담긴 JSON 객체
+ * @param tripImage - 사용자가 업로드한 이미지 파일 (선택 사항)
+ * @returns 생성된 여행 정보
+ */
+export const createTrip = async (request: CreateTripRequestDto,
+  tripImage: File | null): Promise<CreateTripResponseDto> => {
+  // 여행 정보(JSON)를 Blob으로 변환 후 'request'라는 키로 FormData에 추가
+  const formData = new FormData();
+  const { tripName, countries, startDate, endDate, usersId } = request;
 
-  if (tripData.startDate > tripData.endDate) {
-    throw new Error('여행 시작일은 종료일보다 이전이어야 합니다.');
-  }
+  formData.append('tripName', tripName);
+  formData.append('startDate', startDate);
+  formData.append('endDate', endDate);
 
+  formData.append('countries', JSON.stringify(countries));
+  formData.append('usersId', JSON.stringify(usersId));
+
+  if (tripImage) {
+    // 파일이 있으면 파일을 'tripImage' 키로 추가
+    formData.append('tripImage', tripImage);
+  } else {
+    // 파일이 null이면, 서버에서 'tripImage' 키를 인식할 수 있도록 빈 Blob을 추가
+    // 이는 Swagger의 "Send empty value" 옵션과 유사한 동작입니다.
+    formData.append('tripImage', new Blob(), '');
+  }
+  
   try {
-    const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(apiPath.createTrip, tripData);
+    console.log(formData.get('request'));
+    const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(apiPath.createTrip, formData);
     return res.data.data;
   } catch (error) {
     console.error('[API Error] Failed to create trip:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.log('error.response.data:', error.response.data);
+      throw new Error(error.response.data.message || '여행 생성 중 오류가 발생했습니다.');
+    }
     throw new Error('여행 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
 };
