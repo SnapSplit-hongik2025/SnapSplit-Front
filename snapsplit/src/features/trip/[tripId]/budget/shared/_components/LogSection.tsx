@@ -6,50 +6,13 @@ import LogItem from './LogItem';
 import { useDragScroll } from '@/shared/utils/useDragScroll';
 import { SharedBudgetDetail } from '../../types/budget-type';
 
-type LogData = {
-  day: string;
-  date: string | null;
-  entries: {
-    type: 'deposit' | 'expense';
-    label: string;
-    detail: string | null;
-    amount: number;
-    currency: string;
-    krwEquivalent: string;
-  }[];
-};
-
-const beforeTripData: LogData[] = [
-  {
-    day: 'Day 0',
-    date: null,
-    entries: [
-      {
-        type: 'deposit',
-        label: '공동경비 추가하기',
-        detail: null,
-        amount: 500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-      {
-        type: 'deposit',
-        label: '공동경비 추가하기',
-        detail: null,
-        amount: 500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-    ],
-  },
-];
-
 type LogSectionProps = {
   defaultCurrency: string;
   sharedBudgetLog: SharedBudgetDetail[];
+  beforeTripData: SharedBudgetDetail[];
 };
 
-const LogSection = ({ defaultCurrency, sharedBudgetLog }: LogSectionProps) => {
+const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSectionProps) => {
   const { scrollRef, onMouseDown, onMouseMove, onMouseUp } = useDragScroll('y');
 
   return (
@@ -66,19 +29,19 @@ const LogSection = ({ defaultCurrency, sharedBudgetLog }: LogSectionProps) => {
         <div className="flex items-center justify-start">
           <p className="text-body-1 text-grey-1000">여행 준비</p>
         </div>
-        {beforeTripData.map((item) =>
-          item.entries.map((entry, entryIndex) => (
+        {beforeTripData.map((item) => (
+          item.items.map((entry, entryIndex) => (
             <LogItem
               key={entryIndex}
               type={entry.type}
-              label={entry.label}
-              detail={entry.detail}
+              label={entry.title}
+              detail={''}
               amount={entry.amount}
-              currency={entry.currency}
-              krwEquivalent={entry.krwEquivalent}
+              currency={defaultCurrency}
+              krwEquivalent={entry.amount.toString()}
             />
           ))
-        )}
+        ))}
       </div>
 
       {/* Day별 내역 */}

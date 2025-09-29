@@ -19,6 +19,8 @@ const SharedBudgetDetailPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sharedBudgetData, setSharedBudgetData] = useState<GetSharedBudgetDto | null>(null);
 
+  const beforeTripData = sharedBudgetData?.sharedBudgetDetails.filter((item) => new Date(item.date) < new Date(sharedBudgetData.tripStartDate));
+
   useEffect(() => {
     getSharedBudgetData(tripId)
       .then((res) => setSharedBudgetData(res))
@@ -52,7 +54,7 @@ const SharedBudgetDetailPage = () => {
         </div>
       </div>
 
-      <LogSection defaultCurrency={sharedBudgetData.defaultCurrency} sharedBudgetLog={sharedBudgetData.sharedBudgetDetails} />
+      <LogSection defaultCurrency={sharedBudgetData.defaultCurrency} sharedBudgetLog={sharedBudgetData.sharedBudgetDetails} beforeTripData={beforeTripData || []}/>
 
       <BudgetOverview totalSharedBudget={sharedBudgetData.totalSharedBudget} />
 
