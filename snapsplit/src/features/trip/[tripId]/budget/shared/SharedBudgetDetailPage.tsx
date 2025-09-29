@@ -18,6 +18,7 @@ const SharedBudgetDetailPage = () => {
   const tripId: number = Number(params.tripId);
   const [isOpen, setIsOpen] = useState(false);
   const [sharedBudgetData, setSharedBudgetData] = useState<GetSharedBudgetDto | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState('');
 
   const beforeTripData = sharedBudgetData?.sharedBudgetDetails.filter((item) => new Date(item.date) < new Date(sharedBudgetData.tripStartDate));
 
@@ -45,7 +46,7 @@ const SharedBudgetDetailPage = () => {
           <div className="flex items-center justify-between p-4 bg-pale_green rounded-xl">
             <div className="flex items-center gap-1.5">
               <div className="px-2 py-0.5 bg-primary rounded-full text-body-1 text-white">대표통화</div>
-              <div className="text-body-2">{sharedBudgetData.defaultCurrency}({getKorName(sharedBudgetData.defaultCurrency)})</div>
+              <div className="text-body-2">{selectedCurrency || sharedBudgetData.defaultCurrency}({getKorName(selectedCurrency || sharedBudgetData.defaultCurrency)})</div>
             </div>
             <button onClick={() => setIsOpen(!isOpen)} className="text-body-2 text-grey-450">
               변경
@@ -54,15 +55,15 @@ const SharedBudgetDetailPage = () => {
         </div>
       </div>
 
-      <LogSection defaultCurrency={sharedBudgetData.defaultCurrency} sharedBudgetLog={sharedBudgetData.sharedBudgetDetails} beforeTripData={beforeTripData || []}/>
+      <LogSection defaultCurrency={selectedCurrency || sharedBudgetData.defaultCurrency} sharedBudgetLog={sharedBudgetData.sharedBudgetDetails} beforeTripData={beforeTripData || []}/>
 
       <BudgetOverview totalSharedBudget={sharedBudgetData.totalSharedBudget} />
 
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <CurrencyBottomSheet
           onClose={() => setIsOpen(false)}
-          selectedCurrency={sharedBudgetData.defaultCurrency}
-          setCurrency={(currency) => setSharedBudgetData({ ...sharedBudgetData, defaultCurrency: currency })}
+          selectedCurrency={selectedCurrency || sharedBudgetData.defaultCurrency}
+          setCurrency={(currency) => setSelectedCurrency(currency)}
           availableCurrencies={sharedBudgetData.totalSharedBudget.map((budget) => budget.currency)}
         />
       </BottomSheet>
