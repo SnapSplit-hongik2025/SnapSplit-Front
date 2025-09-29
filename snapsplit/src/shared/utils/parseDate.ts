@@ -56,5 +56,5 @@ export function toMDotDDW(dateStr: string, locale: string = 'ko-KR'): string {
   // 필요 시 로케일에 따른 요일명 커스터마이즈 가능 (현재는 ko 고정)
   const w = locale.startsWith('ko') ? weekdayShortKo : new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(d);
 
-  return `${month}.${day}(${w})`;
+  return `${month}.${day}/${w}`;
 }
