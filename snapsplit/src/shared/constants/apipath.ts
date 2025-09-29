@@ -13,4 +13,5 @@ export const enum apiPath {
   settlementMember = '/trips/{tripId}/settlements/{settlementId}/expenses?memberId={memberId}',
   myPage = '/home/myPage',
   logOut = '/auth/kakao/logout',
+  exchange = '/api/exchangeRate'
 }

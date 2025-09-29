@@ -1,5 +1,5 @@
 import privateInstance from "@/lib/api/instance/privateInstance";
-import { GetTripBudgetDto, GetSharedBudgetDto } from "../types/budget-dto-type";
+import { GetTripBudgetDto, GetSharedBudgetDto, GetExchangeRateDto } from "../types/budget-dto-type";
 import { ApiEnvelope } from "@/lib/api/type";
 import { apiPath } from "@/shared/constants/apipath";
 
@@ -32,5 +32,21 @@ export const getSharedBudgetData = async (tripId: number): Promise<GetSharedBudg
   } catch (error) {
     console.error(`[API Error] Failed to get shared budget for tripId ${tripId}:`, error);
     throw new Error('여행 공동 경비 정보를 불러오는 데 실패했습니다.');
+  }
+};
+
+export const getExchangeRate = async (bases: string): Promise<GetExchangeRateDto> => {
+  if (!bases) {
+    throw new Error('유효하지 않은 통화입니다.');
+  }
+  
+  try {
+    const finalPath = apiPath.exchange;
+    const res = await privateInstance.get<ApiEnvelope<GetExchangeRateDto>>(finalPath, { params: { bases } });
+    console.log(`[API] Fetched exchange rate for bases ${bases}:`, res.data.data);
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API Error] Failed to get exchange rate for bases ${bases}:`, error);
+    throw new Error('환율 정보를 불러오는 데 실패했습니다.');
   }
 };
