@@ -49,29 +49,39 @@ export const getUserInfo = async (userCode: string): Promise<UserInfoDto> => {
  */
 export const createTrip = async (request: CreateTripRequestDto,
   tripImage: File | null): Promise<CreateTripResponseDto> => {
-  // 여행 정보(JSON)를 Blob으로 변환 후 'request'라는 키로 FormData에 추가
   const formData = new FormData();
-  const { tripName, countries, startDate, endDate, usersId } = request;
 
-  formData.append('tripName', tripName);
-  formData.append('startDate', startDate);
-  formData.append('endDate', endDate);
-
-  formData.append('countries', JSON.stringify(countries));
-  formData.append('usersId', JSON.stringify(usersId));
+  // 여행 정보(JSON)를 Blob으로 변환 후 'request'라는 키로 FormData에 추가
+  const jsonRequest = JSON.stringify(request);
+  const jsonBlob = new Blob([jsonRequest], { type: 'application/json' });
+  formData.append('request', jsonBlob);
 
   if (tripImage) {
-    // 파일이 있으면 파일을 'tripImage' 키로 추가
+    // 파일이 있으면 'tripImage' 키로 추가
     formData.append('tripImage', tripImage);
   } else {
     // 파일이 null이면, 서버에서 'tripImage' 키를 인식할 수 있도록 빈 Blob을 추가
-    // 이는 Swagger의 "Send empty value" 옵션과 유사한 동작입니다.
     formData.append('tripImage', new Blob(), '');
+  }
+
+  const requestBlob = formData.get('request');
+
+  if (requestBlob instanceof Blob) {
+    // Blob의 내용을 텍스트로 읽어옵니다 (Promise 반환)
+    const text = await requestBlob.text();
+    console.log('✅ Blob 안의 JSON 문자열:', text);
+
+    // (선택사항) 문자열을 다시 객체로 변환해서 구조를 확인할 수도 있습니다.
+    const parsedObject = JSON.parse(text);
+    console.log('✅ 파싱된 자바스크립트 객체:', parsedObject);
   }
   
   try {
-    console.log(formData.get('request'));
-    const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(apiPath.createTrip, formData);
+    const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(
+      apiPath.createTrip,
+      formData
+    );
+
     return res.data.data;
   } catch (error) {
     console.error('[API Error] Failed to create trip:', error);

@@ -14,9 +14,11 @@ import { Country } from '@/shared/types/country';
 import { useQuery } from '@tanstack/react-query';
 import { createTrip, getCountryTrip } from './api/create-trip-api';
 import { UserInfoDto } from './types/type';
+import { useAuthStore } from '@/lib/zustand/useAuthStore';
 
 // steps로 단계별 컴포넌트를 랜더링해주는 Multi Step Form 페이지
 export default function CreateTripPage() {
+  const user = useAuthStore((state) => state.user);
   const router = useRouter();
 
   // 현재 진행 중인 스탭
@@ -67,13 +69,16 @@ export default function CreateTripPage() {
   const handleNextStep = () => {
     if (step === 4) {
       // 마지막 단계라면 여행 생성하고 생성된 여행 홈으로 이동
+
+      const allUserIds = [...selectedUsers.map((user) => user.id), ...(user && user.userCode ? [user.userId] : [])];
+
       createTrip(
         {
           tripName,
           countries: selectedCountries,
           startDate: startDate ? startDate.toISOString().split('T')[0] : '',
           endDate: endDate ? endDate.toISOString().split('T')[0] : '',
-          usersId: selectedUsers.map((user) => user.id),
+          usersId: allUserIds,
         },
         tripImageFile
       )
