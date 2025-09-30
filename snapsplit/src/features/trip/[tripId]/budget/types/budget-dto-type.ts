@@ -42,3 +42,11 @@ export interface ExpenseDto {
   currency: string;
   splitters: string[];
 }
+
+export interface SharedBudgetDto {
+  defaultCurrency: string;
+  currencies: {
+    code: string;
+    exchangeRate: number;
+  } [];
+}

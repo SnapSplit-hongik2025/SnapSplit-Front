@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import CurrencyList from '@/features/trip/[tripId]/budget/shared/[mode]/_components/CurrencyList';
 import BudgetInput from './BudgetInput';
@@ -11,6 +11,7 @@ import CategorySection from './CategorySection';
 import { format } from 'date-fns';
 import StatusMessage from './StatusMessage';
 import { useParams } from 'next/navigation';
+import { getSharedData } from '@/features/trip/[tripId]/budget/api/budget-api';
 
 const result = '$9805596000000';
 const onSubmit = (formData: FormData) => {
@@ -18,17 +19,33 @@ const onSubmit = (formData: FormData) => {
 };
 
 const SharedForm = () => {
+  const router = useRouter();
+  const { tripId } = useParams() as { tripId: string };
   const { mode } = useParams() as { mode: 'add' | 'remove' };
   const isAdd = mode === 'add';
+
   const [amount, setAmount] = useState('');
-  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
   const [currency, setCurrency] = useState<string>('미국 - USD(달러)');
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const router = useRouter();
+  
+  // 모달
+  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const isFormDataReady = Boolean(amount && currency && selectedDate && selectedCategory);
+
+  useEffect(() => {
+    const fetchSharedData = async () => {
+      try {
+        const data = await getSharedData(Number(tripId));
+        setCurrency(data.defaultCurrency);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSharedData();
+  }, []);
 
   const handleSubmit = () => {
     const formData = new FormData();
