@@ -25,7 +25,8 @@ const SharedForm = () => {
   const isAdd = mode === 'add';
 
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<string>('미국 - USD(달러)');
+  const [currency, setCurrency] = useState<string>('KRW');
+  const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
@@ -40,12 +41,13 @@ const SharedForm = () => {
       try {
         const data = await getSharedData(Number(tripId));
         setCurrency(data.defaultCurrency);
+        setAvailableCurrencies(data.currencies.map((currency) => currency.code));
       } catch (error) {
         console.error(error);
       }
     };
     fetchSharedData();
-  }, []);
+  }, [tripId]);
 
   const handleSubmit = () => {
     const formData = new FormData();
@@ -80,6 +82,7 @@ const SharedForm = () => {
             onClose={() => setIsCurrencyOpen(false)}
             setCurrency={setCurrency}
             selectedCurrency={currency}
+            availableCurrencies={availableCurrencies}
           />
         )}
 
