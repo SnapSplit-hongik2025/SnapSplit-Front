@@ -73,3 +73,11 @@ export interface UpdateDefaultCurrencyDto {
   before: string;
   after: string;
 }
+
+export interface UpdateSharedBudgetRequestDto {
+  amount: number;
+  exchangeRate: number;
+  currency: string;
+  paymentMethod: string;
+  createdAt: string;
+}

@@ -11,12 +11,10 @@ import CategorySection from './CategorySection';
 import { format } from 'date-fns';
 import StatusMessage from './StatusMessage';
 import { useParams } from 'next/navigation';
-import { getSharedData, updateDefaultCurrency } from '@/features/trip/[tripId]/budget/api/budget-api';
+import { getSharedData, addSharedBudget, removeSharedBudget, updateDefaultCurrency } from '@/features/trip/[tripId]/budget/api/budget-api';
+import { UpdateSharedBudgetRequestDto } from '../../../types/budget-dto-type';
 
 const result = '$9805596000000';
-const onSubmit = (formData: FormData) => {
-  console.log(formData);
-};
 
 const SharedForm = () => {
   const router = useRouter();
@@ -26,6 +24,7 @@ const SharedForm = () => {
 
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState<string>('KRW');
+  const [exchangeRate, setExchangeRate] = useState<Record<string, number>>({});
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -42,6 +41,10 @@ const SharedForm = () => {
         const data = await getSharedData(Number(tripId));
         setCurrency(data.defaultCurrency);
         setAvailableCurrencies(data.currencies.map((currency) => currency.code));
+        setExchangeRate(data.currencies.reduce((acc,currency) => {
+          acc[currency.code] = currency.exchangeRate;
+          return acc;
+        }, {} as Record<string, number>));
       } catch (error) {
         console.error(error);
       }
@@ -50,11 +53,19 @@ const SharedForm = () => {
   }, [tripId]);
 
   const handleSubmit = () => {
-    const formData = new FormData();
-    formData.append('amount', amount.toString());
-    formData.append('currency', currency);
-    formData.append('date', selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '');
-    onSubmit(formData);
+    const payload: UpdateSharedBudgetRequestDto = {
+      amount: Number(amount),
+      exchangeRate: Number(exchangeRate[currency]),
+      currency: currency,
+      paymentMethod: selectedCategory || '',
+      createdAt: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
+    };
+
+    if (mode === 'add') {
+      addSharedBudget(Number(tripId), payload);
+    } else {
+      removeSharedBudget(Number(tripId), payload);
+    }
   };
 
   const handleCurrencyChange = async () => {
@@ -77,6 +88,7 @@ const SharedForm = () => {
         {/* expense section */}
         <BudgetInput
           currency={currency}
+          exchangeRate={exchangeRate}
           amount={amount}
           setAmount={setAmount}
           isCurrencyOpen={isCurrencyOpen}

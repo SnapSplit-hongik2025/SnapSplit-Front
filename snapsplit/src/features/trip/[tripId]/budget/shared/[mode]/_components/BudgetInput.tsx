@@ -6,12 +6,13 @@ type BudgetInputProps = {
   currency: string;
   amount: string;
   setAmount: (amount: string) => void;
+  exchangeRate: Record<string, number>;
   isCurrencyOpen: boolean;
   setIsCurrencyOpen: (open: boolean) => void;
 };
 
 // TODO: 통화별 환율 적용 결과 표시
-const BudgetInput = ({ currency, amount, setAmount, isCurrencyOpen, setIsCurrencyOpen }: BudgetInputProps) => {
+const BudgetInput = ({ currency, amount, setAmount, exchangeRate, isCurrencyOpen, setIsCurrencyOpen }: BudgetInputProps) => {
 
   return (
     <div className="flex flex-col px-5 py-4 gap-3 rounded-xl bg-grey-150">
@@ -32,7 +33,7 @@ const BudgetInput = ({ currency, amount, setAmount, isCurrencyOpen, setIsCurrenc
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <div className="flex items-center text-body-2 text-grey-550">= 0원</div>
+        <div className="flex items-center text-body-2 text-grey-550">= {Number(amount) * exchangeRate[currency]}원</div>
       </div>
     </div>
   );
