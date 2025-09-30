@@ -25,7 +25,10 @@ const SharedBudgetDetailPage = () => {
 
   useEffect(() => {
     getSharedBudgetData(tripId)
-      .then((res) => setSharedBudgetData(res))
+      .then((res) => {
+        setSharedBudgetData(res);
+        setSelectedCurrency(res.defaultCurrency);
+      })
       .catch((e) => console.error(e));
   }, [tripId]);
 
