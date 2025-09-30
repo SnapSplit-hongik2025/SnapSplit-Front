@@ -1,46 +1,54 @@
 'use client';
 
 import Image from 'next/image';
-import { UploadedImage } from '../type';
+import { GetPhotosDto } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 import { useState } from 'react';
 import FullScreenModal from '@/shared/components/modal/FullScreenModal';
 import Modal from '@/shared/components/modal/Modal';
 import PhotoDeleteModalContent from './photo-grid/PhotoDeleteModalContent';
 
 type PhotoGridProps = {
-  images: UploadedImage[];
+  images: GetPhotosDto['photos'];
   isSelectionMode?: boolean;
   selectedImageIds?: string[];
   onToggleSelect?: (idx: string) => void;
 };
 
 export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, onToggleSelect }: PhotoGridProps) {
+  const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // 선택된 사진 정보
+  const selectedPhoto = images.find((img) => img.photoId === Number(selectedImageId));
+  const photoUrl = selectedPhoto?.photoUrl; // Url 이 없으면 로딩 이미지
+
   return (
     <div className="grid grid-cols-3 gap-2 pb-15">
       {images.map((image) => {
-        const isSelected = isSelectionMode && selectedImageIds?.includes(image.id);
+        const isSelected = isSelectionMode && selectedImageIds?.includes(image.photoId.toString());
         return (
-          <div key={image.id} className="relative aspect-square rounded-xl">
+          <div key={image.photoId} className="relative aspect-square rounded-xl overflow-hidden">
             <Image
-              src={image.src}
+              src={image.photoUrl}
               alt="uploaded"
               width={100}
               height={100}
               onClick={() => {
                 if (isSelectionMode && onToggleSelect) {
-                  onToggleSelect(image.id);
+                  onToggleSelect(image.photoId.toString());
+                  setSelectedImageId(image.photoId);
                 } else if (isSelectionMode === false || !isSelectionMode) {
                   setIsPhotoModalOpen(true);
+                  setSelectedImageId(image.photoId);
                 }
               }}
-              className="object-cover rounded-xl"
+              className="object-cover"
             />
             {isSelected && (
               <div
                 onClick={() => {
-                  onToggleSelect?.(image.id);
+                  onToggleSelect?.(image.photoId.toString());
                 }}
                 className="absolute flex items-center justify-center top-0 left-0 w-full h-full rounded-xl bg-primary/10 border border-primary"
               >
@@ -63,7 +71,17 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
               </button>
             </div>
             <div className="w-full m-auto">
-              <Image src={images[3].src} alt="uploaded" width={1000} height={1000} className="object-contain" />
+              {photoUrl ? (
+                <Image src={photoUrl} alt="uploaded" width={1000} height={1000} className="object-contain" />
+              ) : (
+                <Image
+                  src="/svg/photo-loading.svg"
+                  alt="uploaded"
+                  width={1000}
+                  height={1000}
+                  className="object-contain"
+                />
+              )}
             </div>
           </div>
         </FullScreenModal>

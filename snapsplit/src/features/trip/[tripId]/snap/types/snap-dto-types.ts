@@ -18,3 +18,15 @@ export interface UploadImageDto {
     }[];
   }[];
 }
+
+export interface GetPhotosDto {
+  photos: {
+    photoId: number;
+    photoUrl: string;
+    photoDate: string;
+    taggedUsers: {
+      userId: number;
+      name: string;
+    }[];
+  }[];
+}

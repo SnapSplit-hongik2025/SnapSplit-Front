@@ -8,17 +8,15 @@ import FilterBottomSheet from '@/features/trip/[tripId]/snap/_components/fiterBo
 import { FilterState } from '@/features/trip/[tripId]/snap/type';
 import { useEffect } from 'react';
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
-import { mockPhotos } from '@/shared/mock/Photos';
-
-// 테스트 데이터
-const testImages = mockPhotos;
+import { GetPhotosDto } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 
 type BaseTabViewProps = {
   setIsScrolled: (show: boolean) => void;
   setScrollToTop: (fn: () => void) => void;
+  photos: GetPhotosDto;
 };
 
-export default function BaseTabView({ setIsScrolled, setScrollToTop }: BaseTabViewProps) {
+export default function BaseTabView({ setIsScrolled, setScrollToTop, photos }: BaseTabViewProps) {
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState('최신순');
@@ -30,12 +28,10 @@ export default function BaseTabView({ setIsScrolled, setScrollToTop }: BaseTabVi
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const filteredImages = testImages.filter((img) => {
-    const matchDay = filters.days.length === 0 || filters.days.some((d) => img.tags.days.includes(d));
-    const matchPeople = filters.people.length === 0 || filters.people.some((p) => img.tags.people.includes(p));
-    const matchLocation =
-      filters.locations.length === 0 || filters.locations.some((l) => img.tags.locations.includes(l));
-    return matchDay && matchPeople && matchLocation;
+  const filteredImages: GetPhotosDto['photos'] = photos.photos.filter((img) => {
+    const matchDay = filters.days.length === 0 || filters.days.some((d) => img.photoDate.includes(d.toString()));
+    const matchPeople = filters.people.length === 0 || filters.people.some((p) => img.taggedUsers.some((u) => u.name.includes(p)));
+    return matchDay && matchPeople;
   });
 
   // 탑 버튼 이벤트 설정
@@ -81,7 +77,7 @@ export default function BaseTabView({ setIsScrolled, setScrollToTop }: BaseTabVi
       {/* 상단 여백: 필터 태그가 있는 경우 108px, 없는 경우 64px */}
       <div
         className={
-          filters.days.length > 0 || filters.people.length > 0 || filters.locations.length > 0 ? 'min-h-27' : 'min-h-16'
+          filters.days.length > 0 || filters.people.length > 0 ? 'min-h-27' : 'min-h-16'
         }
       />
 

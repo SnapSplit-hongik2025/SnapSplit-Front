@@ -2,7 +2,7 @@ import privateInstance from '@/lib/api/instance/privateInstance';
 import { GetTripDataDto } from '../types/snap-dto-types';
 import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
-import { UploadImageDto } from '../types/snap-dto-types';
+import { UploadImageDto, GetPhotosDto } from '../types/snap-dto-types';
 
 export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
   if (!tripId) {
@@ -45,3 +45,16 @@ export const deleteImages = async (tripId: number, photoIds: number[]) => {
     throw new Error('이미지를 삭제하는 데 실패했습니다.');
   }
 }
+
+export const getPhotos = async (tripId: number) => {
+  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/photos';
+  try {
+    const res = await privateInstance.get<ApiEnvelope<GetPhotosDto>>(finalPath);
+    console.log(`[API] Fetched photos for tripId ${tripId}:`, res.data.data);
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API Error] Failed to get photos for tripId ${tripId}:`, error);
+    throw new Error('이미지를 불러오는 데 실패했습니다.');
+  }
+}
+  

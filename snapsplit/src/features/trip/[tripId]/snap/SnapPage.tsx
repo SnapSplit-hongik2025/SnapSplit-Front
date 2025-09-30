@@ -9,7 +9,8 @@ import FolderTabView from '@/features/trip/[tripId]/snap/_components/tabView/Fol
 import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 import { GetTripDataDto } from './types/snap-dto-types';
-import { getTripData, uploadImage } from './api/snap-api';
+import { getTripData, uploadImage, getPhotos } from './api/snap-api';
+import { GetPhotosDto } from './types/snap-dto-types';
 
 type SnapPageProps = {
   tripId: string;
@@ -22,7 +23,10 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   const [scrollToTop, setScrollToTop] = useState<(() => void) | null>(null);
 
   const [data, setData] = useState<GetTripDataDto | null>(null);
-  const [error, setError] = useState<Error | null>(null);
+  const [tripError, setTripError] = useState<Error | null>(null);
+
+  const [photos, setPhotos] = useState<GetPhotosDto | null>(null);
+  const [photosError, setPhotosError] = useState<Error | null>(null);
 
   const imageSubmit = (file: File) => {
     console.log("[SnapPage.imageSubmit]: file ->", file);
@@ -34,10 +38,14 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   useEffect(() => {
     getTripData(Number(tripId))
       .then((res) => setData(res))
-      .catch((e) => setError(e));
+      .catch((e) => setTripError(e));
+    
+    getPhotos(Number(tripId))
+      .then((res) => setPhotos(res))
+      .catch((e) => setPhotosError(e));
   }, [tripId]);
 
-  if (error) return null;
+  if (tripError || photosError) return null;
   if (!data) return null;
 
   return (
@@ -62,7 +70,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
       {/* 컨텐츠 영역 */}
       {activeTab === '전체' ? (
-        <BaseTabView setIsScrolled={setIsScrolled} setScrollToTop={setScrollToTop} />
+        <BaseTabView setIsScrolled={setIsScrolled} setScrollToTop={setScrollToTop} photos={photos!} />
       ) : (
         <FolderTabView />
       )}
