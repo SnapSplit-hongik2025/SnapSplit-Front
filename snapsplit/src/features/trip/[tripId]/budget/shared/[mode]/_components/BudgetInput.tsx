@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import arrow_bottom from '@public/svg/arrow_bottom.svg';
+import { getNation } from '@/shared/utils/currency';
 
 type BudgetInputProps = {
   currency: string;
@@ -11,10 +12,6 @@ type BudgetInputProps = {
 
 // TODO: 통화별 환율 적용 결과 표시
 const BudgetInput = ({ currency, amount, setAmount, isCurrencyOpen, setIsCurrencyOpen }: BudgetInputProps) => {
-  const parseCurrencyLabel = (fullLabel: string): string => {
-    const parts = fullLabel.split(' - ');
-    return parts[1] ?? fullLabel; // fallback: 전체 반환
-  };
 
   return (
     <div className="flex flex-col px-5 py-4 gap-3 rounded-xl bg-grey-150">
@@ -23,7 +20,7 @@ const BudgetInput = ({ currency, amount, setAmount, isCurrencyOpen, setIsCurrenc
           onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
           className="inline-flex items-center bg-white rounded-xl pl-3 pr-1"
         >
-          <div className="inline-flex text-body-2">{parseCurrencyLabel(currency)}</div>
+          <div className="inline-flex text-body-2">{currency}({getNation(currency)})</div>
           <Image alt="arrow" src={arrow_bottom} />
         </button>
       </div>

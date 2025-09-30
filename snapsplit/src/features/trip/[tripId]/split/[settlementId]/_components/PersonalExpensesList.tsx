@@ -31,7 +31,7 @@ const PersonalExpensesItem = ({ expense, settlementId, tripId }: PersonalExpense
         <p>{expense.amount?.toLocaleString()}원</p>
         <Link
           href={{
-            pathname: `trip/${tripId}/split/${settlementId}/${expense.memberId}`,
+            pathname: `/trip/${tripId}/split/${settlementId}/${expense.memberId}`,
             query: { name: expense.name, tripId: tripId },
           }}
           className="cursor-pointer"
