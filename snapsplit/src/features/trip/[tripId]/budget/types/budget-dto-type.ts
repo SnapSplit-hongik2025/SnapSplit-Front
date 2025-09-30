@@ -49,22 +49,7 @@ export interface GetSharedBudgetDto {
   tripId: number;
   tripStartDate: string;
   defaultCurrency: string;
-  sharedBudgetDetails: SharedBudgetDetail[];
-  totalSharedBudget: TotalSharedBudget[];
-}
-
-// 환율 정보
-export interface GetExchangeRateDto {
-  base: string;
-  rateToKRW: number;
-  date: string;
-}
-
-// 공동 경비 세부 내역 조회
-export interface GetSharedBudgetDto {
-  tripId: number;
-  tripStartDate: string;
-  defaultCurrency: string;
+  availCurrencies: string[];
   sharedBudgetDetails: SharedBudgetDetail[];
   totalSharedBudget: TotalSharedBudget[];
 }

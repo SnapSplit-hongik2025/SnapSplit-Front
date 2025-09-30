@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { getSharedBudgetData } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { getKorName } from '@/shared/utils/currency';
 import { GetSharedBudgetDto } from '@/features/trip/[tripId]/budget/types/budget-dto-type';
+import { updateDefaultCurrency } from '@/features/trip/[tripId]/budget/api/budget-api';
 
 const SharedBudgetDetailPage = () => {
   const router = useRouter();
@@ -27,6 +28,17 @@ const SharedBudgetDetailPage = () => {
       .then((res) => setSharedBudgetData(res))
       .catch((e) => console.error(e));
   }, [tripId]);
+
+  const handleCurrencyChange = async (currency: string) => {
+    try{
+      const newCur = await updateDefaultCurrency(tripId, currency);
+      setSelectedCurrency(newCur.after);
+    }catch(e){
+      console.log(e);
+      alert('통화 변경에 실패했습니다.');
+      setSelectedCurrency(sharedBudgetData?.defaultCurrency || '');
+    }
+  };
 
   if (!sharedBudgetData) return null;
 
@@ -46,7 +58,7 @@ const SharedBudgetDetailPage = () => {
           <div className="flex items-center justify-between p-4 bg-pale_green rounded-xl">
             <div className="flex items-center gap-1.5">
               <div className="px-2 py-0.5 bg-primary rounded-full text-body-1 text-white">대표통화</div>
-              <div className="text-body-2">{selectedCurrency || sharedBudgetData.defaultCurrency}({getKorName(selectedCurrency || sharedBudgetData.defaultCurrency)})</div>
+              <div className="text-body-2">{selectedCurrency}({getKorName(selectedCurrency)})</div>
             </div>
             <button onClick={() => setIsOpen(!isOpen)} className="text-body-2 text-grey-450">
               변경
@@ -55,16 +67,16 @@ const SharedBudgetDetailPage = () => {
         </div>
       </div>
 
-      <LogSection defaultCurrency={selectedCurrency || sharedBudgetData.defaultCurrency} sharedBudgetLog={sharedBudgetData.sharedBudgetDetails} beforeTripData={beforeTripData || []}/>
+      <LogSection defaultCurrency={selectedCurrency} sharedBudgetLog={sharedBudgetData.sharedBudgetDetails} beforeTripData={beforeTripData || []}/>
 
       <BudgetOverview totalSharedBudget={sharedBudgetData.totalSharedBudget} />
 
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <CurrencyBottomSheet
           onClose={() => setIsOpen(false)}
-          selectedCurrency={selectedCurrency || sharedBudgetData.defaultCurrency}
-          setCurrency={(currency) => setSelectedCurrency(currency)}
-          availableCurrencies={sharedBudgetData.totalSharedBudget.map((budget) => budget.currency)}
+          selectedCurrency={selectedCurrency}
+          handleCurrencyChange={handleCurrencyChange}
+          availableCurrencies={sharedBudgetData.availCurrencies}
         />
       </BottomSheet>
     </div>

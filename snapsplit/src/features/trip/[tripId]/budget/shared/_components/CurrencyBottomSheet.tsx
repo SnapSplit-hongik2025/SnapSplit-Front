@@ -6,18 +6,18 @@ import { getKorName, getNation } from '@/shared/utils/currency';
 type CurrencyBottomSheetProps = {
   onClose?: () => void;
   selectedCurrency: string;
-  setCurrency: (currency: string) => void;
+  handleCurrencyChange: (currency: string) => void;
   availableCurrencies: string[];
 };
 
-const CurrencyBottomSheet = ({ onClose, selectedCurrency, setCurrency, availableCurrencies }: CurrencyBottomSheetProps) => {
+const CurrencyBottomSheet = ({ onClose, selectedCurrency, handleCurrencyChange, availableCurrencies }: CurrencyBottomSheetProps) => {
   return (
     <div className="flex flex-col w-full">
       {availableCurrencies.map((currency) => (
         <button
           key={currency}
           onClick={() => {
-            setCurrency(currency);
+            handleCurrencyChange(currency);
             onClose?.();
           }}
           className="flex items-center py-3"
