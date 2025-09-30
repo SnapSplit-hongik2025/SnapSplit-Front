@@ -1,5 +1,5 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
-import { GetTripDataDto } from '../types/snap-dto-types';
+import { GetReadinessDto, GetTripDataDto } from '../types/snap-dto-types';
 import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
 import { UploadImageDto, GetPhotosDto } from '../types/snap-dto-types';
@@ -43,6 +43,18 @@ export const deleteImages = async (tripId: number, photoIds: number[]) => {
   } catch (error) {
     console.error(`[API Error] Failed to delete images for tripId ${tripId}:`, error);
     throw new Error('이미지를 삭제하는 데 실패했습니다.');
+  }
+}
+
+export const getReadiness = async (tripId: number) => {
+  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/readiness';
+  try {
+    const res = await privateInstance.get<ApiEnvelope<GetReadinessDto>>(finalPath);
+    console.log(`[API] Fetched readiness for tripId ${tripId}:`, res.data.data);
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API Error] Failed to get readiness for tripId ${tripId}:`, error);
+    throw new Error('여행 멤버들의 준비 상태를 불러오는 데 실패했습니다.');
   }
 }
 

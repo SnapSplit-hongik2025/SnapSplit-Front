@@ -9,7 +9,7 @@ import FolderTabView from '@/features/trip/[tripId]/snap/_components/tabView/Fol
 import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 import { GetTripDataDto } from './types/snap-dto-types';
-import { getTripData, uploadImage, getPhotos } from './api/snap-api';
+import { getTripData, uploadImage, getPhotos, getReadiness } from './api/snap-api';
 import { GetPhotosDto } from './types/snap-dto-types';
 
 type SnapPageProps = {
@@ -39,10 +39,18 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     getTripData(Number(tripId))
       .then((res) => setData(res))
       .catch((e) => setTripError(e));
-    
-    getPhotos(Number(tripId))
-      .then((res) => setPhotos(res))
-      .catch((e) => setPhotosError(e));
+
+    const fetchPhotos = async () => {
+      const readiness = await getReadiness(Number(tripId));
+      if (!readiness.allMembersRegistered) {
+        alert('모든 멤버가 얼굴 정보를 등록해야 합니다.');
+        // throw new Error('모든 멤버가 얼굴 정보를 등록해야 합니다.');
+      }
+      await getPhotos(Number(tripId))
+        .then((res) => setPhotos(res))
+        .catch((e) => setPhotosError(e));
+    };
+    fetchPhotos().catch((e) => setPhotosError(e));
   }, [tripId]);
 
   if (tripError || photosError) return null;

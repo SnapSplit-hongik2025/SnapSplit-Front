@@ -30,3 +30,14 @@ export interface GetPhotosDto {
     }[];
   }[];
 }
+
+export interface GetReadinessDto {
+  allMembersRegistered: boolean;
+  members: {
+    userId: number;
+    name: string;
+    profileImageUrl: string;
+    hasFaceData: boolean;
+    currentUser: boolean;
+  }[];
+}

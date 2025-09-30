@@ -13,7 +13,7 @@ import { GetPhotosDto } from '@/features/trip/[tripId]/snap/types/snap-dto-types
 type BaseTabViewProps = {
   setIsScrolled: (show: boolean) => void;
   setScrollToTop: (fn: () => void) => void;
-  photos: GetPhotosDto;
+  photos: GetPhotosDto | null;
 };
 
 export default function BaseTabView({ setIsScrolled, setScrollToTop, photos }: BaseTabViewProps) {
@@ -28,11 +28,11 @@ export default function BaseTabView({ setIsScrolled, setScrollToTop, photos }: B
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const filteredImages: GetPhotosDto['photos'] = photos.photos.filter((img) => {
+  const filteredImages: GetPhotosDto['photos'] = photos?.photos.filter((img) => {
     const matchDay = filters.days.length === 0 || filters.days.some((d) => img.photoDate.includes(d.toString()));
     const matchPeople = filters.people.length === 0 || filters.people.some((p) => img.taggedUsers.some((u) => u.name.includes(p)));
     return matchDay && matchPeople;
-  });
+  }) || [];
 
   // 탑 버튼 이벤트 설정
   useEffect(() => {
@@ -57,6 +57,8 @@ export default function BaseTabView({ setIsScrolled, setScrollToTop, photos }: B
       el.removeEventListener('scroll', handleScroll);
     };
   }, [scrollRef, setIsScrolled]);
+
+  if (!photos) return null;
 
   return (
     <div
