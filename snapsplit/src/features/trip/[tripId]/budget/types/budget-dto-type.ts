@@ -50,3 +50,8 @@ export interface SharedBudgetDto {
     exchangeRate: number;
   } [];
 }
+
+export interface UpdateDefaultCurrencyDto {
+  before: string;
+  after: string;
+}

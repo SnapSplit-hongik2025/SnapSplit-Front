@@ -11,7 +11,7 @@ import CategorySection from './CategorySection';
 import { format } from 'date-fns';
 import StatusMessage from './StatusMessage';
 import { useParams } from 'next/navigation';
-import { getSharedData } from '@/features/trip/[tripId]/budget/api/budget-api';
+import { getSharedData, updateDefaultCurrency } from '@/features/trip/[tripId]/budget/api/budget-api';
 
 const result = '$9805596000000';
 const onSubmit = (formData: FormData) => {
@@ -57,6 +57,11 @@ const SharedForm = () => {
     onSubmit(formData);
   };
 
+  const handleCurrencyChange = async () => {
+    const newCur = await updateDefaultCurrency(Number(tripId), currency);
+    setCurrency(newCur.after);
+  };
+
   // TODO: BottomNavBar fixed 제거 시 pb-15 제거
   return (
     <div className="w-full h-full pb-15 flex flex-col items-center bg-white">
@@ -80,7 +85,7 @@ const SharedForm = () => {
         {isCurrencyOpen && (
           <CurrencyList
             onClose={() => setIsCurrencyOpen(false)}
-            setCurrency={setCurrency}
+            handleCurrencyChange={handleCurrencyChange}
             selectedCurrency={currency}
             availableCurrencies={availableCurrencies}
           />

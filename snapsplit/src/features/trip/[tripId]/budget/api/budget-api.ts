@@ -1,5 +1,5 @@
 import privateInstance from "@/lib/api/instance/privateInstance";
-import { GetTripBudgetDto, SharedBudgetDto } from "../types/budget-dto-type";
+import { GetTripBudgetDto, SharedBudgetDto, UpdateDefaultCurrencyDto } from "../types/budget-dto-type";
 import { ApiEnvelope } from "@/lib/api/type";
 import { apiPath } from "@/shared/constants/apipath";
 
@@ -34,3 +34,19 @@ export const getSharedData = async (tripId: number): Promise<SharedBudgetDto> =>
     throw new Error('여행 예산 정보를 불러오는 데 실패했습니다.');
   }
 };
+
+export const updateDefaultCurrency = async (tripId: number, currency: string): Promise<UpdateDefaultCurrencyDto> => {
+  if (!tripId) {
+    throw new Error('유효하지 않은 여행 ID입니다.');
+  }
+
+  try {
+    const finalPath = `/trips/${Number(tripId)}/budget?newDefaultCur=${currency}`;
+    const res = await privateInstance.patch<ApiEnvelope<UpdateDefaultCurrencyDto>>(finalPath);
+    console.log(`[API] Fetched trip budget for tripId ${tripId}:`, res.data.data);
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API Error] Failed to get trip budget for tripId ${tripId}:`, error);
+    throw new Error('여행 기본 통화 정보를 변경하는 데 실패했습니다.');
+  }
+}
