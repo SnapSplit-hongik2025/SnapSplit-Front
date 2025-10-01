@@ -5,7 +5,7 @@ import Image from "next/image";
 import close from "@public/svg/close-grey-550.svg";
 type PhotoDeleteModalContentProps = {
   onClose: () => void;
-  onClickDelete: () => void;
+  onClickDelete: () => Promise<void>;
 };
 
 function PhotoDeleteModalContent({ onClose, onClickDelete }: PhotoDeleteModalContentProps) {

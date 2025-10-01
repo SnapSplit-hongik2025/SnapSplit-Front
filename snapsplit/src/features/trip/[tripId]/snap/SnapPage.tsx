@@ -8,8 +8,8 @@ import BaseTabView from '@/features/trip/[tripId]/snap/_components/tabView/BaseT
 import FolderTabView from '@/features/trip/[tripId]/snap/_components/tabView/FolderTabView';
 import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
-import { uploadImage, getPhotos, getReadiness } from './api/snap-api';
-import { GetPhotosDto } from './types/snap-dto-types';
+import { uploadImage, getPhotos, getReadiness } from '@/features/trip/[tripId]/snap/api/snap-api';
+import { GetPhotosDto } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 import { getTripBudgetData } from '../budget/api/budget-api';
 import { GetTripBudgetDto } from '../budget/types/budget-dto-type';
 
@@ -33,6 +33,18 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     uploadImage(Number(tripId), file)
       .then((res) => console.log(res))
       .catch((e) => console.log(e));
+    fetchPhotos().catch((e) => setPhotosError(e));
+  };
+
+  const fetchPhotos = async () => {
+    const readiness = await getReadiness(Number(tripId));
+    if (!readiness.allMembersRegistered) {
+      alert('모든 멤버가 얼굴 정보를 등록해야 합니다.');
+      // throw new Error('모든 멤버가 얼굴 정보를 등록해야 합니다.');
+    }
+    await getPhotos(Number(tripId))
+      .then((res) => setPhotos(res))
+      .catch((e) => setPhotosError(e));
   };
 
   useEffect(() => {
@@ -42,17 +54,6 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         .catch((e) => setTripError(e));
     };
     fetchData().catch((e) => setTripError(e));
-
-    const fetchPhotos = async () => {
-      const readiness = await getReadiness(Number(tripId));
-      if (!readiness.allMembersRegistered) {
-        alert('모든 멤버가 얼굴 정보를 등록해야 합니다.');
-        // throw new Error('모든 멤버가 얼굴 정보를 등록해야 합니다.');
-      }
-      await getPhotos(Number(tripId))
-        .then((res) => setPhotos(res))
-        .catch((e) => setPhotosError(e));
-    };
     fetchPhotos().catch((e) => setPhotosError(e));
   }, [tripId]);
 

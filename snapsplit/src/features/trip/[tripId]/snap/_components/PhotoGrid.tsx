@@ -6,6 +6,9 @@ import { useState } from 'react';
 import FullScreenModal from '@/shared/components/modal/FullScreenModal';
 import Modal from '@/shared/components/modal/Modal';
 import PhotoDeleteModalContent from './photo-grid/PhotoDeleteModalContent';
+import { deleteImages } from '@/features/trip/[tripId]/snap/api/snap-api';
+import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 type PhotoGridProps = {
   images: GetPhotosDto['photos'];
@@ -15,6 +18,8 @@ type PhotoGridProps = {
 };
 
 export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, onToggleSelect }: PhotoGridProps) {
+  const tripId = useParams<{ tripId: string }>();
+  const router = useRouter();
   const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -22,6 +27,18 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
   // 선택된 사진 정보
   const selectedPhoto = images.find((img) => img.photoId === Number(selectedImageId));
   const photoUrl = selectedPhoto?.photoUrl; // Url 이 없으면 로딩 이미지
+
+  const handleDeleteImage = async () => {
+    if (!selectedImageId || !tripId.tripId) {
+      alert('유효하지 않은 이미지 ID입니다.');
+      return;
+    }
+    await deleteImages(Number(tripId.tripId), [selectedImageId]);
+    setIsDeleteModalOpen(false);
+    setIsPhotoModalOpen(false);
+    router.refresh(); // ✅ 이걸로 강제 refetch
+  };
+  
 
   return (
     <div className="grid grid-cols-3 gap-2 pb-15">
@@ -90,7 +107,7 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
         <Modal layer="toast">
           <PhotoDeleteModalContent
             onClose={() => setIsDeleteModalOpen(false)}
-            onClickDelete={() => setIsDeleteModalOpen(false)}
+            onClickDelete={handleDeleteImage}
           />
         </Modal>
       )}
