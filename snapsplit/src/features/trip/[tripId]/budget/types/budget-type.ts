@@ -52,7 +52,7 @@ export type ExpenseDateBarProps = {
 export interface SharedBudgetItem {
   type: 'deposit' | 'expense';
   title: string;
-  memo: string;
+  memo: string | null;
   amount: number;
   amountKRW: number;
 }

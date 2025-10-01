@@ -4,9 +4,16 @@
  */
 export function parseYMD(ymd: string): Date {
   const [y, m, d] = ymd.split('-').map(Number);
-  if (!y || !m || !d) throw new Error(`Invalid ymd string: ${ymd}`);
+  if (!y || !m || !d || m < 1 || m > 12 || d < 1 || d > 31) {
+    throw new Error(`Invalid ymd string: ${ymd}`);
+  }
   // 로컬 타임존의 자정으로 생성
-  return new Date(y, m - 1, d, 0, 0, 0, 0);
+  const date = new Date(y, m - 1, d, 0, 0, 0, 0);
+  // Date 정규화 확인 (예: 2월 30일 -> 3월 2일 방지)
+  if (date.getMonth() !== m - 1 || date.getDate() !== d) {
+    throw new Error(`Invalid ymd string: ${ymd}`);
+  }
+  return date;
 }
 
 /**
@@ -40,7 +47,7 @@ export function toDayX(
 }
 
 /**
- * M.DD(W) 형식으로 변환 (예: 9.03(화))
+ * M.DD(W) 형식으로 변환 (예: 9.03/화)
  * - M: 1~12 (0 패딩 없음)
  * - DD: 01~31 (0 패딩)
  * - W: 요일 한 글자 (월화수목금토일)
