@@ -97,7 +97,8 @@ const SharedForm = () => {
       router.back();
     } catch (error) {
       console.error(error);
-      setError('공동 경비 정보를 저장하는데 실패했습니다.');
+      alert('공동 경비 정보를 저장하는데 실패했습니다.');
+      router.refresh();
     } finally {
       setIsSubmitting(false);
     }
