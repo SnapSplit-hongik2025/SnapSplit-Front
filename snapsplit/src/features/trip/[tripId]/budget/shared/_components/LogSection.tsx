@@ -46,7 +46,7 @@ const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSec
       </div>
 
       {/* Day별 내역 */}
-      {sharedBudgetLog.length > 1 && sharedBudgetLog.map(({ date, items }, index) => (
+      {sharedBudgetLog.length > 0 && sharedBudgetLog.map(({ date, items }, index) => (
         <div key={index} className="w-full">
           <div className="flex items-center gap-2">
             <div className="text-body-1 text-grey-1000">{toDayX(date, sharedBudgetLog[0].date)}</div>

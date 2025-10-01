@@ -33,7 +33,8 @@ const BudgetInput = ({ currency, amount, setAmount, exchangeRate, isCurrencyOpen
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <div className="flex items-center text-body-2 text-grey-550">= {Number(amount) * exchangeRate[currency]}원</div>
+        <div className="flex items-center text-body-2 text-grey-550">= {
+        amount && exchangeRate[currency] ? Number(amount) * exchangeRate[currency] : '0'}원</div>
       </div>
     </div>
   );
