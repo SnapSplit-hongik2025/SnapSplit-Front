@@ -6,7 +6,7 @@ type LogItemProps = {
   memo: string | null;
   amount: number;
   currency: string;
-  krwEquivalent: string;
+  krwEquivalent: number;
 };
 
 const LogItem = ({ type, label, memo, amount, currency, krwEquivalent }: LogItemProps) => {

@@ -39,14 +39,14 @@ const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSec
               memo={entry.memo}
               amount={entry.amount}
               currency={defaultCurrency}
-              krwEquivalent={entry.amount.toString()}
+              krwEquivalent={entry.amountKRW}
             />
           ))
         ))}
       </div>
 
       {/* Day별 내역 */}
-      {sharedBudgetLog.map(({ date, items }, index) => (
+      {sharedBudgetLog.length > 1 && sharedBudgetLog.map(({ date, items }, index) => (
         <div key={index} className="w-full">
           <div className="flex items-center gap-2">
             <div className="text-body-1 text-grey-1000">{toDayX(date, sharedBudgetLog[0].date)}</div>
@@ -62,7 +62,7 @@ const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSec
               memo={item.memo}
               amount={item.amount}
               currency={defaultCurrency}
-              krwEquivalent={item.amount.toString()}
+              krwEquivalent={item.amountKRW}
             />
           ))}
         </div>
