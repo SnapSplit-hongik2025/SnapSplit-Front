@@ -41,8 +41,10 @@ export const updateDefaultCurrency = async (tripId: number, currency: string): P
   }
 
   try {
-    const finalPath = `/trips/${Number(tripId)}/budget?newDefaultCur=${currency}`;
-    const res = await privateInstance.patch<ApiEnvelope<UpdateDefaultCurrencyDto>>(finalPath);
+    const finalPath = apiPath.budget.replace('{tripId}', String(tripId));
+    const res = await privateInstance.patch<ApiEnvelope<UpdateDefaultCurrencyDto>>(finalPath, null, {
+      params: { newDefaultCur: currency }
+    });
     console.log(`[API] Fetched trip budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
   } catch (error) {
