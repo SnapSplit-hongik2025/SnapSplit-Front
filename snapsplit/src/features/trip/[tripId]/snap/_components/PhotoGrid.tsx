@@ -32,8 +32,7 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
             <Image
               src={image.photoUrl}
               alt="uploaded"
-              width={100}
-              height={100}
+              fill
               onClick={() => {
                 if (isSelectionMode && onToggleSelect) {
                   onToggleSelect(image.photoId.toString());

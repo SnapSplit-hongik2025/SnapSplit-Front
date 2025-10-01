@@ -8,9 +8,10 @@ import BaseTabView from '@/features/trip/[tripId]/snap/_components/tabView/BaseT
 import FolderTabView from '@/features/trip/[tripId]/snap/_components/tabView/FolderTabView';
 import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
-import { GetTripDataDto } from './types/snap-dto-types';
-import { getTripData, uploadImage, getPhotos, getReadiness } from './api/snap-api';
+import { uploadImage, getPhotos, getReadiness } from './api/snap-api';
 import { GetPhotosDto } from './types/snap-dto-types';
+import { getTripBudgetData } from '../budget/api/budget-api';
+import { GetTripBudgetDto } from '../budget/types/budget-dto-type';
 
 type SnapPageProps = {
   tripId: string;
@@ -22,23 +23,25 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollToTop, setScrollToTop] = useState<(() => void) | null>(null);
 
-  const [data, setData] = useState<GetTripDataDto | null>(null);
+  const [data, setData] = useState<GetTripBudgetDto | null>(null);
   const [tripError, setTripError] = useState<Error | null>(null);
 
   const [photos, setPhotos] = useState<GetPhotosDto | null>(null);
   const [photosError, setPhotosError] = useState<Error | null>(null);
 
   const imageSubmit = (file: File) => {
-    console.log("[SnapPage.imageSubmit]: file ->", file);
     uploadImage(Number(tripId), file)
       .then((res) => console.log(res))
       .catch((e) => console.log(e));
   };
 
   useEffect(() => {
-    getTripData(Number(tripId))
-      .then((res) => setData(res))
-      .catch((e) => setTripError(e));
+    const fetchData = async () => {
+      await getTripBudgetData(Number(tripId))
+        .then((res) => setData(res))
+        .catch((e) => setTripError(e));
+    };
+    fetchData().catch((e) => setTripError(e));
 
     const fetchPhotos = async () => {
       const readiness = await getReadiness(Number(tripId));
@@ -69,8 +72,8 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           <TripInfo
             tripName={data.tripName}
             countries={data.countries}
-            startDate={data.startDate}
-            endDate={data.endDate}
+            startDate={data.startDate ?? ''}
+            endDate={data.endDate ?? ''}
           />
         )}
       </div>
@@ -92,7 +95,6 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         style={{ display: 'none' }}
         onChange={(e) => {
           const file = e.target.files?.[0];
-          console.log(file);
           if (file) imageSubmit(file);
         }}
       />
