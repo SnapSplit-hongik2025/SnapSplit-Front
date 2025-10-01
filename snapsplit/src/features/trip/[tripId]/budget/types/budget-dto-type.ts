@@ -1,4 +1,5 @@
 import { BackendCategory } from '@/shared/utils/useCategoryMapper';
+import { SharedBudgetDetail, TotalSharedBudget } from './budget-type';
 
 // 여행홈 조회 API 응답 타입
 export interface GetTripBudgetDto {
@@ -41,4 +42,42 @@ export interface ExpenseDto {
   amount: number;
   currency: string;
   splitters: string[];
+}
+
+// 공동 경비 세부 내역 조회
+export interface GetSharedBudgetDto {
+  tripId: number;
+  tripStartDate: string;
+  defaultCurrency: string;
+  availCurrencies: string[];
+  sharedBudgetDetails: SharedBudgetDetail[];
+  totalSharedBudget: TotalSharedBudget[];
+}
+
+// 환율 정보
+export interface GetExchangeRateDto {
+  base: string;
+  rateToKRW: number;
+  date: string;
+}
+
+export interface SharedBudgetDto {
+  defaultCurrency: string;
+  currencies: {
+    code: string;
+    exchangeRate: number;
+  } [];
+}
+
+export interface UpdateDefaultCurrencyDto {
+  before: string;
+  after: string;
+}
+
+export interface UpdateSharedBudgetRequestDto {
+  amount: number;
+  exchangeRate: number;
+  currency: string;
+  paymentMethod: string;
+  createdAt: string;
 }

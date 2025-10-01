@@ -46,3 +46,25 @@ export type DailyExpenseListProps = {
 export type ExpenseDateBarProps = {
   label: string;
 };
+
+// GetSharedBudgetDto 서브 타입
+// 개별 아이템
+export interface SharedBudgetItem {
+  type: 'deposit' | 'expense';
+  title: string;
+  memo: string | null;
+  amount: number;
+  amountKRW: number;
+}
+
+// 날짜별 공유 예산 상세
+export interface SharedBudgetDetail {
+  date: string; // ISO date string
+  items: SharedBudgetItem[];
+}
+
+// 통화별 총액
+export interface TotalSharedBudget {
+  currency: string; // e.g., "KRW", "EUR", "GBP"
+  amount: number;
+}

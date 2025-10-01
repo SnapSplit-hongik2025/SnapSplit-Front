@@ -5,7 +5,8 @@ export const enum apiPath {
   countries = '/countries',
   split = '/trips/{tripId}/settlements',
   users = '/users/code/{userCode}',
-  budget = '/trips/{tripId}/expenses',
+  budget = '/trips/{tripId}/budget',
+  expense = '/trips/{tripId}/expenses',
   tripCode = '/trips/{tripId}/tripcode',
   trips = '/trips/{tripId}',
   snap = '/trips/{tripId}/snap',
@@ -13,4 +14,5 @@ export const enum apiPath {
   settlementMember = '/trips/{tripId}/settlements/{settlementId}/expenses?memberId={memberId}',
   myPage = '/home/myPage',
   logOut = '/auth/kakao/logout',
+  exchange = '/api/exchangeRate'
 }
