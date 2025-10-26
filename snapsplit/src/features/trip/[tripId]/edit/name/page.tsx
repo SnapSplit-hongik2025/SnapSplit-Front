@@ -4,7 +4,7 @@ import InputTripNameSection from '@/shared/components/steps/Step4_InputTripName'
 import { EditNamePageProps, GetCountryInfoDto } from './type';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getTripInfo } from '../api/edit-trip-api';
+import { editTripInfo, getTripInfo } from '../api/edit-trip-api';
 import { useRouter } from 'next/navigation';
 
 const EditNamePage = ({ tripId }: EditNamePageProps) => {
@@ -13,7 +13,6 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
   const [tripName, setTripName] = useState<string>('');
   const [tripImageUrl, setTripImageUrl] = useState<string | null>(null);
   const [tripImageFile, setTripImageFile] = useState<File | null>(null);
-  console.log(tripImageFile);
 
   const { data, isLoading, isError, error } = useQuery<GetCountryInfoDto, Error>({
     queryKey: ['tripInfo', tripId],
@@ -21,11 +20,13 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
     enabled: !!tripId,
   });
 
+  const beforeTripName = data?.tripName;
+
   useEffect(() => {
     if (data) {
       setTripName(data.tripName);
       setTripImageUrl(data.tripImage);
-      setTripImageFile(null); // 파일은 다시 선택해야 하므로 null로 초기화
+      setTripImageFile(null);
     }
   }, [data]);
 
@@ -44,9 +45,12 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
     }
 
     if (tripName) {
+      if (tripName == beforeTripName) {
+        await editTripInfo(tripId, null, tripImageFile);
+      } else if (tripName != beforeTripName) {
+        await editTripInfo(tripId, tripName, tripImageFile);
+      }
       router.push(`/trip/${tripId}/budget`);
-    } else {
-      alert('시작일과 종료일을 모두 선택해주세요.');
     }
   };
 

@@ -83,4 +83,34 @@ export const getTripInfo = async (tripId: string): Promise<GetCountryInfoDto> =>
 };
 
 // 여행 이름, 이미지 수정 API
-// export const 
+export const editTripInfo = async (tripId: string, tripName: string | null, tripImage: File | null) => {
+    const formData = new FormData();
+    
+    // 여행명 처리
+    if (tripName) {
+        const jsonRequest = JSON.stringify(tripName);
+        const jsonBlob = new Blob([jsonRequest], { type: 'application/json' });
+        formData.append('tripName', jsonBlob);
+    }
+
+    // 이미지 처리
+    if (tripImage) {
+        formData.append('tripImage', tripImage);
+    } else {
+        formData.append('tripImage', new Blob(), '');
+    }
+  
+    try {
+        const finalPath = apiPath.tripInfo.replace('{tripId}', encodeURIComponent(tripId));
+        const res = await privateInstance.patch<ApiEnvelope<null>>(finalPath, formData,{
+                headers: {
+                'Content-Type': 'multipart/form-data',
+                },
+            }
+        )
+        return res.data;
+    } catch (error) {
+        console.error(`[API Error] 여행 일정 수정 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행 일정 수정에 실패했습니다.');
+    }
+}
