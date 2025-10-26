@@ -62,7 +62,7 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
       </div>
       {mode === 'expense' ? <ReceiptRegisterButton /> : null}
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} setCurrency={setCurrency} />
+        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} handleCurrencyChange={setCurrency} availableCurrencies={Object.keys(exchangeRates)} />
       </BottomSheet>
     </div>
   );
