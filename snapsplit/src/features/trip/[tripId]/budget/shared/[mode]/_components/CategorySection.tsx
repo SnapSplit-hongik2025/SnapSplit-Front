@@ -20,14 +20,14 @@ export default function CategorySection({ selectedCategory, onSelectCategory }: 
       <div className="">경비 형태</div>
       <div className="flex items-center gap-3">
         <button
-          onClick={() => toggleCategory('cash')}
-          className={`rounded-xl w-full h-12 px-5 ${selectedCategory === 'cash' ? 'bg-primary text-white' : 'bg-white text-black border border-grey-350'}`}
+          onClick={() => toggleCategory('CASH')}
+          className={`rounded-xl w-full h-12 px-5 ${selectedCategory === 'CASH' ? 'bg-primary text-white' : 'bg-white text-black border border-grey-350'}`}
         >
           현금
         </button>
         <button
-          onClick={() => toggleCategory('card')}
-          className={`rounded-xl w-full h-12 px-5 ${selectedCategory === 'card' ? 'bg-primary text-white' : 'bg-white text-black border border-grey-350'}`}
+          onClick={() => toggleCategory('CARD')}
+          className={`rounded-xl w-full h-12 px-5 ${selectedCategory === 'CARD' ? 'bg-primary text-white' : 'bg-white text-black border border-grey-350'}`}
         >
           카드
         </button>

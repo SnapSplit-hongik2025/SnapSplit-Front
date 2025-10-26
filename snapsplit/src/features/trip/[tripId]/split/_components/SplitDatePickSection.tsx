@@ -78,7 +78,6 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
       // day 정보 같이 전달해주는 것 고려하기
       router.push(`/trip/${tripId}/split/${settlementId}`);
     } catch (e) {
-      alert('정산 요청에 실패했습니다. 잠시 후 다시 시도해주세요.');
       console.error(e);
     }
   };

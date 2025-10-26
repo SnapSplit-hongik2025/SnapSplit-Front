@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import close from '@public/svg/close-grey.svg';
 import { useState } from 'react';
+import { joinTripByCode } from '../../api/home-api';
 
 type JoinTripByCodeModalProps = {
   onClose: () => void;
@@ -33,6 +34,13 @@ export default function JoinTripByCodeModal({ onClose }: JoinTripByCodeModalProp
         className={`w-full rounded-xl py-[14px] text-label-1  text-white ${
           isValid ? 'bg-primary cursor-pointer' : 'bg-light_green_deep cursor-not-allowed'
         }`}
+        onClick={async () => {
+          try {
+            await joinTripByCode(code);
+          } catch (error) {
+            console.error('여행 참여 실패:', error);
+          }
+        }}
       >
         참여하기
       </button>

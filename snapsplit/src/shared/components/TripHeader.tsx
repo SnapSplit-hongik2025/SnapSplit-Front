@@ -128,7 +128,7 @@ const TripHeader = ({ tripId }: TripHeaderProps) => {
 
         <div className="flex flex-row space-x-3 items-center justify-center">
           <button
-            className="flex flex-row rounded-[20px] border-1 p-[2px] pr-2 cursor-pointer text-sm items-center justify-center"
+            className="flex flex-row rounded-[20px] border-[1.5px] p-[2px] pr-2 cursor-pointer text-sm items-center justify-center"
             onClick={() => setIsAddMemberModalOpen(true)}
           >
             <Image src={plus3Black} alt="동행추가" />
