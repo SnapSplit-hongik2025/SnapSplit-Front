@@ -1,24 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import SelectDateSection from '@/shared/components/steps/Step2_SelectDate';
-import mock from '@public/mocks/edit-date-mock.json';
-import { EditDatePageProps } from './type';
+import { EditDatePageProps, GetTripDateDto } from './type';
 import { parseISO } from 'date-fns'; // 원하면 parseISO 사용 가능
+import { useQuery } from '@tanstack/react-query';
+import { getTripDates } from '../api/edit-trip-api';
 
 export default function EditDatePage({ tripId }: EditDatePageProps) {
-  console.log('tripId : ' + tripId);
+  // Date 상태 관리
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
   const router = useRouter();
 
-  // ISO 문자열 → Date 객체로 변환
-  const initialStart = parseISO(mock.data.startDate);
-  const initialEnd = parseISO(mock.data.endDate);
+  const { data, isLoading, isError, error } = useQuery<GetTripDateDto, Error>({
+    queryKey: ['tripDate', tripId],
+    queryFn: () => getTripDates(tripId),
+    enabled: !!tripId,
+  });
 
-  // Date 상태 관리
-  const [startDate, setStartDate] = useState<Date | null>(initialStart);
-  const [endDate, setEndDate] = useState<Date | null>(initialEnd);
+  useEffect(() => {
+    if (data) {
+      setStartDate(parseISO(data.startDate));
+      setEndDate(parseISO(data.endDate));
+    }
+  }, [data]);
+
+  if (isLoading) {
+    return <div>날짜 정보를 불러오는 중입니다...</div>;
+  }
+
+  if (isError) {
+    return <div>오류가 발생했습니다: {error.message}</div>;
+  }
 
   const handleNext = () => {
     router.back();

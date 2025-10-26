@@ -3,6 +3,7 @@ import privateInstance from '@/lib/api/instance/privateInstance';
 import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
 import { Country } from '@/shared/types/country';
+import { GetTripDateDto } from '../date/type';
 
 // 여행 삭제 API
 export const deleteTrip = async (tripId: string) => {
@@ -44,7 +45,7 @@ export const editTripCountries = async (tripId: string, countries: Country[]) =>
 };
 
 // 수정 전 여행 일정 불러오기 API
-export const getTripDates = async (tripId: string): Promise<{ startDate: string; endDate: string }> => {
+export const getTripDates = async (tripId: string): Promise<GetTripDateDto> => {
     try {
         const finalPath = apiPath.tripDate.replace('{tripId}', encodeURIComponent(tripId));
         const res = await privateInstance.get<ApiEnvelope<{ startDate: string; endDate: string }>>(finalPath);
