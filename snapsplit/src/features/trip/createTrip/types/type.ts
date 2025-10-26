@@ -31,7 +31,7 @@ export interface CreateTripRequestDto {
 export type CreateTripResponseDto = {
   tripId: number;
   createdAt: string;
-};
+}[];
 
 export interface CreateTripRequestDto {
   tripName: string;
