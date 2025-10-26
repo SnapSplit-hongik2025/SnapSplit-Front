@@ -62,17 +62,6 @@ export const createTrip = async (request: CreateTripRequestDto,
   } else {
     formData.append('tripImage', new Blob(), '');
   }
-
-  const requestBlob = formData.get('request');
-
-  if (requestBlob instanceof Blob) {
-    const text = await requestBlob.text();
-    console.log('✅ Blob 안의 JSON 문자열:', text);
-
-    // (선택사항) 문자열을 다시 객체로 변환해서 구조를 확인할 수도 있습니다.
-    const parsedObject = JSON.parse(text);
-    console.log('✅ 파싱된 자바스크립트 객체:', parsedObject);
-  }
   
   try {
     const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(
