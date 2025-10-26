@@ -99,7 +99,7 @@ export default function CreateTripPage() {
   const steps = [
     <CountrySearchSection
       key="step1"
-      countries={data ?? []}
+      countries={data.countries}
       selected={selectedCountries}
       onToggle={toggleCountry}
       onClick={handleNextStep}

@@ -1,5 +1,8 @@
+import { GetCountryTripDto } from '@/features/trip/createTrip/types/type';
 import privateInstance from '@/lib/api/instance/privateInstance';
+import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
+import { Country } from '@/shared/types/country';
 
 // 여행 삭제 API
 export const deleteTrip = async (tripId: string) => {
@@ -13,5 +16,29 @@ export const deleteTrip = async (tripId: string) => {
     } catch (error) {
         console.error(`[API Error] Failed to delete trip for tripId ${tripId}:`, error);
         throw new Error('여행 삭제에 실패했습니다.');
+    }
+};
+
+// 수정 전 여행지 불러오기 API
+export const getTripCountries = async (tripId: string): Promise<GetCountryTripDto> => {
+    try {
+        const finalPath = apiPath.tripCountry.replace('{tripId}', encodeURIComponent(tripId));
+        const res = await privateInstance.get<ApiEnvelope<GetCountryTripDto>>(finalPath);
+        return res.data.data;
+    } catch (error) {
+        console.error(`[API Error] 여행지 불러오기 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행지를 불러오는 데 실패했습니다.');
+    }
+};
+
+// 여행지 수정 API
+export const editTripCountries = async (tripId: string, countries: Country[]) => {
+    try {
+        const finalPath = apiPath.tripCountry.replace('{tripId}', encodeURIComponent(tripId));
+        await privateInstance.patch(finalPath, { countries });
+        return { success: true };
+    } catch (error) {
+        console.error(`[API Error] 여행지 수정 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행지 수정에 실패했습니다.');
     }
 };

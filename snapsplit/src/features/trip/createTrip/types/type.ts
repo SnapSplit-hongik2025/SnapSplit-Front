@@ -9,7 +9,10 @@ export type CreateTripHeaderProps = {
 export type StepProgressBarProps = { step: number };
 
 // STEP1 - 국가 목록 조회 API 응답 타입
-export type GetCountryTripDto = Country[];
+export type GetCountryTripDto = {
+  countries: Country[],
+  selectedCountries: Country[],
+ };
 
 // STEP3 - 유저 검색 API 응답 타입
 export interface UserInfoDto {
