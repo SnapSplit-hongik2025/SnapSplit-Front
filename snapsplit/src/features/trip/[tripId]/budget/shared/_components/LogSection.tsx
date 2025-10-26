@@ -4,113 +4,16 @@
 import React from 'react';
 import LogItem from './LogItem';
 import { useDragScroll } from '@/shared/utils/useDragScroll';
+import { SharedBudgetDetail } from '../../types/budget-type';
+import { toDayX, toMDotDDW } from '@/shared/utils/parseDate';
 
-type LogData = {
-  day: string;
-  date: string | null;
-  entries: {
-    type: 'budget' | 'expense';
-    label: string;
-    detail: string | null;
-    amount: number;
-    currency: string;
-    krwEquivalent: string;
-  }[];
+type LogSectionProps = {
+  defaultCurrency: string;
+  sharedBudgetLog: SharedBudgetDetail[];
+  beforeTripData: SharedBudgetDetail[];
 };
 
-const beforeTripData: LogData[] = [
-  {
-    day: 'Day 0',
-    date: null,
-    entries: [
-      {
-        type: 'budget',
-        label: '공동경비 추가하기',
-        detail: null,
-        amount: 500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-      {
-        type: 'budget',
-        label: '공동경비 추가하기',
-        detail: null,
-        amount: 500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-    ],
-  },
-];
-
-const mockData: LogData[] = [
-  {
-    day: 'Day 1',
-    date: '5.21/월',
-    entries: [
-      {
-        type: 'expense',
-        label: '지출 내용',
-        detail: '지출 상세',
-        amount: -500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-      {
-        type: 'expense',
-        label: '지출 내용',
-        detail: '지출 상세',
-        amount: -500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-    ],
-  },
-  {
-    day: 'Day 2',
-    date: '5.22/화',
-    entries: [
-      {
-        type: 'budget',
-        label: '공동경비 빼기',
-        detail: null,
-        amount: -500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-    ],
-  },
-  {
-    day: 'Day 3',
-    date: '5.23/수',
-    entries: [
-      {
-        type: 'expense',
-        label: '지출 내용',
-        detail: '지출 상세',
-        amount: -500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-    ],
-  },
-  {
-    day: 'Day 4',
-    date: '5.24/목',
-    entries: [
-      {
-        type: 'expense',
-        label: '지출 내용',
-        detail: '지출 상세',
-        amount: -500,
-        currency: '€',
-        krwEquivalent: '875,656',
-      },
-    ],
-  },
-];
-
-const LogSection = () => {
+const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSectionProps) => {
   const { scrollRef, onMouseDown, onMouseMove, onMouseUp } = useDragScroll('y');
 
   return (
@@ -127,39 +30,39 @@ const LogSection = () => {
         <div className="flex items-center justify-start">
           <p className="text-body-1 text-grey-1000">여행 준비</p>
         </div>
-        {beforeTripData.map((item) =>
-          item.entries.map((entry, entryIndex) => (
+        {beforeTripData.map((item) => (
+          item.items.map((entry, entryIndex) => (
             <LogItem
               key={entryIndex}
               type={entry.type}
-              label={entry.label}
-              detail={entry.detail}
+              label={entry.title}
+              memo={entry.memo}
               amount={entry.amount}
-              currency={entry.currency}
-              krwEquivalent={entry.krwEquivalent}
+              currency={defaultCurrency}
+              krwEquivalent={entry.amountKRW}
             />
           ))
-        )}
+        ))}
       </div>
 
       {/* Day별 내역 */}
-      {mockData.map(({ day, date, entries }, index) => (
+      {sharedBudgetLog.length > 0 && sharedBudgetLog.map(({ date, items }, index) => (
         <div key={index} className="w-full">
           <div className="flex items-center gap-2">
-            <div className="text-body-1 text-grey-1000">{day}</div>
+            <div className="text-body-1 text-grey-1000">{toDayX(date, sharedBudgetLog[0].date)}</div>
             <div className="w-0 h-3.75 border-1 border-grey-350" />
-            <div className="text-body-1 text-grey-550">{date}</div>
+            <div className="text-body-1 text-grey-550">{toMDotDDW(date)}</div>
           </div>
 
-          {entries.map((entry, index) => (
+          {items.map((item, index) => (
             <LogItem
               key={index}
-              type={entry.type}
-              label={entry.label}
-              detail={entry.detail}
-              amount={entry.amount}
-              currency={entry.currency}
-              krwEquivalent={entry.krwEquivalent}
+              type={item.type}
+              label={item.title}
+              memo={item.memo}
+              amount={item.amount}
+              currency={defaultCurrency}
+              krwEquivalent={item.amountKRW}
             />
           ))}
         </div>
