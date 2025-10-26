@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import SelectDateSection from '@/shared/components/steps/Step2_SelectDate';
 import { EditDatePageProps, GetTripDateDto } from './type';
-import { parseISO } from 'date-fns'; // 원하면 parseISO 사용 가능
+import { format, parseISO } from 'date-fns'; // 원하면 parseISO 사용 가능
 import { useQuery } from '@tanstack/react-query';
 import { editTripDates, getTripDates } from '../api/edit-trip-api';
 
@@ -39,11 +39,8 @@ export default function EditDatePage({ tripId }: EditDatePageProps) {
 
   const handleNext = async () => {
     if (startDate && endDate) {
-      const startDateString = startDate.toISOString();
-      const endDateString = endDate.toISOString();
-
-      console.log('선택된 날짜:', startDateString, endDateString);
-
+      const startDateString = format(startDate, 'yyyy-MM-dd');
+      const endDateString = format(endDate, 'yyyy-MM-dd');
       const res = await editTripDates(tripId, startDateString, endDateString);
       console.log(res);
       router.push(`/trip/${tripId}/budget`);
