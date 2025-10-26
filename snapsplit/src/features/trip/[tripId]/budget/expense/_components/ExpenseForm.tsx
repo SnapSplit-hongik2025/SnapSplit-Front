@@ -19,6 +19,7 @@ import { useExpenseInitStore, ExpenseInitData } from '@/lib/zustand/useExpenseIn
 import { expenseCreate } from '@/lib/api/expense';
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
+import { getExpensePageData } from '../api/expense-api';
 
 export default function ExpenseForm() {
   // tripId
@@ -70,6 +71,11 @@ export default function ExpenseForm() {
       // TODO: API 반환 데이터로 대체
       const res = EXPENSE_INIT_DATA as { data: ExpenseInitData };
       setExpenseInitData(res.data);
+
+      // API 테스트
+      const testDate = '2025-09-13';
+      const expensePageData = getExpensePageData(Number(tripId), testDate);
+      console.log('expensePageData : ', expensePageData);
 
       // INIT
       // TODO: 초기화 로직 다듬기
