@@ -10,7 +10,12 @@ type CurrencyBottomSheetProps = {
   availableCurrencies: string[];
 };
 
-const CurrencyBottomSheet = ({ onClose, selectedCurrency, handleCurrencyChange, availableCurrencies }: CurrencyBottomSheetProps) => {
+const CurrencyBottomSheet = ({
+  onClose,
+  selectedCurrency,
+  handleCurrencyChange,
+  availableCurrencies,
+}: CurrencyBottomSheetProps) => {
   return (
     <div className="flex flex-col w-full">
       {availableCurrencies.map((currency) => (

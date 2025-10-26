@@ -1,8 +1,8 @@
 import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
-import { expense } from '../types/budget-type';
+import { ExpenseDto } from '../types/budget-dto-type';
 
 type ExpenseItemProps = {
-  expense: expense;
+  expense: ExpenseDto;
 };
 
 const ExpenseItem = ({ expense }: ExpenseItemProps) => {
