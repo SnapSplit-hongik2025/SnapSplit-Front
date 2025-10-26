@@ -83,7 +83,7 @@ export default function CreateTripPage() {
         tripImageFile
       )
         .then((res) => {
-          const TripId = res.tripId;
+          const TripId = res[0].tripId;
           router.push(`${routerPath.trip.href(TripId)}/budget`);
         })
         .catch((err) => {
