@@ -7,7 +7,7 @@ import SelectDateSection from '@/shared/components/steps/Step2_SelectDate';
 import { EditDatePageProps, GetTripDateDto } from './type';
 import { parseISO } from 'date-fns'; // 원하면 parseISO 사용 가능
 import { useQuery } from '@tanstack/react-query';
-import { getTripDates } from '../api/edit-trip-api';
+import { editTripDates, getTripDates } from '../api/edit-trip-api';
 
 export default function EditDatePage({ tripId }: EditDatePageProps) {
   // Date 상태 관리
@@ -37,9 +37,20 @@ export default function EditDatePage({ tripId }: EditDatePageProps) {
     return <div>오류가 발생했습니다: {error.message}</div>;
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (startDate && endDate) {
+      const startDateString = startDate.toISOString();
+      const endDateString = endDate.toISOString();
+
+      console.log('선택된 날짜:', startDateString, endDateString);
+
+      const res = await editTripDates(tripId, startDateString, endDateString);
+      console.log(res);
+      router.push(`/trip/${tripId}/budget`);
+    } else {
+      alert('시작일과 종료일을 모두 선택해주세요.');
+    }
     router.back();
-    // 편집 API 호출
   };
 
   return (

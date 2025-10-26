@@ -54,7 +54,6 @@ const EditCountryPage = ({ tripId }: EditCountryPageProps) => {
   // "완료" 버튼 클릭 시, 예: API 호출 후 뒤로 가기
   const handleSave = async () => {
     await editTripCountries(tripId, selected);
-    console.log('선택된 국가들:', selected);
     router.back();
   };
 

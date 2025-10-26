@@ -56,3 +56,15 @@ export const getTripDates = async (tripId: string): Promise<GetTripDateDto> => {
         throw new Error('여행 일정을 불러오는 데 실패했습니다.');
     }
 }
+
+// 여행 일정 수정 API
+export const editTripDates = async (tripId: string, startDate: string, endDate: string) => {
+    try {
+        const finalPath = apiPath.tripDate.replace('{tripId}', encodeURIComponent(tripId));
+        const res = await privateInstance.patch<ApiEnvelope<null>>(finalPath, { startDate, endDate });
+        return res.data;
+    } catch (error) {
+        console.error(`[API Error] 여행 일정 수정 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행 일정 수정에 실패했습니다.');
+    }
+}
