@@ -8,7 +8,7 @@ import BottomCTAButton from '@/shared/components/BottomCTAButton';
 import { CountrySearchSectionProps } from './type';
 
 const CountrySearchSection = ({
-  countries,
+  countries = [],
   selected,
   onToggle,
   onClick: handleNextStep,
