@@ -3,6 +3,7 @@ import privateInstance from '@/lib/api/instance/privateInstance';
 import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
 import { Country } from '@/shared/types/country';
+import { GetTripDateDto } from '../date/type';
 
 // 여행 삭제 API
 export const deleteTrip = async (tripId: string) => {
@@ -42,3 +43,28 @@ export const editTripCountries = async (tripId: string, countries: Country[]) =>
         throw new Error('여행지 수정에 실패했습니다.');
     }
 };
+
+// 수정 전 여행 일정 불러오기 API
+export const getTripDates = async (tripId: string): Promise<GetTripDateDto> => {
+    try {
+        const finalPath = apiPath.tripDate.replace('{tripId}', encodeURIComponent(tripId));
+        const res = await privateInstance.get<ApiEnvelope<{ startDate: string; endDate: string }>>(finalPath);
+        return res.data.data;
+    }
+    catch (error) {
+        console.error(`[API Error] 여행 일정 불러오기 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행 일정을 불러오는 데 실패했습니다.');
+    }
+}
+
+// 여행 일정 수정 API
+export const editTripDates = async (tripId: string, startDate: string, endDate: string) => {
+    try {
+        const finalPath = apiPath.tripDate.replace('{tripId}', encodeURIComponent(tripId));
+        const res = await privateInstance.patch<ApiEnvelope<null>>(finalPath, { startDate, endDate });
+        return res.data;
+    } catch (error) {
+        console.error(`[API Error] 여행 일정 수정 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행 일정 수정에 실패했습니다.');
+    }
+}
