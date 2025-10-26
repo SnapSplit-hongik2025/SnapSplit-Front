@@ -4,6 +4,8 @@ import { useRef } from 'react';
 import { TripImageUploaderProps } from './type';
 
 const TripImageUploader = ({ tripImageUrl, setTripImageUrl, setTripImageFile }: TripImageUploaderProps) => {
+  console.log('여행 이미지 : ', tripImageUrl);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const openFileInputRef = () => {
     fileInputRef.current?.click();

@@ -17,4 +17,5 @@ export const enum apiPath {
   exchange = '/api/exchangeRate',
   tripCountry = '/trips/{tripId}/countries',
   tripDate = '/trips/{tripId}/schedule',
+  tripInfo = '/trips/{tripId}/info',
 }

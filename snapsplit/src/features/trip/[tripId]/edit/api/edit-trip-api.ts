@@ -4,6 +4,7 @@ import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
 import { Country } from '@/shared/types/country';
 import { GetTripDateDto } from '../date/type';
+import { GetCountryInfoDto } from '../name/type';
 
 // 여행 삭제 API
 export const deleteTrip = async (tripId: string) => {
@@ -68,3 +69,18 @@ export const editTripDates = async (tripId: string, startDate: string, endDate: 
         throw new Error('여행 일정 수정에 실패했습니다.');
     }
 }
+
+// 수정 전 여행 이름, 이미지 불러오기 API
+export const getTripInfo = async (tripId: string): Promise<GetCountryInfoDto> => {
+    try {
+        const finalPath = apiPath.tripInfo.replace('{tripId}', encodeURIComponent(tripId));
+        const res = await privateInstance.get<ApiEnvelope<GetCountryInfoDto>>(finalPath);
+        return res.data.data;
+    } catch (error) {
+        console.error(`[API Error] 여행 정보 불러오기 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행 정보를 불러오는 데 실패했습니다.');
+    }
+};
+
+// 여행 이름, 이미지 수정 API
+// export const 
