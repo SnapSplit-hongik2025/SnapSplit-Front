@@ -86,7 +86,7 @@ const SharedBudgetDetailPage = () => {
         <CurrencyBottomSheet
           onClose={() => setIsOpen(false)}
           selectedCurrency={selectedCurrency}
-          setCurrency={handleCurrencyChange}
+          handleCurrencyChange={handleCurrencyChange}
           availableCurrencies={sharedBudgetData.availCurrencies}
         />
       </BottomSheet>
