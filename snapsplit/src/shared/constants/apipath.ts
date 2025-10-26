@@ -15,5 +15,6 @@ export const enum apiPath {
   myPage = '/home/myPage',
   logOut = '/auth/kakao/logout',
   exchange = '/api/exchangeRate',
-  tripCountry = '/trips/{tripId}/countries'
+  tripCountry = '/trips/{tripId}/countries',
+  tripDate = '/trips/{tripId}/schedule',
 }

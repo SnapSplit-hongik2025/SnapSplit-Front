@@ -42,3 +42,16 @@ export const editTripCountries = async (tripId: string, countries: Country[]) =>
         throw new Error('여행지 수정에 실패했습니다.');
     }
 };
+
+// 수정 전 여행 일정 불러오기 API
+export const getTripDates = async (tripId: string): Promise<{ startDate: string; endDate: string }> => {
+    try {
+        const finalPath = apiPath.tripDate.replace('{tripId}', encodeURIComponent(tripId));
+        const res = await privateInstance.get<ApiEnvelope<{ startDate: string; endDate: string }>>(finalPath);
+        return res.data.data;
+    }
+    catch (error) {
+        console.error(`[API Error] 여행 일정 불러오기 실패, tripId [${tripId}]:`, error);
+        throw new Error('여행 일정을 불러오는 데 실패했습니다.');
+    }
+}
