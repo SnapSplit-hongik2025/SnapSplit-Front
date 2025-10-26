@@ -46,8 +46,10 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
 
     if (tripName) {
       if (tripName == beforeTripName) {
+        console.log('tripName == beforeTripName, API 실행');
         await editTripInfo(tripId, null, tripImageFile);
       } else if (tripName != beforeTripName) {
+        console.log('tripName != beforeTripName, API 실행');
         await editTripInfo(tripId, tripName, tripImageFile);
       }
       router.push(`/trip/${tripId}/budget`);

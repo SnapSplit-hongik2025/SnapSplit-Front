@@ -101,8 +101,12 @@ export const editTripInfo = async (tripId: string, tripName: string | null, trip
     }
   
     try {
+        console.log('변경하고자 하는 사진, 이름: ', tripName, tripImage);
         const finalPath = apiPath.tripInfo.replace('{tripId}', encodeURIComponent(tripId));
-        const res = await privateInstance.patch<ApiEnvelope<null>>(finalPath, formData,{
+        const res = await privateInstance.patch<ApiEnvelope<null>>(
+            finalPath,
+            formData,
+            {
                 headers: {
                 'Content-Type': 'multipart/form-data',
                 },
