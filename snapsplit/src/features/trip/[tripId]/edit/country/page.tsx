@@ -8,7 +8,7 @@ import { EditCountryPageProps } from './type';
 import { Country } from '@/shared/types/country';
 import { useQuery } from '@tanstack/react-query';
 import { GetCountryTripDto } from '@/features/trip/createTrip/types/type';
-import { getTripCountries } from '../api/edit-trip-api';
+import { editTripCountries, getTripCountries } from '../api/edit-trip-api';
 
 const EditCountryPage = ({ tripId }: EditCountryPageProps) => {
   const router = useRouter();
@@ -53,10 +53,8 @@ const EditCountryPage = ({ tripId }: EditCountryPageProps) => {
 
   // "완료" 버튼 클릭 시, 예: API 호출 후 뒤로 가기
   const handleSave = async () => {
-    // await fetch(`/api/trips/${tripId}/countries`, {
-    //   method: 'PATCH',
-    //   body: JSON.stringify({ countries: selected }),
-    // });
+    await editTripCountries(tripId, selected);
+    console.log('선택된 국가들:', selected);
     router.back();
   };
 
