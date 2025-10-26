@@ -4,10 +4,10 @@ import { getKorName } from '@/shared/utils/currency';
 
 type Props = {
   onClick?: () => void;
+  currency: string;
 };
 
-export default function CurrencyButton({ onClick }: Props) {
-  const currency = useExpenseStore((state) => state.currency);
+export default function CurrencyButton({ onClick, currency }: Props) {
   return (
     <button
       onClick={onClick}

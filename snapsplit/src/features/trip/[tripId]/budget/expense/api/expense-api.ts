@@ -1,7 +1,6 @@
 
 import privateInstance from "@/lib/api/instance/privateInstance";
 import { ApiEnvelope } from "@/lib/api/type";
-import { apiPath } from "@/shared/constants/apipath";
 import { CreateExpenseRequest, ExpensePageDataResponse } from "./expense-dto-type";
 
 export const getExpensePageData = async (tripId: number, date: string): Promise<ExpensePageDataResponse> => {
@@ -13,7 +12,7 @@ export const getExpensePageData = async (tripId: number, date: string): Promise<
   }
   
   try {
-    const finalPath = apiPath.expense.replace('{tripId}', String(tripId));
+    const finalPath = `trips/${tripId}/expense/new`;
     const res = await privateInstance.get<ApiEnvelope<ExpensePageDataResponse>>(finalPath, {
       params: {
         date,
@@ -36,7 +35,7 @@ export const createExpense = async (tripId: number, data: CreateExpenseRequest):
   }
   
   try {
-    const finalPath = apiPath.expense.replace('{tripId}', String(tripId));
+    const finalPath = `trips/${tripId}/expense/new`;
     const res = await privateInstance.post<ApiEnvelope<{expenseId: number}>>(finalPath, data);
     console.log(`[API] Created expense for tripId ${tripId}:`, res.data.data);
     return res.data;

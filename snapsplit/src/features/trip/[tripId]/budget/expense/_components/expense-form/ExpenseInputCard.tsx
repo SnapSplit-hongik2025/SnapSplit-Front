@@ -45,7 +45,7 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
   return (
     <div className="flex flex-col items-center gap-4 w-full px-5 py-4 rounded-xl bg-grey-150">
       <div className="flex flex-col items-start justify-between w-full gap-3">
-        <CurrencyButton onClick={() => setIsOpen(true)} />
+        <CurrencyButton onClick={() => setIsOpen(true)} currency={currency} />
         <div className="flex flex-col items-start justify-between gap-1 w-full">
           <input
             type="text"
