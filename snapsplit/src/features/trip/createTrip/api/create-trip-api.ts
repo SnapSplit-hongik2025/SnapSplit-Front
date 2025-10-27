@@ -1,13 +1,13 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
 import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
-import { CreateTripRequestDto, CreateTripResponseDto, GetCountryTripDto, UserInfoDto } from '../types/type';
+import { CreateTripRequestDto, CreateTripResponseDto, GetCountryDto, UserInfoDto } from '../types/type';
 import axios from 'axios';
 
 // 국가 목록 조회
-export const getCountryTrip = async (): Promise<GetCountryTripDto> => {
+export const getCountryTrip = async (): Promise<GetCountryDto> => {
   try {
-    const res = await privateInstance.get<ApiEnvelope<GetCountryTripDto>>(apiPath.countries);
+    const res = await privateInstance.get<ApiEnvelope<GetCountryDto>>(apiPath.countries);
     if (!res.data.success) {
       throw new Error(res.data.message || '국가 목록 조회에 실패했습니다.');
     }

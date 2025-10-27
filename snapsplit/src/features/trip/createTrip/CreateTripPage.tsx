@@ -42,6 +42,10 @@ export default function CreateTripPage() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['countryList'],
     queryFn: () => getCountryTrip(),
+    select: (responseData) => {
+      // 이 배열을 컴포넌트가 기대하는 { countries: [...] } 객체 형태로 만들어서 반환
+      return { countries: responseData };
+    },
   });
 
   if (isLoading) {
