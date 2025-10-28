@@ -7,7 +7,7 @@ import axios from 'axios';
 // 국가 목록 조회
 export const getCountryTrip = async (): Promise<GetCountryDto> => {
   try {
-    const res = await privateInstance.get<ApiEnvelope<GetCountryDto>>(apiPath.countries);
+    const res = await privateInstance.get<ApiEnvelope<GetCountryDto>>(apiPath.COUNTRIES);
     if (!res.data.success) {
       throw new Error(res.data.message || '국가 목록 조회에 실패했습니다.');
     }
@@ -25,7 +25,7 @@ export const getUserInfo = async (userCode: string): Promise<UserInfoDto> => {
   }
 
   try {
-    const finalPath = apiPath.users.replace('{userCode}', userCode);
+    const finalPath = apiPath.USERS.replace('{userCode}', userCode);
     const res = await privateInstance.get<ApiEnvelope<UserInfoDto>>(finalPath);
     if (!res.data.success) {
       alert(res.data.message || '유저 정보 조회에 실패했습니다.');
@@ -65,7 +65,7 @@ export const createTrip = async (request: CreateTripRequestDto,
   
   try {
     const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(
-      apiPath.createTrip,
+      apiPath.CREATE_TRIP,
       formData,
       {
         headers: {

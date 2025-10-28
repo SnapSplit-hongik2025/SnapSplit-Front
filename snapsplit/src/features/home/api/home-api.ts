@@ -6,14 +6,14 @@ import axios from 'axios';
 
 // 홈 데이터 조회
 export const getHomeData = async (): Promise<GetHomeResponseDto> => {
-  const res = await privateInstance.get<ApiEnvelope<GetHomeResponseDto>>(apiPath.home);
+  const res = await privateInstance.get<ApiEnvelope<GetHomeResponseDto>>(apiPath.HOME);
   return res.data.data;
 };
 
 // 코드로 여행 참가
 export const joinTripByCode = async (inviteCode: string): Promise<void> => {
   try {
-    await privateInstance.post<ApiEnvelope<null>>(apiPath.joinTrip, { inviteCode });
+    await privateInstance.post<ApiEnvelope<null>>(apiPath.JOIN_TRIP, { inviteCode });
     alert('여행에 성공적으로 참여했습니다!');
     return;
   } catch (error) {

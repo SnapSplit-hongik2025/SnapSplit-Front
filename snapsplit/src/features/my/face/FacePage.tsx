@@ -7,6 +7,7 @@ import TipInfoBox from './_components/TipInfoBox';
 import FaceImageCircle from './_components/FaceImageCircle';
 import Button from '@/shared/components/Button';
 import { useRef, useState, useEffect } from 'react';
+import { GetMyFaceDto } from './types/face-dto-type';
 
 export default function BeforeRegistration() {
   const queryClient = useQueryClient();
@@ -14,25 +15,26 @@ export default function BeforeRegistration() {
   const [curFaceImgFile, setCurFaceImgFile] = useState<File | null>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<GetMyFaceDto, Error>({
     queryKey: ['face'],
     queryFn: getMyFaceData,
   });
 
-  const { mutate: uploadFace } = useMutation({
+  const { mutate: uploadFace } = useMutation<unknown, Error, File>({
     mutationFn: (imageFile: File) => postMyFace(imageFile),
     onSuccess: () => {
       alert('얼굴이 성공적으로 처리되었습니다!');
       queryClient.invalidateQueries({ queryKey: ['face'] });
       setCurFaceImgFile(null);
       setPreviewImageUrl(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     },
     onError: (err) => {
       alert(err.message || '얼굴 처리에 실패했습니다.');
     },
   });
 
-  const { mutate: changeFace } = useMutation({
+  const { mutate: changeFace } = useMutation<unknown, Error, File>({
     mutationFn: (imageFile: File) => putMyFace(imageFile),
     onSuccess: () => {
       alert('얼굴이 성공적으로 처리되었습니다!');
@@ -41,7 +43,6 @@ export default function BeforeRegistration() {
       setPreviewImageUrl(null);
     },
     onError: (err) => {
-      console.log(err);
       alert(err.message || '얼굴 처리에 실패했습니다.');
     },
   });
@@ -58,6 +59,9 @@ export default function BeforeRegistration() {
       setCurFaceImgFile(file);
       const previewUrl = URL.createObjectURL(file);
       setPreviewImageUrl(previewUrl);
+
+      // 동일 파일 재선택 가능하게 입력값 초기화
+      e.target.value = '';
     }
   };
 

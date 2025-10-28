@@ -6,7 +6,7 @@ export default function FaceHeader() {
   return (
     <header className="py-3 flex items-center justify-between">
       <Link href="/my">
-        <Image src={arrow} alt="exit" aria-label="홈으로" />
+        <Image src={arrow} alt="exit" aria-label="마이페이지로 돌아가기" />
       </Link>
       <h1 className="text-label-1">나의 얼굴</h1>
       <div className="w-[25px]"></div>

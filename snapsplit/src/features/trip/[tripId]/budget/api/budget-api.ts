@@ -9,7 +9,7 @@ export const getTripBudgetData = async (tripId: number): Promise<GetTripBudgetDt
   }
   
   try {
-    const finalPath = apiPath.expense.replace('{tripId}', String(tripId));
+    const finalPath = apiPath.EXPENSE.replace('{tripId}', String(tripId));
     const res = await privateInstance.get<ApiEnvelope<GetTripBudgetDto>>(finalPath);
     console.log(`[API] Fetched trip budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -41,7 +41,7 @@ export const updateDefaultCurrency = async (tripId: number, currency: string): P
   }
 
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId));
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId));
     const res = await privateInstance.patch<ApiEnvelope<UpdateDefaultCurrencyDto>>(finalPath, null, {
       params: { newDefaultCur: currency }
     });
@@ -59,7 +59,7 @@ export const getSharedBudgetData = async (tripId: number): Promise<GetSharedBudg
   }
   
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId)) + '/details';
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId)) + '/details';
     const res = await privateInstance.get<ApiEnvelope<GetSharedBudgetDto>>(finalPath);
     console.log(`[API] Fetched shared budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -75,7 +75,7 @@ export const getExchangeRate = async (bases: string): Promise<GetExchangeRateDto
   }
   
   try {
-    const finalPath = apiPath.exchange;
+    const finalPath = apiPath.EXCHANGE;
     const res = await privateInstance.get<ApiEnvelope<GetExchangeRateDto>>(finalPath, { params: { bases } });
     console.log(`[API] Fetched exchange rate for bases ${bases}:`, res.data.data);
     return res.data.data;
@@ -91,7 +91,7 @@ export const addSharedBudget = async (tripId: number, payload: UpdateSharedBudge
   }
   
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId)) + '/add';
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId)) + '/add';
     const res = await privateInstance.post<ApiEnvelope<GetSharedBudgetDto>>(finalPath, payload);
     console.log(`[API] Added shared budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -107,7 +107,7 @@ export const removeSharedBudget = async (tripId: number, payload: UpdateSharedBu
   }
   
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId)) + '/remove';
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId)) + '/remove';
     const res = await privateInstance.post<ApiEnvelope<GetSharedBudgetDto>>(finalPath, payload);
     console.log(`[API] Removed shared budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
