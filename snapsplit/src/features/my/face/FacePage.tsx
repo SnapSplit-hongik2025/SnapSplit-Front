@@ -1,69 +1,127 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import arrow from '@public/svg/arrow-left-grey-850.svg';
+'use client';
 
-// components/BeforeRegistration.js
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getMyFaceData, postMyFace, putMyFace } from './api/face-api';
+import FaceHeader from './_components/FaceHeader';
+import TipInfoBox from './_components/TipInfoBox';
+import FaceImageCircle from './_components/FaceImageCircle';
+import Button from '@/shared/components/Button';
+import { useRef, useState, useEffect } from 'react';
+import { GetMyFaceDto } from './types/face-dto-type';
+
 export default function BeforeRegistration() {
-  return (
-    <div className="flex flex-col bg-white min-h-[100dvh] px-5">
-      <header className="py-3 flex items-center justify-between">
-        <Link href="/my">
-          <Image src={arrow} alt="exit" aria-label="홈으로" />
-        </Link>
-        <h1 className="text-label-1">나의 얼굴</h1>
-        <div className="w-[25px]"></div>
-      </header>
+  const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [curFaceImgFile, setCurFaceImgFile] = useState<File | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
-      {/* 중앙 컨텐츠 영역 */}
-      <div className="flex flex-col items-center text-center space-y-4">
-        <p className="text-start text-gray-600">
-          아직 등록된 얼굴이 없어요. <br />
-          얼굴을 등록하면 여행 사진에서 나를 자동으로 찾아줘요!
-        </p>
-        <div className="flex items-center justify-center w-32 h-32 bg-gray-100 border-1 border-dashed rounded-full">
-          <span className="text-2xl font-bold text-gray-400">?</span>
-        </div>
-        <button className="w-full px-4 py-3 font-bold text-white bg-primary rounded-lg cursor-pointer">
-          나의 얼굴 등록하기
-        </button>
-        <div className="flex w-full flex-col text-grey-550 p-4 bg-grey-50 rounded-lg border border-grey-350 items-start">
-          <h3 className="font-semibold">높은 품질을 위한 tip</h3>
-          <ul className="mt-2 text-sm list-disc list-inside">
-            <li>얼굴을 가리지 않은 정면 사진</li>
-            <li>단체사진이라면 잘라서 올려주세요</li>
-          </ul>
-        </div>
+  const { data, isLoading, isError, error } = useQuery<GetMyFaceDto, Error>({
+    queryKey: ['face'],
+    queryFn: getMyFaceData,
+  });
+
+  const { mutate: uploadFace } = useMutation<unknown, Error, File>({
+    mutationFn: (imageFile: File) => postMyFace(imageFile),
+    onSuccess: () => {
+      alert('얼굴이 성공적으로 처리되었습니다!');
+      queryClient.invalidateQueries({ queryKey: ['face'] });
+      setCurFaceImgFile(null);
+      setPreviewImageUrl(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+    onError: (err) => {
+      alert(err.message || '얼굴 처리에 실패했습니다.');
+    },
+  });
+
+  const { mutate: changeFace } = useMutation<unknown, Error, File>({
+    mutationFn: (imageFile: File) => putMyFace(imageFile),
+    onSuccess: () => {
+      alert('얼굴이 성공적으로 처리되었습니다!');
+      queryClient.invalidateQueries({ queryKey: ['face'] });
+      setCurFaceImgFile(null);
+      setPreviewImageUrl(null);
+    },
+    onError: (err) => {
+      alert(err.message || '얼굴 처리에 실패했습니다.');
+    },
+  });
+
+  // 파일 선택창을 여는 함수
+  const handleSelectFileClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // 사용자가 파일을 선택했을 때 처리하는 함수
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCurFaceImgFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setPreviewImageUrl(previewUrl);
+
+      // 동일 파일 재선택 가능하게 입력값 초기화
+      e.target.value = '';
+    }
+  };
+
+  const handleUploadSubmit = () => {
+    if (curFaceImgFile) {
+      console.log(curFaceImgFile);
+      uploadFace(curFaceImgFile);
+    } else {
+      alert('먼저 얼굴 이미지를 선택해주세요.');
+    }
+  };
+
+  const handleChangeSubmit = () => {
+    if (curFaceImgFile) {
+      console.log(curFaceImgFile);
+      changeFace(curFaceImgFile);
+    } else {
+      alert('먼저 얼굴 이미지를 선택해주세요.');
+    }
+  };
+
+  // 컴포넌트 언마운트 시 Object URL 정리
+  useEffect(() => {
+    return () => {
+      if (previewImageUrl) {
+        URL.revokeObjectURL(previewImageUrl);
+      }
+    };
+  }, [previewImageUrl]);
+
+  if (isLoading) {
+    return <div>로딩중..</div>;
+  }
+  if (isError) {
+    return <div>에러 발생: {error.message}</div>;
+  }
+  if (!data) {
+    return <div>데이터가 없습니다.</div>;
+  }
+
+  const displayImageUrl = previewImageUrl || data?.faceImageUrl;
+  const isImageAvailable = !!displayImageUrl;
+
+  return (
+    <div className="flex flex-col min-h-[100dvh] bg-white px-5">
+      <FaceHeader />
+      <div className="flex flex-col items-center text-center space-y-6 pt-12">
+        <FaceImageCircle registered={isImageAvailable} faceImageUrl={displayImageUrl} />
+        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+        {data?.registered || curFaceImgFile ? (
+          <div className="flex flex-col space-y-2 w-full">
+            <Button label="다른 사진 선택하기" onClick={handleSelectFileClick} />
+            {curFaceImgFile && <Button label="이 얼굴로 변경하기" onClick={handleChangeSubmit} bg="bg-grey-750" />}
+          </div>
+        ) : (
+          <Button label="나의 얼굴 등록하기" onClick={handleSelectFileClick}></Button>
+        )}
+        {!data?.registered && curFaceImgFile && <Button label="이 얼굴로 등록하기" onClick={handleUploadSubmit} />}
+        <TipInfoBox />
       </div>
     </div>
   );
 }
-
-// // components/AfterRegistration.js
-// export function AfterRegistration() {
-//   return (
-//     <div className="w-full max-w-sm p-8 space-y-6 bg-white border rounded-lg shadow-sm">
-//       {/* 중앙 컨텐츠 영역 */}
-//       <div className="flex flex-col items-center text-center space-y-4">
-//         <p className="text-gray-600">이 사진으로 나를 인식해요.</p>
-//         <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-yellow-400">
-//           {/* 등록된 사용자 얼굴 이미지가 여기에 들어갑니다. */}
-//           <img
-//             src="https://i.pravatar.cc/150?u=a042581f4e29026704d" // 예시 이미지
-//             alt="Registered face"
-//             className="object-cover w-full h-full"
-//           />
-//         </div>
-//         <button className="w-full px-4 py-3 font-bold text-gray-800 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
-//           나의 얼굴 변경하기
-//         </button>
-//       </div>
-//       {/* 하단 주의사항 영역 */}
-//       <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
-//         <h3 className="font-semibold text-orange-800">주의</h3>
-//         <p className="mt-2 text-sm text-orange-700">
-//           기존에 태그된 사진들에는 적용되지 않아요. 업로드할 여행 사진들부터 변경된 얼굴로 인식해요.
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }

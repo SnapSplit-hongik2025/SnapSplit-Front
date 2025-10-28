@@ -13,7 +13,7 @@ export const getExpensePageData = async (tripId: number, date: string): Promise<
   }
   
   try {
-    const finalPath = apiPath.expense.replace('{tripId}', String(tripId));
+    const finalPath = apiPath.EXPENSE.replace('{tripId}', String(tripId));
     const res = await privateInstance.get<ApiEnvelope<ExpensePageDataResponse>>(finalPath, {
       params: {
         date,

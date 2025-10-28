@@ -12,7 +12,7 @@ export const deleteTrip = async (tripId: string) => {
         throw new Error('유효하지 않은 여행 ID입니다.');}
 
     try {
-        const finalPath = apiPath.trips.replace('{tripId}', encodeURIComponent(tripId));
+        const finalPath = apiPath.TRIPS.replace('{tripId}', encodeURIComponent(tripId));
         await privateInstance.delete(finalPath);
         return { success: true };
     } catch (error) {
@@ -24,7 +24,7 @@ export const deleteTrip = async (tripId: string) => {
 // 수정 전 여행지 불러오기 API
 export const getTripCountries = async (tripId: string): Promise<GetCountryTripDto> => {
     try {
-        const finalPath = apiPath.tripCountry.replace('{tripId}', encodeURIComponent(tripId));
+        const finalPath = apiPath.TRIP_COUNTRY.replace('{tripId}', encodeURIComponent(tripId));
         const res = await privateInstance.get<ApiEnvelope<GetCountryTripDto>>(finalPath);
         return res.data.data;
     } catch (error) {
@@ -36,7 +36,7 @@ export const getTripCountries = async (tripId: string): Promise<GetCountryTripDt
 // 여행지 수정 API
 export const editTripCountries = async (tripId: string, countries: Country[]) => {
     try {
-        const finalPath = apiPath.tripCountry.replace('{tripId}', encodeURIComponent(tripId));
+        const finalPath = apiPath.TRIP_COUNTRY.replace('{tripId}', encodeURIComponent(tripId));
         await privateInstance.patch(finalPath, { countries });
         return { success: true };
     } catch (error) {
@@ -48,7 +48,7 @@ export const editTripCountries = async (tripId: string, countries: Country[]) =>
 // 수정 전 여행 일정 불러오기 API
 export const getTripDates = async (tripId: string): Promise<GetTripDateDto> => {
     try {
-        const finalPath = apiPath.tripDate.replace('{tripId}', encodeURIComponent(tripId));
+        const finalPath = apiPath.TRIP_DATE.replace('{tripId}', encodeURIComponent(tripId));
         const res = await privateInstance.get<ApiEnvelope<{ startDate: string; endDate: string }>>(finalPath);
         return res.data.data;
     }
@@ -61,7 +61,7 @@ export const getTripDates = async (tripId: string): Promise<GetTripDateDto> => {
 // 여행 일정 수정 API
 export const editTripDates = async (tripId: string, startDate: string, endDate: string) => {
     try {
-        const finalPath = apiPath.tripDate.replace('{tripId}', encodeURIComponent(tripId));
+        const finalPath = apiPath.TRIP_DATE.replace('{tripId}', encodeURIComponent(tripId));
         const res = await privateInstance.patch<ApiEnvelope<null>>(finalPath, { startDate, endDate });
         return res.data;
     } catch (error) {
@@ -73,7 +73,7 @@ export const editTripDates = async (tripId: string, startDate: string, endDate: 
 // 수정 전 여행 이름, 이미지 불러오기 API
 export const getTripInfo = async (tripId: string): Promise<GetCountryInfoDto> => {
     try {
-        const finalPath = apiPath.tripInfo.replace('{tripId}', encodeURIComponent(tripId));
+        const finalPath = apiPath.TRIP_INFO.replace('{tripId}', encodeURIComponent(tripId));
         const res = await privateInstance.get<ApiEnvelope<GetCountryInfoDto>>(finalPath);
         return res.data.data;
     } catch (error) {
@@ -102,7 +102,7 @@ export const editTripInfo = async (tripId: string, tripName: string | null, trip
   
     try {
         console.log('변경하고자 하는 사진, 이름: ', tripName, tripImage);
-        const finalPath = apiPath.tripInfo.replace('{tripId}', encodeURIComponent(tripId));
+        const finalPath = apiPath.TRIP_INFO.replace('{tripId}', encodeURIComponent(tripId));
         const res = await privateInstance.patch<ApiEnvelope<null>>(
             finalPath,
             formData,
