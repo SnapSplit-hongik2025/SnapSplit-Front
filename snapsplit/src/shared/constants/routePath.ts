@@ -12,4 +12,8 @@ export const routerPath = {
         href: (tripId: number | string) =>
             `/trip/${tripId}`,
     },
+    myFace: {
+        description: "나의 얼굴 관리하기 페이지입니다.",
+        href: `/my/face`,
+    }
 };
