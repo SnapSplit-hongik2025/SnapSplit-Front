@@ -25,9 +25,16 @@ export default function BeforeRegistration() {
     },
   });
 
-  const handleRegisterClick = () => {
-    registerFace();
-  };
+  const { mutate: changeFace } = useMutation({
+    mutationFn: postMyFace,
+    onSuccess: () => {
+      alert('얼굴이 성공적으로 변경되었습니다!');
+      queryClient.invalidateQueries({ queryKey: ['face'] });
+    },
+    onError: (err) => {
+      alert(err.message || '얼굴 변경에 실패했습니다.');
+    },
+  });
 
   if (isLoading) {
     return <div>로딩중..</div>;
@@ -46,7 +53,8 @@ export default function BeforeRegistration() {
       <FaceHeader />
       <div className="flex flex-col items-center text-center space-y-6 pt-12">
         <FaceImageCircle registered={data?.registered} faceImageUrl={data?.faceImageUrl} />
-        <Button label="나의 얼굴 등록하기" onClick={handleRegisterClick}></Button>
+        <Button label="나의 얼굴 등록하기" onClick={registerFace}></Button>
+        <Button label="나의 얼굴 변경하기" onClick={changeFace}></Button>
         <TipInfoBox />
       </div>
     </div>

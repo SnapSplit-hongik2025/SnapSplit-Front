@@ -22,3 +22,14 @@ export const postMyFace = async (): Promise<null> => {
         throw new Error('나의 얼굴 등록을 실패했습니다.');
     }
 };
+
+// 나의 face Id 수정하기
+export const putMyFace = async (): Promise<null> => {
+    try {
+        await privateInstance.put<ApiEnvelope<null>>(apiPath.face);
+        return null;
+    } catch (error) {
+        console.log('postMyFace API 실패', error);
+        throw new Error('나의 얼굴 등록을 실패했습니다.');
+    }
+};
