@@ -53,8 +53,8 @@ export default function BeforeRegistration() {
       <FaceHeader />
       <div className="flex flex-col items-center text-center space-y-6 pt-12">
         <FaceImageCircle registered={data?.registered} faceImageUrl={data?.faceImageUrl} />
-        <Button label="나의 얼굴 등록하기" onClick={registerFace}></Button>
-        <Button label="나의 얼굴 변경하기" onClick={changeFace}></Button>
+        {data?.registered && <Button label="나의 얼굴 등록하기" onClick={registerFace}></Button>}
+        {!data?.registered && <Button label="나의 얼굴 변경하기" onClick={changeFace}></Button>}
         <TipInfoBox />
       </div>
     </div>
