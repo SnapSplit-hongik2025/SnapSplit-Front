@@ -9,6 +9,16 @@ export const getMyFaceData = async (): Promise<GetMyFaceDto> => {
         return res.data.data;
     } catch (error) {
         console.log('getMyFaceData API 실패', error);
-        throw new Error('여행 예산 정보를 불러오는 데 실패했습니다.');
+        throw new Error('나의 얼굴 정보를 가져오는데 실패했습니다.');
+    }
+};
+
+export const postMyFace = async (): Promise<null> => {
+    try {
+        await privateInstance.post<ApiEnvelope<null>>(apiPath.face);
+        return null;
+    } catch (error) {
+        console.log('postMyFace API 실패', error);
+        throw new Error('나의 얼굴 등록을 실패했습니다.');
     }
 };
