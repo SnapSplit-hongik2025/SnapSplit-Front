@@ -5,7 +5,7 @@ import { GetMyFaceDto } from "../types/face-dto-type";
 
 export const getMyFaceData = async (): Promise<GetMyFaceDto> => {
     try {
-        const res = await privateInstance.get<ApiEnvelope<GetMyFaceDto>>(apiPath.face);
+        const res = await privateInstance.get<ApiEnvelope<GetMyFaceDto>>(apiPath.my_face);
         return res.data.data;
     } catch (error) {
         console.log('getMyFaceData API 실패', error);
@@ -13,9 +13,16 @@ export const getMyFaceData = async (): Promise<GetMyFaceDto> => {
     }
 };
 
-export const postMyFace = async (): Promise<null> => {
+export const postMyFace = async (imageFile: File): Promise<null> => {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
     try {
-        await privateInstance.post<ApiEnvelope<null>>(apiPath.face);
+        await privateInstance.post<ApiEnvelope<null>>(apiPath.snap_face,formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
         return null;
     } catch (error) {
         console.log('postMyFace API 실패', error);
@@ -23,13 +30,19 @@ export const postMyFace = async (): Promise<null> => {
     }
 };
 
-// 나의 face Id 수정하기
-export const putMyFace = async (): Promise<null> => {
+export const putMyFace = async (imageFile: File): Promise<null> => {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
     try {
-        await privateInstance.put<ApiEnvelope<null>>(apiPath.face);
+        await privateInstance.put<ApiEnvelope<null>>(apiPath.snap_face, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
         return null;
     } catch (error) {
-        console.log('postMyFace API 실패', error);
-        throw new Error('나의 얼굴 등록을 실패했습니다.');
+        console.log('putMyFace API 실패', error);
+        throw new Error('나의 얼굴 수정을 실패했습니다.');
     }
 };
