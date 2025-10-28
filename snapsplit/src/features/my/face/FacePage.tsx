@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import arrow from '@public/svg/arrow-left-grey-850.svg';
 
-// components/BeforeRegistration.js
 export default function BeforeRegistration() {
   return (
     <div className="flex flex-col bg-white min-h-[100dvh] px-5">
@@ -14,31 +13,28 @@ export default function BeforeRegistration() {
         <div className="w-[25px]"></div>
       </header>
 
-      {/* 중앙 컨텐츠 영역 */}
       <div className="flex flex-col items-center text-center space-y-4">
-        <p className="text-start text-gray-600">
+        <p className="text-start text-gray-600 py-5 w-full">
           아직 등록된 얼굴이 없어요. <br />
-          얼굴을 등록하면 여행 사진에서 나를 자동으로 찾아줘요!
+          얼굴을 등록하면 여행 사진에서 나를 찾아줘요!
         </p>
-        <div className="flex items-center justify-center w-32 h-32 bg-gray-100 border-1 border-dashed rounded-full">
+        <div className="flex items-center justify-center w-32 h-32 bg-gray-200 rounded-full">
           <span className="text-2xl font-bold text-gray-400">?</span>
         </div>
-        <button className="w-full px-4 py-3 font-bold text-white bg-primary rounded-lg cursor-pointer">
+        <button className="w-full px-4 py-3 mt-5 font-bold text-white bg-primary rounded-lg cursor-pointer">
           나의 얼굴 등록하기
         </button>
-        <div className="flex w-full flex-col text-grey-550 p-4 bg-grey-50 rounded-lg border border-grey-350 items-start">
-          <h3 className="font-semibold">높은 품질을 위한 tip</h3>
-          <ul className="mt-2 text-sm list-disc list-inside">
-            <li>얼굴을 가리지 않은 정면 사진</li>
-            <li>단체사진이라면 잘라서 올려주세요</li>
-          </ul>
+        <div className="flex w-full flex-col gap-1 text-grey-550 p-4 bg-grey-50 rounded-lg border border-grey-350 items-start">
+          <h3 className="font-semibold">나의 얼굴 tip</h3>
+          <p className="text-body-2">얼굴을 가리지 않은 정면 사진으로 올려주세요.</p>
+          <p className="text-body-2">기존에 태그된 사진들에는 적용되지 않아요.</p>
         </div>
       </div>
     </div>
   );
 }
 
-// // components/AfterRegistration.js
+// components/AfterRegistration.js
 // export function AfterRegistration() {
 //   return (
 //     <div className="w-full max-w-sm p-8 space-y-6 bg-white border rounded-lg shadow-sm">
