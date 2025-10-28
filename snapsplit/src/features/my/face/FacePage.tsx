@@ -108,9 +108,9 @@ export default function BeforeRegistration() {
         <FaceImageCircle registered={isImageAvailable} faceImageUrl={displayImageUrl} />
         <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
         {data?.registered || curFaceImgFile ? (
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-2 w-full">
             <Button label="다른 사진 선택하기" onClick={handleSelectFileClick} />
-            {curFaceImgFile && <Button label="이 얼굴로 변경하기" onClick={handleChangeSubmit} />}
+            {curFaceImgFile && <Button label="이 얼굴로 변경하기" onClick={handleChangeSubmit} bg="bg-grey-750" />}
           </div>
         ) : (
           <Button label="나의 얼굴 등록하기" onClick={handleSelectFileClick}></Button>
