@@ -18,4 +18,5 @@ export const enum apiPath {
   tripCountry = '/trips/{tripId}/countries',
   tripDate = '/trips/{tripId}/schedule',
   tripInfo = '/trips/{tripId}/info',
+  face = '/home/myPage/face'
 }
