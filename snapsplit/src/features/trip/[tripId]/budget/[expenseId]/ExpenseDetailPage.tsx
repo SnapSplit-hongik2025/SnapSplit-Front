@@ -29,17 +29,7 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
   if (!data) {
     return <div>데이터가 없습니다.</div>;
   }
-  const mock = {
-    receiptItems: [
-      { name: 'COLES STRAWB YOGHURT 1KG', amount: 4 },
-      { name: 'A2 DAIRY LIGHT MILK 2LITRE', amount: 1000000 },
-      { name: 'ANNIES OAT MILK 1LITRE', amount: 2.6 },
-      { name: 'IMPERFECT APPLES 2KG', amount: 6.9 },
-      { name: 'PREPACK CARROTS 1KGREPACK CARROTS 1KGREPACK CARROTS 1KG', amount: 1.7 },
-      { name: 'BANANAS PERKG', amount: 5.09 },
-      { name: 'WHITE PEACHES PERKG', amount: 1.81 },
-    ],
-  };
+
   const korCategory = data.category ? mapCategoryToKor(data.category) : '기타';
   const symbol = getSymbol(data.currency);
 
@@ -74,7 +64,7 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
             symbol={symbol}
           />
         </div>
-        {data.receiptItems && <ReceiptItemsSection symbol={symbol} receiptItems={mock.receiptItems || []} />}
+        {data.receiptItems && <ReceiptItemsSection symbol={symbol} receiptItems={data.receiptItems || []} />}
       </div>
     </div>
   );
