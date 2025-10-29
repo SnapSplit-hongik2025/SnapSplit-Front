@@ -40,7 +40,7 @@ const BudgetPage = ({ tripId }: BudgetPageProps) => {
         <TripDateBar startDate={budgetData.startDate} endDate={budgetData.endDate} />
       </div>
       <DailyExpenseList dailyExpenses={budgetData.dailyExpenses} tripStartDate={budgetData.startDate} />
-      <BottomSheetTrigger total={budgetData.totalExpense} />
+      <BottomSheetTrigger total={budgetData.totalExpense} tripId={tripId} />
     </div>
   );
 };

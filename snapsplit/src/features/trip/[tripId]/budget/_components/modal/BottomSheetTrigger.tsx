@@ -7,7 +7,7 @@ import Image from 'next/image';
 import topArrow from '@public/svg/topArrow.svg';
 import FullScreenModal from '@/shared/components/modal/FullScreenModal';
 
-const BottomSheetTrigger = ({ total }: { total: number }) => {
+const BottomSheetTrigger = ({ total, tripId }: { total: number; tripId: string }) => {
   const [open, setOpen] = useState(false);
 
   // TODO: BottomNavBar fixed 제거 시 포지션 꼬이는 지 확인해보기
@@ -28,7 +28,7 @@ const BottomSheetTrigger = ({ total }: { total: number }) => {
       <AnimatePresence>
         {open && (
           <FullScreenModal>
-            <FullExpenseModal onClose={() => setOpen(false)} />
+            <FullExpenseModal onClose={() => setOpen(false)} tripId={tripId} />
           </FullScreenModal>
         )}
       </AnimatePresence>

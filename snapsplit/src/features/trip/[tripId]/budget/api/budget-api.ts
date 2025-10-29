@@ -117,7 +117,7 @@ export const removeSharedBudget = async (tripId: number, payload: UpdateSharedBu
   }
 };
 
-export const getCategoryExpense = async (tripId: number): Promise<GetCategoryExpenseDto> => {
+export const getCategoryExpense = async (tripId: string): Promise<GetCategoryExpenseDto> => {
   if (!tripId) {
     alert('유효하지 않은 여행 ID입니다. 다시 시도해주세요.')
   }
