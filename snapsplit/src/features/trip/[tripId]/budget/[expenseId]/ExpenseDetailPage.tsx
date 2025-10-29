@@ -32,10 +32,10 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
   const mock = {
     receiptItems: [
       { name: 'COLES STRAWB YOGHURT 1KG', amount: 4 },
-      { name: 'A2 DAIRY LIGHT MILK 2LITRE', amount: 6.9 },
+      { name: 'A2 DAIRY LIGHT MILK 2LITRE', amount: 1000000 },
       { name: 'ANNIES OAT MILK 1LITRE', amount: 2.6 },
       { name: 'IMPERFECT APPLES 2KG', amount: 6.9 },
-      { name: 'PREPACK CARROTS 1KG', amount: 1.7 },
+      { name: 'PREPACK CARROTS 1KGREPACK CARROTS 1KGREPACK CARROTS 1KG', amount: 1.7 },
       { name: 'BANANAS PERKG', amount: 5.09 },
       { name: 'WHITE PEACHES PERKG', amount: 1.81 },
     ],
@@ -43,18 +43,12 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
   const korCategory = data.category ? mapCategoryToKor(data.category) : '기타';
   const symbol = getSymbol(data.currency);
 
-  // {data.receiptUrl && <ReceiptImg receiptUrl={data.receiptUrl} />}
-
   return (
     <div className="h-screen w-full flex flex-col">
       <ExpenseDetailHeader tripId={tripId} />
       <div className="flex h-full flex-col w-full overflow-y-auto scrollbar-hide p-5">
         <ExpenseAmount amount={data.amount} symbol={symbol} amountKRW={data.amountKRW} />
-        <ReceiptImg
-          receiptUrl={
-            'https://snapsplit-assets.s3.ap-northeast-2.amazonaws.com/photos/0144acc6-50ce-4f0f-befd-b39fc9bd9b8e_IMG_0003.jpeg'
-          }
-        />
+        {data.receiptUrl && <ReceiptImg receiptUrl={data.receiptUrl} />}
         <div className="pt-6 space-y-6">
           <ExpenseDetailInfoItem label="여행 일자" value={data.date} />
           <ExpenseDetailInfoItem label="지출 형태" value={data.paymentMethod === 'CREDIT_CARD' ? '카드' : '현금'} />
@@ -80,7 +74,7 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
             symbol={symbol}
           />
         </div>
-        <ReceiptItemsSection symbol={symbol} receiptItems={mock.receiptItems || []} />
+        {data.receiptItems && <ReceiptItemsSection symbol={symbol} receiptItems={mock.receiptItems || []} />}
       </div>
     </div>
   );
