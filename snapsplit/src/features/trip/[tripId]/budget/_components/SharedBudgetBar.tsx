@@ -1,15 +1,15 @@
 'use client';
 
 import { SharedBudgetBarProps } from '../types/budget-type';
-import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
 import rightArrow from '@public/svg/rightArrow.svg';
 import Image from 'next/image';
 import devider from '@public/svg/devider-2-green.svg';
 import Link from 'next/link';
 import { mapCategoryToKor } from '@/shared/utils/useCategoryMapper';
+import { getSymbol } from '@/shared/utils/currency';
 
 const SharedBudgetBar = ({ tripId, sharedFund, topExpense }: SharedBudgetBarProps) => {
-  const symbol = useCurrencySymbol(sharedFund.defaultCurrency);
+  const symbol = getSymbol(sharedFund.defaultCurrency);
 
   if (!sharedFund) {
     return <div>예산 정보를 불러올 수 없습니다.</div>;
