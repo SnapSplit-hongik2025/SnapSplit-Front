@@ -10,6 +10,7 @@ import { mapCategoryToKor } from '@/shared/utils/useCategoryMapper';
 import { getExpenseDetail } from './api/expense-detail';
 import { useQuery } from '@tanstack/react-query';
 import ReceiptImg from './_components/ReceiptImg';
+import ReceiptItemsSection from './_components/ReceiptItemsSection';
 
 export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPageProps) {
   const { data, isLoading, isError, error } = useQuery({
@@ -28,7 +29,17 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
   if (!data) {
     return <div>데이터가 없습니다.</div>;
   }
-
+  const mock = {
+    receiptItems: [
+      { name: 'COLES STRAWB YOGHURT 1KG', amount: 4 },
+      { name: 'A2 DAIRY LIGHT MILK 2LITRE', amount: 6.9 },
+      { name: 'ANNIES OAT MILK 1LITRE', amount: 2.6 },
+      { name: 'IMPERFECT APPLES 2KG', amount: 6.9 },
+      { name: 'PREPACK CARROTS 1KG', amount: 1.7 },
+      { name: 'BANANAS PERKG', amount: 5.09 },
+      { name: 'WHITE PEACHES PERKG', amount: 1.81 },
+    ],
+  };
   const korCategory = data.category ? mapCategoryToKor(data.category) : '기타';
   const symbol = getSymbol(data.currency);
 
@@ -69,6 +80,7 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
             symbol={symbol}
           />
         </div>
+        <ReceiptItemsSection symbol={symbol} receiptItems={mock.receiptItems || []} />
       </div>
     </div>
   );
