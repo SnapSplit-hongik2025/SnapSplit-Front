@@ -1,5 +1,5 @@
 import privateInstance from "@/lib/api/instance/privateInstance";
-import { GetTripBudgetDto, SharedBudgetDto, UpdateDefaultCurrencyDto,GetSharedBudgetDto, GetExchangeRateDto, UpdateSharedBudgetRequestDto } from "../types/budget-dto-type";
+import { GetTripBudgetDto, SharedBudgetDto, UpdateDefaultCurrencyDto,GetSharedBudgetDto, GetExchangeRateDto, UpdateSharedBudgetRequestDto, GetCategoryExpenseDto } from "../types/budget-dto-type";
 import { ApiEnvelope } from "@/lib/api/type";
 import { apiPath } from "@/shared/constants/apipath";
 
@@ -116,3 +116,19 @@ export const removeSharedBudget = async (tripId: number, payload: UpdateSharedBu
     throw new Error('여행 공동 경비를 빼는 데 실패했습니다.');
   }
 };
+
+export const getCategoryExpense = async (tripId: number): Promise<GetCategoryExpenseDto> => {
+  if (!tripId) {
+    alert('유효하지 않은 여행 ID입니다. 다시 시도해주세요.')
+  }
+
+  try {
+    const finalPath = apiPath.STATISTICS.replace('{tripId}', String(tripId));
+    const res = await privateInstance.get<ApiEnvelope<GetCategoryExpenseDto>>(finalPath);
+    console.log(`[API] getCategoryExpense for tripId ${tripId}:`, res.data.data);
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API ERROR] 카테고리 지출 정보를 불러오는데 실패했습니다. ${tripId}:`, error);
+    throw new Error('');
+  }
+}
