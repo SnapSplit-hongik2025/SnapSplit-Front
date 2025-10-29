@@ -4,22 +4,10 @@ export interface expenseMember {
   amount: number;
 }
 
-export interface ExpenseDetailData {
-  expenseId: number;
-  amount: number;
-  amountKRW: number;
-  currency: string;         // ex: "EUR"
-  paymentMethod: "cash" | "card";
-  date: string;
-  expenseName: string;
-  expenseMemo: string;
-  category: string;         // ex: "FOOD" 구체적인 union 타입 정하기
-  payers: expenseMember[];
-  splitters: expenseMember[];
-}
-
 export interface ExpenseDetailPageProps {
   tripId: string;
+  expenseId: string;
+
 }
 
 export interface ExpenseAmountProps {

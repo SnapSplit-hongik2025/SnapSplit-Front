@@ -1,4 +1,4 @@
-import { ExpenseAmountProps } from '../type';
+import { ExpenseAmountProps } from '../types/expense-detail-type';
 
 export default function ExpenseAmount({ amount, symbol, amountKRW }: ExpenseAmountProps) {
   return (
