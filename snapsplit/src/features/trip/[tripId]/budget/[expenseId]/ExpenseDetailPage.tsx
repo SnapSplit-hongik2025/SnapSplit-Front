@@ -1,6 +1,5 @@
 'use client';
 
-import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
 import { getSymbol } from '@/shared/utils/currency';
 import ExpenseAmount from './_components/ExpenseAmount';
 import ExpenseDetailHeader from './_components/ExpenseDetailHeader';
@@ -10,6 +9,8 @@ import { ExpenseDetailPageProps } from './types/expense-detail-type';
 import { mapCategoryToKor } from '@/shared/utils/useCategoryMapper';
 import { getExpenseDetail } from './api/expense-detail';
 import { useQuery } from '@tanstack/react-query';
+import ReceiptImg from './_components/ReceiptImg';
+import ReceiptItemsSection from './_components/ReceiptItemsSection';
 
 export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPageProps) {
   const { data, isLoading, isError, error } = useQuery({
@@ -37,6 +38,7 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
       <ExpenseDetailHeader tripId={tripId} />
       <div className="flex h-full flex-col w-full overflow-y-auto scrollbar-hide p-5">
         <ExpenseAmount amount={data.amount} symbol={symbol} amountKRW={data.amountKRW} />
+        {data.receiptUrl && <ReceiptImg receiptUrl={data.receiptUrl} />}
         <div className="pt-6 space-y-6">
           <ExpenseDetailInfoItem label="여행 일자" value={data.date} />
           <ExpenseDetailInfoItem label="지출 형태" value={data.paymentMethod === 'CREDIT_CARD' ? '카드' : '현금'} />
@@ -62,6 +64,7 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
             symbol={symbol}
           />
         </div>
+        {data.receiptItems && <ReceiptItemsSection symbol={symbol} receiptItems={data.receiptItems || []} />}
       </div>
     </div>
   );

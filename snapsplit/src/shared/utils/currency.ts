@@ -53,7 +53,7 @@ const currencyMap: Record<string, Currency> = {
   },
   CHF: {
     KorName: '프랑',
-    symbol: 'CHF',
+    symbol: '₣',
     nation: '스위스'
   },
   CZK: {

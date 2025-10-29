@@ -1,6 +1,6 @@
-import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
 import { ExpenseDto } from '../types/budget-dto-type';
 import { routerPath } from '@/shared/constants/routePath';
+import { getSymbol } from '@/shared/utils/currency';
 import Link from 'next/link';
 
 type ExpenseItemProps = {
@@ -10,8 +10,11 @@ type ExpenseItemProps = {
 
 const ExpenseItem = ({ expense, tripId }: ExpenseItemProps) => {
   const userNames = expense.splitters.map((u) => u).join(', ');
+
   const baseHref = routerPath.expenseDetail.href;
   const ExpenseDetailPath = baseHref.replace('{tripId}', tripId).replace('{expenseId}', expense.expenseId.toString());
+
+  const symbol = getSymbol(expense.currency);
 
   return (
     <Link href={ExpenseDetailPath} className="w-full flex gap-2 py-4">
@@ -20,8 +23,7 @@ const ExpenseItem = ({ expense, tripId }: ExpenseItemProps) => {
         <div className="flex justify-between text-label-1">
           <p>{expense.expenseName}</p>
           <p>
-            {useCurrencySymbol(expense.currency)}
-            {expense.amount.toLocaleString()}
+            {symbol} {expense.amount.toLocaleString()}
           </p>
         </div>
         <div className="flex justify-between text-label-1">

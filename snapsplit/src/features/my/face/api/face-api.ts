@@ -5,7 +5,7 @@ import { GetMyFaceDto } from "../types/face-dto-type";
 
 export const getMyFaceData = async (): Promise<GetMyFaceDto> => {
     try {
-        const res = await privateInstance.get<ApiEnvelope<GetMyFaceDto>>(apiPath.my_face);
+        const res = await privateInstance.get<ApiEnvelope<GetMyFaceDto>>(apiPath.MY_FACE);
         if (!res.data.success) {
             throw new Error(res.data.message || '나의 얼굴 정보를 가져오는데 실패했습니다.');
         }
@@ -21,7 +21,7 @@ export const postMyFace = async (imageFile: File): Promise<null> => {
     formData.append('image', imageFile);
 
     try {
-        const res = await privateInstance.post<ApiEnvelope<null>>(apiPath.snap_face,formData, {
+        const res = await privateInstance.post<ApiEnvelope<null>>(apiPath.SNAP_FACE,formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -41,7 +41,7 @@ export const putMyFace = async (imageFile: File): Promise<null> => {
     formData.append('image', imageFile);
 
     try {
-        const res = await privateInstance.put<ApiEnvelope<null>>(apiPath.snap_face, formData, {
+        const res = await privateInstance.put<ApiEnvelope<null>>(apiPath.SNAP_FACE, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

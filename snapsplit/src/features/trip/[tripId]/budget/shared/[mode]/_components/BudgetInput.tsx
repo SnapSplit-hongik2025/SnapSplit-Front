@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import arrow_bottom from '@public/svg/arrow_bottom.svg';
+import arrow_bottom from '@public/svg/arrow-bottom.svg';
 import { getNation } from '@/shared/utils/currency';
 
 type BudgetInputProps = {
@@ -12,8 +12,14 @@ type BudgetInputProps = {
 };
 
 // TODO: 통화별 환율 적용 결과 표시
-const BudgetInput = ({ currency, amount, setAmount, exchangeRate, isCurrencyOpen, setIsCurrencyOpen }: BudgetInputProps) => {
-
+const BudgetInput = ({
+  currency,
+  amount,
+  setAmount,
+  exchangeRate,
+  isCurrencyOpen,
+  setIsCurrencyOpen,
+}: BudgetInputProps) => {
   return (
     <div className="flex flex-col px-5 py-4 gap-3 rounded-xl bg-grey-150">
       <div className="flex items-center">
@@ -21,7 +27,9 @@ const BudgetInput = ({ currency, amount, setAmount, exchangeRate, isCurrencyOpen
           onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
           className="inline-flex items-center bg-white rounded-xl pl-3 pr-1"
         >
-          <div className="inline-flex text-body-2">{currency}({getNation(currency)})</div>
+          <div className="inline-flex text-body-2">
+            {currency}({getNation(currency)})
+          </div>
           <Image alt="arrow" src={arrow_bottom} />
         </button>
       </div>
@@ -33,8 +41,9 @@ const BudgetInput = ({ currency, amount, setAmount, exchangeRate, isCurrencyOpen
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <div className="flex items-center text-body-2 text-grey-550">= {
-        amount && exchangeRate[currency] ? Number(amount) * exchangeRate[currency] : '0'}원</div>
+        <div className="flex items-center text-body-2 text-grey-550">
+          = {amount && exchangeRate[currency] ? Number(amount) * exchangeRate[currency] : '0'}원
+        </div>
       </div>
     </div>
   );

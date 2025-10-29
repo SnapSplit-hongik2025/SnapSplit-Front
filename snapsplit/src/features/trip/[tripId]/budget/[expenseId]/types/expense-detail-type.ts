@@ -1,3 +1,5 @@
+import { ReceiptItemDto } from "./expense-detail-dto";
+
 export interface expenseMember {
   memberId: number;
   name: string;
@@ -7,7 +9,6 @@ export interface expenseMember {
 export interface ExpenseDetailPageProps {
   tripId: string;
   expenseId: string;
-
 }
 
 export interface ExpenseAmountProps {
@@ -19,5 +20,19 @@ export interface ExpenseAmountProps {
 export interface PersonalExpenseItemProps {
   variant: 'payers' | 'splitters';
   member: expenseMember[];
+  symbol: string;
+}
+
+export interface ReceiptImgProps {
+  receiptUrl: string;
+}
+
+export interface ReceiptItemsSectionProps {
+  symbol: string;
+  receiptItems : ReceiptItemDto[];
+}
+
+export interface ReceiptItemProps {
+  receiptItem: ReceiptItemDto;
   symbol: string;
 }
