@@ -21,3 +21,7 @@ export interface PersonalExpenseItemProps {
   member: expenseMember[];
   symbol: string;
 }
+
+export interface ReceiptImgProps {
+  receiptUrl: string;
+}
