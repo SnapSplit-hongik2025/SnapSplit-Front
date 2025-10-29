@@ -15,5 +15,9 @@ export const routerPath = {
     myFace: {
         description: "나의 얼굴 관리하기 페이지입니다.",
         href: `/my/face`,
+    },
+    expenseDetail: {
+        description: "개별 지출 상세 페이지입니다.",
+        href: `/trip/{tripId}/budget/{expenseId}`,
     }
 };
