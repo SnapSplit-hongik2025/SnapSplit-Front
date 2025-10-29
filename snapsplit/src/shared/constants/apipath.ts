@@ -19,5 +19,6 @@ export const enum apiPath {
   TRIP_DATE = '/trips/{tripId}/schedule',
   TRIP_INFO = '/trips/{tripId}/info',
   MY_FACE = '/home/myPage/face',
-  SNAP_FACE = '/api/snap/face'
+  SNAP_FACE = '/api/snap/face',
+  STATISTICS = '/trips/{tripId}/statistics'
 }

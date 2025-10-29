@@ -1,25 +1,46 @@
 'use client';
 
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 import ModalMotionWrapper from './ModalMotionWrapper';
+import { getCategoryExpense } from '../../api/budget-api';
+import { mapCategoryToKor } from '@/shared/utils/useCategoryMapper';
 
 type Props = {
   onClose: () => void;
+  tripId: string;
 };
 
-// TODO: data fetch
-const expenses = {
-  '점심': 10000,
-  '기차 예매': 20000,
-  '간식': 30000,
-  '쇼핑': 40000,
-};
+const FullExpenseModal = ({ onClose, tripId }: Props) => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['categoryExpense', tripId],
+    queryFn: () => getCategoryExpense(tripId),
+    enabled: !!tripId,
+  });
 
-const total = Object.values(expenses).reduce((acc, cur) => acc + cur, 0);
+  if (isLoading) {
+    return (
+      <ModalMotionWrapper>
+        <div className="flex justify-center items-center h-64 text-grey-500">로딩 중...</div>
+      </ModalMotionWrapper>
+    );
+  }
 
-const FullExpenseModal = ({ onClose }: Props) => {
+  if (isError || !data) {
+    return (
+      <ModalMotionWrapper>
+        <div className="flex justify-center items-center h-64 text-red-400">
+          데이터를 불러오는 중 오류가 발생했습니다.
+        </div>
+      </ModalMotionWrapper>
+    );
+  }
+
+  const { totalAmountKRW, categoryExpenses } = data;
+
   return (
     <ModalMotionWrapper>
+      {/* Header */}
       <div className="flex flex-col w-full bg-grey-850">
         <div className="flex justify-end px-5 py-3 h-12">
           <button onClick={onClose}>
@@ -27,17 +48,18 @@ const FullExpenseModal = ({ onClose }: Props) => {
           </button>
         </div>
         <div className="flex justify-center pt-1 pb-4 border-b-1 border-grey-250 w-full">
-          <div className="text-title-1 text-white">총 {total.toLocaleString()}원 지출</div>
+          <div className="text-title-1 text-white">총 {totalAmountKRW.toLocaleString()}원 지출</div>
         </div>
       </div>
 
+      {/* Body */}
       <div className="flex flex-col">
-        {Object.entries(expenses).map(([category, amount], index) => (
+        {categoryExpenses.map(({ category, amountKRW }, index) => (
           <div key={category} className="flex items-center px-5 py-5 gap-4">
             <div className="flex justify-center items-center w-5 h-6 text-primary text-3xl font-cal">{index + 1}</div>
             <div className="flex items-center justify-between w-full">
-              <div className="text-label-1 text-grey-1000">{category}</div>
-              <div className="text-label-1 text-grey-550">{amount.toLocaleString()}원</div>
+              <div className="text-label-1 text-grey-1000">{mapCategoryToKor(category)}</div>
+              <div className="text-label-1 text-grey-550">{amountKRW.toLocaleString()}원</div>
             </div>
           </div>
         ))}
