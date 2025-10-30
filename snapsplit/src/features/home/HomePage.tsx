@@ -7,6 +7,7 @@ import PastTripImgCardList from './_components/PastTripImgCardList';
 import AllPastTripList from './_components/AllPastTripList';
 import { getHomeData } from './api/home-api';
 import { GetHomeResponseDto } from './types/home-type';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function HomePage() {
   const [homeData, setHomeData] = useState<GetHomeResponseDto | null>(null);
@@ -43,7 +44,12 @@ export default function HomePage() {
     };
   }, []);
 
-  if (loading) return <div>로딩중...</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center bg-grey-50 min-h-[100dvh] pb-6">
+        <Loading />
+      </div>
+    );
   if (!homeData) return <div>데이터를 불러오지 못했습니다.</div>;
 
   return (
