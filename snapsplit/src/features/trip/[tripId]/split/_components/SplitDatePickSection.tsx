@@ -43,12 +43,10 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
   const hasExpenseInRange = useMemo(() => {
     if (!isValidDateRange) return false;
 
-    // 배열 슬라이싱 후 하나라도 지출을 가진 날이 있는지 확인
     const selectedRange = tripDay.slice(startDayIndex, endDayIndex + 1);
     return selectedRange.some((day) => day.hasExpense);
   }, [startDayIndex, endDayIndex, tripDay, isValidDateRange]);
 
-  // 에러 메시지 결정
   let errorMessage: string | null = null;
 
   if (startDayIndex === null || endDayIndex === null) {
@@ -69,14 +67,14 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
     try {
       const startDate = tripDay[startDayIndex].date;
       const endDate = tripDay[endDayIndex].date;
-
       const { settlementId } = await postSettlement(tripId, startDate, endDate);
 
-      // 동작 순서 고민하기
       alert('정산이 완료되었습니다!');
       setIsConfirmModalOpen(false);
-      // day 정보 같이 전달해주는 것 고려하기
-      router.push(`/trip/${tripId}/split/${settlementId}`);
+
+      const startDayParam = encodeURIComponent(tripDay[startDayIndex].day); // 또는 index 사용: startDayIndex
+      const endDayParam = encodeURIComponent(tripDay[endDayIndex].day);
+      router.push(`/trip/${tripId}/split/${settlementId}?startDay=${startDayParam}&endDay=${endDayParam}`);
     } catch (e) {
       console.error(e);
     }
