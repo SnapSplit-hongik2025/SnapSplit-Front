@@ -9,6 +9,7 @@ import { Country } from '@/shared/types/country';
 import { useQuery } from '@tanstack/react-query';
 import { GetCountryTripDto } from '@/features/trip/createTrip/types/type';
 import { editTripCountries, getTripCountries } from '../api/edit-trip-api';
+import Loading from '@/shared/components/loading/Loading';
 
 const EditCountryPage = ({ tripId }: EditCountryPageProps) => {
   const router = useRouter();
@@ -28,7 +29,11 @@ const EditCountryPage = ({ tripId }: EditCountryPageProps) => {
   }, [data]);
 
   if (isLoading) {
-    return <div>여행지 정보를 불러오는 중입니다...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

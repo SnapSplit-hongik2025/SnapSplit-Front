@@ -15,6 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createTrip, getCountryTrip } from './api/create-trip-api';
 import { UserInfoDto } from './types/type';
 import { useAuthStore } from '@/lib/zustand/useAuthStore';
+import Loading from '@/shared/components/loading/Loading';
 
 // steps로 단계별 컴포넌트를 랜더링해주는 Multi Step Form 페이지
 export default function CreateTripPage() {
@@ -49,7 +50,11 @@ export default function CreateTripPage() {
   });
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

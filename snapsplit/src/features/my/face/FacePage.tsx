@@ -8,6 +8,7 @@ import FaceImageCircle from './_components/FaceImageCircle';
 import Button from '@/shared/components/Button';
 import { useRef, useState, useEffect } from 'react';
 import { GetMyFaceDto } from './types/face-dto-type';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function BeforeRegistration() {
   const queryClient = useQueryClient();
@@ -93,7 +94,11 @@ export default function BeforeRegistration() {
   }, [previewImageUrl]);
 
   if (isLoading) {
-    return <div>로딩중..</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
   if (isError) {
     return <div>에러 발생: {error.message}</div>;
