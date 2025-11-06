@@ -11,6 +11,7 @@ import { getExpenseDetail } from './api/expense-detail';
 import { useQuery } from '@tanstack/react-query';
 import ReceiptImg from './_components/ReceiptImg';
 import ReceiptItemsSection from './_components/ReceiptItemsSection';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPageProps) {
   const { data, isLoading, isError, error } = useQuery({
@@ -19,7 +20,11 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
   });
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

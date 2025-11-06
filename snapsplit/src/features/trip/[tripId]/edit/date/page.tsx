@@ -8,6 +8,7 @@ import { EditDatePageProps, GetTripDateDto } from './type';
 import { format, parseISO } from 'date-fns'; // 원하면 parseISO 사용 가능
 import { useQuery } from '@tanstack/react-query';
 import { editTripDates, getTripDates } from '../api/edit-trip-api';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function EditDatePage({ tripId }: EditDatePageProps) {
   // Date 상태 관리
@@ -30,7 +31,11 @@ export default function EditDatePage({ tripId }: EditDatePageProps) {
   }, [data]);
 
   if (isLoading) {
-    return <div>날짜 정보를 불러오는 중입니다...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

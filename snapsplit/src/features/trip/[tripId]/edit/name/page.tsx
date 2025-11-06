@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { editTripInfo, getTripInfo } from '../api/edit-trip-api';
 import { useRouter } from 'next/navigation';
+import Loading from '@/shared/components/loading/Loading';
 
 const EditNamePage = ({ tripId }: EditNamePageProps) => {
   const router = useRouter();
@@ -31,7 +32,11 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
   }, [data]);
 
   if (isLoading) {
-    return <div>날짜 정보를 불러오는 중입니다...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

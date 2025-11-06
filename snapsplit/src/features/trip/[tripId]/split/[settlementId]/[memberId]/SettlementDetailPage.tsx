@@ -7,6 +7,7 @@ import { SettlementDetailPageProps } from './types/settlement-member-type';
 import { getSettlementMemberData } from './api/settlement-member-api';
 import { GetSettlementMemberDto } from './types/settlement-member-dto-type';
 import { useQuery } from '@tanstack/react-query';
+import Loading from '@/shared/components/loading/Loading';
 
 const SettlementDetailPage = ({ name, tripId, settlementId, memberId }: SettlementDetailPageProps) => {
   const {
@@ -21,7 +22,11 @@ const SettlementDetailPage = ({ name, tripId, settlementId, memberId }: Settleme
   });
 
   if (isLoading) {
-    return <div>정산 내역을 불러오는 중입니다...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {
