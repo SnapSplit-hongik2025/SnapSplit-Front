@@ -58,7 +58,7 @@ export default function ExpenseForm() {
     }));
   };
 
-  // payer 업데이트 핸들러
+/*   // payer 업데이트 핸들러
   const handlePayerChange = (index: number, key: 'memberId' | 'payerAmount', value: number) => {
     setForm((prev) => {
       const nextPayers = [...prev.payers];
@@ -80,7 +80,7 @@ export default function ExpenseForm() {
   const addPayer = () => setForm((p) => ({ ...p, payers: [...p.payers, { memberId: 0, payerAmount: 0 }] }));
   const addSplitter = () =>
     setForm((p) => ({ ...p, splitters: [...p.splitters, { memberId: 0, splitAmount: 0 }] }));
-
+ */
   // receipt
   const searchParams = useSearchParams();
   const from = searchParams.get('from');

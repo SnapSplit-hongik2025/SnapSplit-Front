@@ -1,51 +1,67 @@
 'use client';
 
-import { useCurrencySymbol } from '@/shared/utils/useCurrencySymbol';
+import { getSymbol } from '@/shared/utils/currency';
 import ExpenseAmount from './_components/ExpenseAmount';
 import ExpenseDetailHeader from './_components/ExpenseDetailHeader';
 import ExpenseDetailInfoItem from './_components/ExpenseDetailInfoItem';
 import PersonalExpenseItem from './_components/PersonalExpenseItem';
-import { ExpenseDetailPageProps, ExpenseDetailData } from './type';
-import mock from '@public/mocks/expense-detail.json';
+import { ExpenseDetailPageProps } from './types/expense-detail-type';
 import { mapCategoryToKor } from '@/shared/utils/useCategoryMapper';
+import { getExpenseDetail } from './api/expense-detail';
+import { useQuery } from '@tanstack/react-query';
+import ReceiptImg from './_components/ReceiptImg';
+import ReceiptItemsSection from './_components/ReceiptItemsSection';
+import Loading from '@/shared/components/loading/Loading';
 
-export default function ExpenseDetailPage({ tripId }: ExpenseDetailPageProps) {
-  const expenseDetail = (mock as { data: ExpenseDetailData }).data;
-  const { amount, amountKRW, currency, paymentMethod, date, expenseName, expenseMemo, category, payers, splitters } =
-    expenseDetail;
-  const korCategory = category ? mapCategoryToKor(category) : '기타';
-  // 통화 기호 ($, €, etc.)
-  const symbol = useCurrencySymbol(currency);
+export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPageProps) {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['expenseDetail', tripId, expenseId],
+    queryFn: () => getExpenseDetail(tripId, expenseId),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div>에러 발생: {error.message}</div>;
+  }
+
+  if (!data) {
+    return <div>데이터가 없습니다.</div>;
+  }
+
+  const korCategory = data.category ? mapCategoryToKor(data.category) : '기타';
+  const symbol = getSymbol(data.currency);
 
   return (
     <div className="h-screen w-full flex flex-col">
       <ExpenseDetailHeader tripId={tripId} />
-
       <div className="flex h-full flex-col w-full overflow-y-auto scrollbar-hide p-5">
-        <ExpenseAmount amount={amount} symbol={symbol} amountKRW={amountKRW} />
-
+        <ExpenseAmount amount={data.amount} symbol={symbol} amountKRW={data.amountKRW} />
+        {data.receiptUrl && <ReceiptImg receiptUrl={data.receiptUrl} />}
         <div className="pt-6 space-y-6">
-          <ExpenseDetailInfoItem label="여행 일자" value={date} />
-          <ExpenseDetailInfoItem label="지출 형태" value={paymentMethod === 'card' ? '카드' : '현금'} />
-          <ExpenseDetailInfoItem label="지출명" value={expenseName} />
-          <ExpenseDetailInfoItem label="지출 내용 (선택)" value={expenseMemo} />
+          <ExpenseDetailInfoItem label="여행 일자" value={data.date} />
+          <ExpenseDetailInfoItem label="지출 형태" value={data.paymentMethod === 'CREDIT_CARD' ? '카드' : '현금'} />
+          <ExpenseDetailInfoItem label="지출명" value={data.expenseName} />
+          <ExpenseDetailInfoItem label="지출 내용 (선택)" value={data.expenseMemo} />
           <ExpenseDetailInfoItem label="카테고리 (선택)" value={korCategory} />
-
-          {/* 결제자 리스트 */}
           <PersonalExpenseItem
             variant="payers"
-            member={payers.map((p) => ({
+            member={data.payers.map((p) => ({
               memberId: p.memberId,
               name: p.name,
               amount: p.amount,
             }))}
             symbol={symbol}
           />
-
-          {/* 정산자 리스트 */}
           <PersonalExpenseItem
             variant="splitters"
-            member={splitters.map((s) => ({
+            member={data.splitters.map((s) => ({
               memberId: s.memberId,
               name: s.name,
               amount: s.amount,
@@ -53,6 +69,7 @@ export default function ExpenseDetailPage({ tripId }: ExpenseDetailPageProps) {
             symbol={symbol}
           />
         </div>
+        {data.receiptItems && <ReceiptItemsSection symbol={symbol} receiptItems={data.receiptItems || []} />}
       </div>
     </div>
   );

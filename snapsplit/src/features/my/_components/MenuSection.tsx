@@ -6,6 +6,8 @@ import MyPageModal from '@/features/my/_components/modal/MyPageModal';
 import { logOut as logOutApi } from '@/features/my/api/my-api';
 import { useAuthStore } from '@/lib/zustand/useAuthStore';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { routerPath } from '@/shared/constants/routePath';
 
 export default function MenuSection() {
   const [isLogOutModalOpen, setIsLogOutModalOpen] = useState(false);
@@ -29,6 +31,7 @@ export default function MenuSection() {
       {/* Account Menu */}
       <div className="flex flex-col gap-4 items-start text-label-2">
         <p className="text-body-3 text-grey-550">내 계정</p>
+        <Link href={routerPath.myFace.href}>나의 얼굴</Link>
         <button className="cursor-pointer" onClick={() => setIsLogOutModalOpen(true)}>
           로그아웃
         </button>

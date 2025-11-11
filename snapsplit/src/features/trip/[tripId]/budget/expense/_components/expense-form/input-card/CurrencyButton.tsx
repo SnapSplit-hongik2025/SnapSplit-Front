@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 import { getKorName } from '@/shared/utils/currency';
 
 type Props = {

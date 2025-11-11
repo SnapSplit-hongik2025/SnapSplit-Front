@@ -1,4 +1,4 @@
-import { ExpenseAmountProps } from '../type';
+import { ExpenseAmountProps } from '../types/expense-detail-type';
 
 export default function ExpenseAmount({ amount, symbol, amountKRW }: ExpenseAmountProps) {
   return (
@@ -7,7 +7,7 @@ export default function ExpenseAmount({ amount, symbol, amountKRW }: ExpenseAmou
         {amount}
         {symbol}
       </p>
-      <p className="text-body-2 text-grey-550">= {amountKRW}원</p>
+      <p className="text-body-2 text-grey-550">= {amountKRW.toLocaleString()}원</p>
     </div>
   );
 }

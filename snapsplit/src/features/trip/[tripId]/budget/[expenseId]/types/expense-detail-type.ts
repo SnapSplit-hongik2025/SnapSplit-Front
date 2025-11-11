@@ -1,25 +1,14 @@
+import { ReceiptItemDto } from "./expense-detail-dto";
+
 export interface expenseMember {
   memberId: number;
   name: string;
   amount: number;
 }
 
-export interface ExpenseDetailData {
-  expenseId: number;
-  amount: number;
-  amountKRW: number;
-  currency: string;         // ex: "EUR"
-  paymentMethod: "cash" | "card";
-  date: string;
-  expenseName: string;
-  expenseMemo: string;
-  category: string;         // ex: "FOOD" 구체적인 union 타입 정하기
-  payers: expenseMember[];
-  splitters: expenseMember[];
-}
-
 export interface ExpenseDetailPageProps {
   tripId: string;
+  expenseId: string;
 }
 
 export interface ExpenseAmountProps {
@@ -31,5 +20,19 @@ export interface ExpenseAmountProps {
 export interface PersonalExpenseItemProps {
   variant: 'payers' | 'splitters';
   member: expenseMember[];
+  symbol: string;
+}
+
+export interface ReceiptImgProps {
+  receiptUrl: string;
+}
+
+export interface ReceiptItemsSectionProps {
+  symbol: string;
+  receiptItems : ReceiptItemDto[];
+}
+
+export interface ReceiptItemProps {
+  receiptItem: ReceiptItemDto;
   symbol: string;
 }

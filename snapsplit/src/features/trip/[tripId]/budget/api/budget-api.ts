@@ -1,5 +1,5 @@
 import privateInstance from "@/lib/api/instance/privateInstance";
-import { GetTripBudgetDto, SharedBudgetDto, UpdateDefaultCurrencyDto,GetSharedBudgetDto, GetExchangeRateDto, UpdateSharedBudgetRequestDto } from "../types/budget-dto-type";
+import { GetTripBudgetDto, SharedBudgetDto, UpdateDefaultCurrencyDto,GetSharedBudgetDto, GetExchangeRateDto, UpdateSharedBudgetRequestDto, GetCategoryExpenseDto } from "../types/budget-dto-type";
 import { ApiEnvelope } from "@/lib/api/type";
 import { apiPath } from "@/shared/constants/apipath";
 
@@ -9,7 +9,7 @@ export const getTripBudgetData = async (tripId: number): Promise<GetTripBudgetDt
   }
   
   try {
-    const finalPath = apiPath.expense.replace('{tripId}', String(tripId));
+    const finalPath = apiPath.EXPENSE.replace('{tripId}', String(tripId));
     const res = await privateInstance.get<ApiEnvelope<GetTripBudgetDto>>(finalPath);
     console.log(`[API] Fetched trip budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -41,7 +41,7 @@ export const updateDefaultCurrency = async (tripId: number, currency: string): P
   }
 
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId));
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId));
     const res = await privateInstance.patch<ApiEnvelope<UpdateDefaultCurrencyDto>>(finalPath, null, {
       params: { newDefaultCur: currency }
     });
@@ -59,7 +59,7 @@ export const getSharedBudgetData = async (tripId: number): Promise<GetSharedBudg
   }
   
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId)) + '/details';
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId)) + '/details';
     const res = await privateInstance.get<ApiEnvelope<GetSharedBudgetDto>>(finalPath);
     console.log(`[API] Fetched shared budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -75,7 +75,7 @@ export const getExchangeRate = async (bases: string): Promise<GetExchangeRateDto
   }
   
   try {
-    const finalPath = apiPath.exchange;
+    const finalPath = apiPath.EXCHANGE;
     const res = await privateInstance.get<ApiEnvelope<GetExchangeRateDto>>(finalPath, { params: { bases } });
     console.log(`[API] Fetched exchange rate for bases ${bases}:`, res.data.data);
     return res.data.data;
@@ -91,7 +91,7 @@ export const addSharedBudget = async (tripId: number, payload: UpdateSharedBudge
   }
   
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId)) + '/add';
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId)) + '/add';
     const res = await privateInstance.post<ApiEnvelope<GetSharedBudgetDto>>(finalPath, payload);
     console.log(`[API] Added shared budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -107,7 +107,7 @@ export const removeSharedBudget = async (tripId: number, payload: UpdateSharedBu
   }
   
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId)) + '/remove';
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId)) + '/remove';
     const res = await privateInstance.post<ApiEnvelope<GetSharedBudgetDto>>(finalPath, payload);
     console.log(`[API] Removed shared budget for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -116,3 +116,19 @@ export const removeSharedBudget = async (tripId: number, payload: UpdateSharedBu
     throw new Error('여행 공동 경비를 빼는 데 실패했습니다.');
   }
 };
+
+export const getCategoryExpense = async (tripId: string): Promise<GetCategoryExpenseDto> => {
+  if (!tripId) {
+    alert('유효하지 않은 여행 ID입니다. 다시 시도해주세요.')
+  }
+
+  try {
+    const finalPath = apiPath.STATISTICS.replace('{tripId}', String(tripId));
+    const res = await privateInstance.get<ApiEnvelope<GetCategoryExpenseDto>>(finalPath);
+    console.log(`[API] getCategoryExpense for tripId ${tripId}:`, res.data.data);
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API ERROR] 카테고리 지출 정보를 불러오는데 실패했습니다. ${tripId}:`, error);
+    throw new Error('');
+  }
+}

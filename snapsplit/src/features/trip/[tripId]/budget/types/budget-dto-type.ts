@@ -81,3 +81,11 @@ export interface UpdateSharedBudgetRequestDto {
   paymentMethod: string;
   createdAt: string;
 }
+
+export interface GetCategoryExpenseDto {
+  totalAmountKRW: number;
+  categoryExpenses: {
+    category: BackendCategory,
+    amountKRW: number;
+  }[]
+}

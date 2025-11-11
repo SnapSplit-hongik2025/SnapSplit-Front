@@ -10,8 +10,7 @@ import Divider from '@/shared/components/Divider';
 import PersonalExpensesList from './_components/PersonalExpensesList';
 import { getSettlementData } from './api/settlement-api';
 import { GetSettlementDto } from './types/settlement-dto-type';
-
-// GNB 사이즈 재조정 이후, margin 조정 필요
+import Loading from '@/shared/components/loading/Loading';
 
 const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPageProps) => {
   const { data, isLoading, isError, error, isSuccess } = useQuery<GetSettlementDto, Error>({
@@ -21,7 +20,11 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
   });
 
   if (isLoading) {
-    return <div>정산 내역을 불러오는 중입니다...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

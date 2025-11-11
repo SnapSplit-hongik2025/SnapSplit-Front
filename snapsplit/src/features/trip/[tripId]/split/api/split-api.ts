@@ -12,7 +12,7 @@ export const getSplitData = async (tripId: string): Promise<GetSplitDto> => {
   }
 
   try {
-    const finalPath = apiPath.split.replace('{tripId}', encodeURIComponent(tripId));
+    const finalPath = apiPath.SPLIT.replace('{tripId}', encodeURIComponent(tripId));
     const res = await privateInstance.get<ApiEnvelope<GetSplitDto>>(finalPath);
     return res.data.data;
   } catch (error) {
@@ -40,7 +40,7 @@ export const postSettlement = async (
   }
 
   try {
-    const finalPath = apiPath.split.replace('{tripId}', encodeURIComponent(tripId));
+    const finalPath = apiPath.SPLIT.replace('{tripId}', encodeURIComponent(tripId));
     const settlementData = { startDate, endDate };
     const res = await privateInstance.post<ApiEnvelope<PostSettlementResponseDto>>(finalPath, settlementData);
     return res.data.data;

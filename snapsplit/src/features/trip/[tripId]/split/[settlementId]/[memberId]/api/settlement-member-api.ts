@@ -19,7 +19,7 @@ export const getSettlementMemberData = async (
   }
 
   try {
-    const finalPath = apiPath.settlementMember
+    const finalPath = apiPath.SETTLEMENT_MEMBER
       .replace('{tripId}', encodeURIComponent(tripId))
       .replace('{settlementId}', encodeURIComponent(settlementId))
       .replace('{memberId}', encodeURIComponent(memberId));

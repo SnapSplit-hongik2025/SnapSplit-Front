@@ -1,13 +1,13 @@
 import privateInstance from '@/lib/api/instance/privateInstance';
 import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
-import { CreateTripRequestDto, CreateTripResponseDto, GetCountryTripDto, UserInfoDto } from '../types/type';
+import { CreateTripRequestDto, CreateTripResponseDto, GetCountryDto, UserInfoDto } from '../types/type';
 import axios from 'axios';
 
 // 국가 목록 조회
-export const getCountryTrip = async (): Promise<GetCountryTripDto> => {
+export const getCountryTrip = async (): Promise<GetCountryDto> => {
   try {
-    const res = await privateInstance.get<ApiEnvelope<GetCountryTripDto>>(apiPath.countries);
+    const res = await privateInstance.get<ApiEnvelope<GetCountryDto>>(apiPath.COUNTRIES);
     if (!res.data.success) {
       throw new Error(res.data.message || '국가 목록 조회에 실패했습니다.');
     }
@@ -25,7 +25,7 @@ export const getUserInfo = async (userCode: string): Promise<UserInfoDto> => {
   }
 
   try {
-    const finalPath = apiPath.users.replace('{userCode}', userCode);
+    const finalPath = apiPath.USERS.replace('{userCode}', userCode);
     const res = await privateInstance.get<ApiEnvelope<UserInfoDto>>(finalPath);
     if (!res.data.success) {
       alert(res.data.message || '유저 정보 조회에 실패했습니다.');
@@ -51,35 +51,27 @@ export const createTrip = async (request: CreateTripRequestDto,
   tripImage: File | null): Promise<CreateTripResponseDto> => {
   const formData = new FormData();
 
-  // 여행 정보(JSON)를 Blob으로 변환 후 'request'라는 키로 FormData에 추가
+  // JSON 데이터 처리
   const jsonRequest = JSON.stringify(request);
   const jsonBlob = new Blob([jsonRequest], { type: 'application/json' });
   formData.append('request', jsonBlob);
 
+  // 이미지 처리
   if (tripImage) {
-    // 파일이 있으면 'tripImage' 키로 추가
     formData.append('tripImage', tripImage);
   } else {
-    // 파일이 null이면, 서버에서 'tripImage' 키를 인식할 수 있도록 빈 Blob을 추가
     formData.append('tripImage', new Blob(), '');
-  }
-
-  const requestBlob = formData.get('request');
-
-  if (requestBlob instanceof Blob) {
-    // Blob의 내용을 텍스트로 읽어옵니다 (Promise 반환)
-    const text = await requestBlob.text();
-    console.log('✅ Blob 안의 JSON 문자열:', text);
-
-    // (선택사항) 문자열을 다시 객체로 변환해서 구조를 확인할 수도 있습니다.
-    const parsedObject = JSON.parse(text);
-    console.log('✅ 파싱된 자바스크립트 객체:', parsedObject);
   }
   
   try {
     const res = await privateInstance.post<ApiEnvelope<CreateTripResponseDto>>(
-      apiPath.createTrip,
-      formData
+      apiPath.CREATE_TRIP,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
     );
 
     return res.data.data;
