@@ -10,9 +10,10 @@ type Props = {
     memberId: number;
     name: string;
   };
+  currency: string;
 };
 
-export default function SplitRow({ splitter }: Props) {
+export default function SplitRow({ splitter, currency }: Props) {
   const member = useExpenseStore((s) => s.members.find((m) => m.memberId === splitter.memberId));
 
   const setSplitter = useExpenseStore((s) => s.setSplitter);
@@ -56,7 +57,7 @@ export default function SplitRow({ splitter }: Props) {
             />
           </button>
         </div>
-        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} />
+        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );

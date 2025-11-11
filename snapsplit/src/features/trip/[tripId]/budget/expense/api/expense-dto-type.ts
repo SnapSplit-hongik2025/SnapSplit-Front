@@ -1,30 +1,15 @@
 export type ExpensePageDataResponse = {
-  tripId: number;
-  tripName: string;
-  memberProfileImages: string[];
   defaultCurrency: string;
   availCurrencies: string[];
   exchangeRates: {
     [key: string]: number;
   };
-  topCategoryExpense: {
-    category: string;
-    amountKRW: number;
-  };
-  dailyExpenses: {
-    date: string; // YYYY-MM-DD
-    expenses: {
-      expenseId: number;
-      category: string;
-      expenseName: string;
-      expenseMemo: string;
-      amount: number;
-      currency: string;
-      splitters: string[];
-    }[];
-  }[];
-  totalExpense: number;
   defaultDate: string;
+  members: {
+    memberId: number;
+    name: string;
+    memberType: string;
+  }[];
   settledDates: string[];
 };
 

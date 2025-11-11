@@ -129,7 +129,7 @@ export default function ExpenseForm() {
         setAmount={(amount) => handleExpenseChange('amount', amount)}
         currency={form.expense.currency}
         setCurrency={(currency) => handleExpenseChange('currency', currency)}
-        exchangeRates={{[form.expense.currency]: form.expense.exchangeRate}}
+        exchangeRates={pageData.exchangeRates}
         availCurrencies={pageData.availCurrencies}
         mode="expense"
       />
@@ -140,8 +140,8 @@ export default function ExpenseForm() {
         <MemoSection expenseMemo={form.expense.expenseMemo} setExpenseMemo={(expenseMemo) => handleExpenseChange('expenseMemo', expenseMemo)} />
         <CategorySection category={form.expense.category} setCategory={(category) => handleExpenseChange('category', category)} />
         {isFromReceipt && <ReceiptDetailSection items={receiptItems} />}
-        <PaySection />
-        <SplitSection />
+        <PaySection currency={form.expense.currency} />
+        <SplitSection currency={form.expense.currency} />
       </div>
       <div className="flex items-center justify-center w-full py-5">
         <Button label="추가하기" onClick={handleSubmit} enabled={true} />

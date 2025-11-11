@@ -10,9 +10,10 @@ type Props = {
     memberId: number;
     name: string;
   };
+  currency: string;
 };
 
-export default function PaymentRow({ payer }: Props) {
+export default function PaymentRow({ payer, currency }: Props) {
   const member = useExpenseStore((s) => s.members.find((m) => m.memberId === payer.memberId));
 
   const setPayer = useExpenseStore((s) => s.setPayer);
@@ -56,7 +57,7 @@ export default function PaymentRow({ payer }: Props) {
             />
           </button>
         </div>
-        <AmountInput value={payAmount?.toString() || ''} updateValue={handleAmountChange} />
+        <AmountInput value={payAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );

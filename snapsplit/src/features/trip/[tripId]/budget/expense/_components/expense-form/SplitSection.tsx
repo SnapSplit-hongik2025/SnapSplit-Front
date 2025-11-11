@@ -3,7 +3,7 @@
 import SplitRow from "./payment/SplitRow";
 import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
 
-export default function SplitSection() {
+export default function SplitSection({ currency }: { currency: string }) {
   const members = useExpenseStore((s) => s.members);
 
   return (
@@ -19,7 +19,7 @@ export default function SplitSection() {
         {members.map((member) => {
           if(member.memberType === 'SHARED_FUND') return null;
           return (
-            <SplitRow key={member.memberId} splitter={{ memberId: member.memberId, name: member.name }} />
+            <SplitRow key={member.memberId} splitter={{ memberId: member.memberId, name: member.name }} currency={currency} />
           );
         })}
       </div>
