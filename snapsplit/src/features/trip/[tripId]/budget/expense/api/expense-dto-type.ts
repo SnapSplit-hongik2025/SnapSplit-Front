@@ -5,9 +5,10 @@ export type ExpensePageDataResponse = {
   endDate: string; // YYYY-MM-DD
   countries: string[];
   memberProfileImages: string[];
-  sharedFund: {
-    defaultCurrency: string;
-    balance: number;
+  defaultCurrency: string;
+  availCurrencies: string[];
+  exchangeRates: {
+    [key: string]: number;
   };
   topCategoryExpense: {
     category: string;

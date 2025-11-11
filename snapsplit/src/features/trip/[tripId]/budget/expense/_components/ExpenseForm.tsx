@@ -101,8 +101,8 @@ export default function ExpenseForm() {
           ...prev,
           expense: {
             ...prev.expense,
-            currency: expensePageData.sharedFund.defaultCurrency,
-            exchangeRate: expensePageData.sharedFund.balance,
+            currency: expensePageData.defaultCurrency,
+            exchangeRate: expensePageData.exchangeRates[expensePageData.defaultCurrency],
           }
         }))
       } catch (error) {
@@ -130,6 +130,7 @@ export default function ExpenseForm() {
         currency={form.expense.currency}
         setCurrency={(currency) => handleExpenseChange('currency', currency)}
         exchangeRates={{[form.expense.currency]: form.expense.exchangeRate}}
+        availCurrencies={pageData.availCurrencies}
         mode="expense"
       />
       <div className="flex flex-col items-center gap-7 w-full pt-6">
