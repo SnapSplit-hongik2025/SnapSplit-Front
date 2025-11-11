@@ -134,7 +134,7 @@ export default function ExpenseForm() {
         mode="expense"
       />
       <div className="flex flex-col items-center gap-7 w-full pt-6">
-        <TripDateSection date={form.expense.date} setDate={(date) => handleExpenseChange('date', date)} startDate={pageData.startDate} endDate={pageData.endDate}/>
+        <TripDateSection date={form.expense.date} setDate={(date) => handleExpenseChange('date', date)} startDate={pageData.settledDates[0]} endDate={pageData.settledDates[pageData.settledDates.length - 1]}/>
         <PaymentMethodSection paymentMethod={form.expense.paymentMethod} setPaymentMethod={(paymentMethod) => handleExpenseChange('paymentMethod', paymentMethod)} />
         <NameSection expenseName={form.expense.expenseName} setExpenseName={(expenseName) => handleExpenseChange('expenseName', expenseName)} />
         <MemoSection expenseMemo={form.expense.expenseMemo} setExpenseMemo={(expenseMemo) => handleExpenseChange('expenseMemo', expenseMemo)} />

@@ -1,9 +1,6 @@
 export type ExpensePageDataResponse = {
   tripId: number;
   tripName: string;
-  startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
-  countries: string[];
   memberProfileImages: string[];
   defaultCurrency: string;
   availCurrencies: string[];
@@ -27,6 +24,8 @@ export type ExpensePageDataResponse = {
     }[];
   }[];
   totalExpense: number;
+  defaultDate: string;
+  settledDates: string[];
 };
 
 export type CreateExpenseRequest = {
