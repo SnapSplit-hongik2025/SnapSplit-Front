@@ -117,7 +117,6 @@ export default function ExpenseForm() {
     if (!tripId) return;
     // TODO: Mock data DB에 들어가면 수정
     const res = await createExpense(Number(tripId), form);
-    console.log('res : ', res);
   };
 
   if (!pageData) return null;

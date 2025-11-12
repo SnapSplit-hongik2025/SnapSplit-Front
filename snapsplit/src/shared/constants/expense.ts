@@ -1,24 +1,31 @@
 export const EXPENSE_CATEGORY = [
     {
-        name: '항공'
+        name: '항공',
+        backendName: 'FLIGHT'
     },
     {
-        name: '숙소'
+        name: '숙소',
+        backendName: 'ACCOMMODATION'
     },
     {
-        name: '식비'
+        name: '식비',
+        backendName: 'FOOD'
     },
     {
-        name: '교통'
+        name: '교통',
+        backendName: 'TRANSPORTATION'
     },
     {
-        name: '관광'
+        name: '관광',
+        backendName: 'TOUR'
     },
     {
-        name: '쇼핑'
+        name: '쇼핑',
+        backendName: 'SHOPPING'
     },
     {
-        name: '기타'
+        name: '기타',
+        backendName: 'OTHERS'
     },
 ];
 
