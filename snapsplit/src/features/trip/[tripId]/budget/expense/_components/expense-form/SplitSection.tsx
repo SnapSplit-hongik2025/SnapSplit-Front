@@ -8,7 +8,7 @@ type SplitSectionProps = {
   members: { memberId: number; name: string; memberType: string }[];
   membersState: Record<number, MemberState>;
   handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
-  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number) => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => void;
 };
 
 export default function SplitSection({ currency, members, membersState, handleCheck, updateAmount }: SplitSectionProps) {

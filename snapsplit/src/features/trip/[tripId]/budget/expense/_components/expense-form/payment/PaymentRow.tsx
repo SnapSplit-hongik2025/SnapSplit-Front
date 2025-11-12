@@ -13,16 +13,16 @@ type Props = {
   currency: string;
   membersState: Record<number, MemberState>;
   handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
-  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number) => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => void;
 };
 
 export default function PaymentRow({ payer, currency, membersState, handleCheck, updateAmount }: Props) {
   const isChecked = membersState[payer.memberId]?.isPayer;
-  const payAmount = membersState[payer.memberId]?.payAmount;
+  const payAmount = membersState[payer.memberId]?.payAmount || null;
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      const amount = Number(value) || 0;
+      const amount = Number(value) || null;
       updateAmount(payer.memberId, 'payAmount', amount);
     },
     [payer.memberId, updateAmount]
@@ -48,7 +48,7 @@ export default function PaymentRow({ payer, currency, membersState, handleCheck,
             />
           </button>
         </div>
-        <AmountInput value={payAmount?.toString() || '0'} updateValue={handleAmountChange} currency={currency} />
+        <AmountInput value={payAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );

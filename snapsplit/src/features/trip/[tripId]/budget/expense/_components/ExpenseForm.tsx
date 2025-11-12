@@ -61,7 +61,7 @@ export default function ExpenseForm() {
     }));
   };
 
-  const updateAmount = (id: number, key: 'payAmount' | 'splitAmount', value: number) => {
+  const updateAmount = (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => {
     setMembersState((prev) => ({
       ...prev,
       [id]: { ...prev[id], [key]: value },
@@ -79,28 +79,6 @@ export default function ExpenseForm() {
     }));
   };
 
-  // payer 업데이트 핸들러
-  const handlePayerChange = (index: number, key: 'memberId' | 'payerAmount', value: number) => {
-    setForm((prev) => {
-      const nextPayers = [...prev.payers];
-      nextPayers[index] = { ...nextPayers[index], [key]: value };
-      return { ...prev, payers: nextPayers };
-    });
-  };
-
-  // splitter 업데이트 핸들러
-  const handleSplitterChange = (index: number, key: 'memberId' | 'splitAmount', value: number) => {
-    setForm((prev) => {
-      const nextSplitters = [...prev.splitters];
-      nextSplitters[index] = { ...nextSplitters[index], [key]: value };
-      return { ...prev, splitters: nextSplitters };
-    });
-  };
-
-  // payer / splitter 추가
-  const addPayer = () => setForm((p) => ({ ...p, payers: [...p.payers, { memberId: 0, payerAmount: 0 }] }));
-  const addSplitter = () =>
-    setForm((p) => ({ ...p, splitters: [...p.splitters, { memberId: 0, splitAmount: 0 }] }));
   // receipt
   const searchParams = useSearchParams();
   const from = searchParams.get('from');

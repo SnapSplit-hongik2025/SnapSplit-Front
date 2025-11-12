@@ -13,23 +13,16 @@ type Props = {
   currency: string;
   membersState: Record<number, MemberState>;
   handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
-  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number) => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => void;
 };
 
 export default function SplitRow({ splitter, currency, membersState, handleCheck, updateAmount }: Props) {
-  const isChecked = !!membersState[splitter.memberId]?.isSplitter;
-  const splitAmount = membersState[splitter.memberId]?.splitAmount ?? 0;
-
-  const toggleCheck = useCallback(() => {
-    handleCheck(splitter.memberId, 'isSplitter');
-    if (isChecked) {
-      updateAmount(splitter.memberId, 'splitAmount', 0);
-    }
-  }, [handleCheck, splitter.memberId, isChecked, updateAmount]);
+  const isChecked = membersState[splitter.memberId]?.isSplitter;
+  const splitAmount = membersState[splitter.memberId]?.splitAmount || null;
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      const amount = Number(value) || 0;
+      const amount = Number(value) || null;
       updateAmount(splitter.memberId, 'splitAmount', amount);
     },
     [splitter.memberId, updateAmount]
@@ -42,7 +35,7 @@ export default function SplitRow({ splitter, currency, membersState, handleCheck
         <div className="flex items-center justify-center w-20">
           <button
             type="button"
-            onClick={toggleCheck}
+            onClick={() => handleCheck(splitter.memberId, 'isSplitter')}
             className={`flex items-center justify-center w-6 h-6 rounded-full ${
               isChecked ? 'bg-primary text-white' : 'border-[1px] border-grey-250'
             }`}
@@ -55,7 +48,7 @@ export default function SplitRow({ splitter, currency, membersState, handleCheck
             />
           </button>
         </div>
-        <AmountInput value={splitAmount.toString() || '0'} updateValue={handleAmountChange} currency={currency} />
+        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );
