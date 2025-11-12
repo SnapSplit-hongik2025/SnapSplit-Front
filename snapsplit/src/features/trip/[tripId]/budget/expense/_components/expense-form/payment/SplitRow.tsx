@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import { useCallback } from 'react';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 import AmountInput from './AmountInput';
+import type { MemberState } from '../../ExpenseForm';
 
 type Props = {
   splitter: {
@@ -11,30 +11,28 @@ type Props = {
     name: string;
   };
   currency: string;
+  membersState: Record<number, MemberState>;
+  handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number) => void;
 };
 
-export default function SplitRow({ splitter, currency }: Props) {
-  const member = useExpenseStore((s) => s.members.find((m) => m.memberId === splitter.memberId));
-
-  const setSplitter = useExpenseStore((s) => s.setSplitter);
-  const updateSplitAmount = useExpenseStore((s) => s.updateSplitAmount);
-
-  const isChecked = !!member?.isSplitter;
-  const splitAmount = member?.splitAmount ?? null;
+export default function SplitRow({ splitter, currency, membersState, handleCheck, updateAmount }: Props) {
+  const isChecked = !!membersState[splitter.memberId]?.isSplitter;
+  const splitAmount = membersState[splitter.memberId]?.splitAmount ?? 0;
 
   const toggleCheck = useCallback(() => {
-    setSplitter(splitter.memberId, !isChecked);
+    handleCheck(splitter.memberId, 'isSplitter');
     if (isChecked) {
-      updateSplitAmount(splitter.memberId, null);
+      updateAmount(splitter.memberId, 'splitAmount', 0);
     }
-  }, [setSplitter, splitter.memberId, isChecked, updateSplitAmount]);
+  }, [handleCheck, splitter.memberId, isChecked, updateAmount]);
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      const amount = Number(value) || null;
-      updateSplitAmount(splitter.memberId, amount);
+      const amount = Number(value) || 0;
+      updateAmount(splitter.memberId, 'splitAmount', amount);
     },
-    [splitter.memberId, updateSplitAmount]
+    [splitter.memberId, updateAmount]
   );
 
   return (
@@ -57,7 +55,7 @@ export default function SplitRow({ splitter, currency }: Props) {
             />
           </button>
         </div>
-        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
+        <AmountInput value={splitAmount.toString() || '0'} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );

@@ -164,7 +164,7 @@ export default function ExpenseForm() {
         <CategorySection category={form.expense.category} setCategory={(category) => handleExpenseChange('category', category)} />
         {isFromReceipt && <ReceiptDetailSection items={receiptItems} />}
         <PaySection currency={form.expense.currency} members={pageData.members} membersState={membersState} handleCheck={toggle} updateAmount={updateAmount}/>
-        <SplitSection currency={form.expense.currency} members={pageData.members} />
+        <SplitSection currency={form.expense.currency} members={pageData.members} membersState={membersState} handleCheck={toggle} updateAmount={updateAmount}/>
       </div>
       <div className="flex items-center justify-center w-full py-5">
         <Button label="추가하기" onClick={handleSubmit} enabled={true} />
