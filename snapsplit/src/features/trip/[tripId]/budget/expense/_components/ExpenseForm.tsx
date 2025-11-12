@@ -31,7 +31,7 @@ export default function ExpenseForm() {
   const tripId = params.tripId as string;
 
   // mock
-  const date = '2025-09-13';
+  const date = '2025-10-13';
 
   // 초기 상태
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
@@ -87,7 +87,7 @@ export default function ExpenseForm() {
 
   // init
   useEffect(() => {
-    const date = '2025-09-13'; // 임시 데이터
+    const date = '2025-10-13'; // 임시 데이터
     if (!tripId || !date) return;
 
     const fetchExpensePageData = async () => {
@@ -118,7 +118,25 @@ export default function ExpenseForm() {
   const handleSubmit = async () => {
     if (!tripId) return;
     // TODO: Mock data DB에 들어가면 수정
-    const res = await createExpense(Number(tripId), form);
+    // refine form
+    const refinedForm = {
+      ...form,
+      payers: Object.entries(membersState).filter(([_, member]) => member.isPayer).map(([memberId, member]) => ({
+        memberId: Number(memberId),
+        payerAmount: member.payAmount,
+      })),
+      splitters: Object.entries(membersState).filter(([_, member]) => member.isSplitter).map(([memberId, member]) => ({
+        memberId: Number(memberId),
+        splitAmount: member.splitAmount,
+      })),
+      expense: {
+        ...form.expense,
+        category: form.expense.category.toLowerCase(),
+        paymentMethod: form.expense.paymentMethod.toUpperCase(),
+      }
+    };
+    const res = await createExpense(Number(tripId), refinedForm);
+    console.log('res : ', res);
   };
 
   if (!pageData) return null;

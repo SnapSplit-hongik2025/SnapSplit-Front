@@ -35,7 +35,7 @@ export const createExpense = async (tripId: number, data: CreateExpenseRequest):
   }
   
   try {
-    const finalPath = `trips/${tripId}/expense/new`;
+    const finalPath = `trips/${tripId}/expense`;
     const res = await privateInstance.post<ApiEnvelope<{expenseId: number}>>(finalPath, data);
     console.log(`[API] Created expense for tripId ${tripId}:`, res.data.data);
     return res.data;
