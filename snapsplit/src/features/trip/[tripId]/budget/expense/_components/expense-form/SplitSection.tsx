@@ -1,11 +1,13 @@
 'use client';
 
 import SplitRow from "./payment/SplitRow";
-import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
 
-export default function SplitSection({ currency }: { currency: string }) {
-  const members = useExpenseStore((s) => s.members);
+type SplitSectionProps = {
+  currency: string;
+  members: { memberId: number; name: string; memberType: string }[];
+};
 
+export default function SplitSection({ currency, members }: SplitSectionProps) {
   return (
     <div className="flex flex-col items-center gap-3 w-full text-body-3">
       <div className="flex items-center justify-between w-full">

@@ -18,6 +18,13 @@ import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import { getExpensePageData } from '../api/expense-api';
 import type { CreateExpenseRequest, ExpensePageDataResponse } from '../api/expense-dto-type';
 
+export type MemberState = {
+  isPayer: boolean;
+  isSplitter: boolean;
+  payAmount: number;
+  splitAmount: number;
+}
+
 export default function ExpenseForm() {
   // tripId
   const params = useParams();
@@ -39,13 +46,27 @@ export default function ExpenseForm() {
       expenseMemo: '',
       paymentMethod: 'cash',
     },
-    payers: [
-      { memberId: 1, payerAmount: 0 },
-    ],
-    splitters: [
-      { memberId: 1, splitAmount: 0 },
-    ],
+    payers: [],
+    splitters: [],
   });
+
+  // 세부 상태
+  const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
+
+  const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
+    console.log(id, key);
+    setMembersState((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [key]: !prev[id][key] },
+    }));
+  };
+
+  const updateAmount = (id: number, key: 'payAmount' | 'splitAmount', value: number) => {
+    setMembersState((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [key]: value },
+    }));
+  };
 
   // expense 필드 업데이트 핸들러
   const handleExpenseChange = <K extends keyof CreateExpenseRequest['expense']>(
@@ -58,7 +79,7 @@ export default function ExpenseForm() {
     }));
   };
 
-/*   // payer 업데이트 핸들러
+  // payer 업데이트 핸들러
   const handlePayerChange = (index: number, key: 'memberId' | 'payerAmount', value: number) => {
     setForm((prev) => {
       const nextPayers = [...prev.payers];
@@ -80,7 +101,6 @@ export default function ExpenseForm() {
   const addPayer = () => setForm((p) => ({ ...p, payers: [...p.payers, { memberId: 0, payerAmount: 0 }] }));
   const addSplitter = () =>
     setForm((p) => ({ ...p, splitters: [...p.splitters, { memberId: 0, splitAmount: 0 }] }));
- */
   // receipt
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
@@ -105,6 +125,10 @@ export default function ExpenseForm() {
             exchangeRate: expensePageData.exchangeRates[expensePageData.defaultCurrency],
           }
         }))
+        setMembersState(expensePageData.members.reduce((acc, member) => {
+          acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
+          return acc;
+        }, {} as Record<number, MemberState>));
       } catch (error) {
         console.error('지출 초기화 데이터 가져오기 실패 : ', error);
         // TODO: 에러 상태 표시
@@ -139,8 +163,8 @@ export default function ExpenseForm() {
         <MemoSection expenseMemo={form.expense.expenseMemo} setExpenseMemo={(expenseMemo) => handleExpenseChange('expenseMemo', expenseMemo)} />
         <CategorySection category={form.expense.category} setCategory={(category) => handleExpenseChange('category', category)} />
         {isFromReceipt && <ReceiptDetailSection items={receiptItems} />}
-        <PaySection currency={form.expense.currency} />
-        <SplitSection currency={form.expense.currency} />
+        <PaySection currency={form.expense.currency} members={pageData.members} membersState={membersState} handleCheck={toggle} updateAmount={updateAmount}/>
+        <SplitSection currency={form.expense.currency} members={pageData.members} />
       </div>
       <div className="flex items-center justify-center w-full py-5">
         <Button label="추가하기" onClick={handleSubmit} enabled={true} />

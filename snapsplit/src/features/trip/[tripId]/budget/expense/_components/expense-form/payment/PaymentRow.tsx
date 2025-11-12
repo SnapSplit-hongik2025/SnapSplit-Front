@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import { useCallback } from 'react';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 import AmountInput from './AmountInput';
+import type { MemberState } from '../../ExpenseForm';
 
 type Props = {
   payer: {
@@ -11,30 +11,21 @@ type Props = {
     name: string;
   };
   currency: string;
+  membersState: Record<number, MemberState>;
+  handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number) => void;
 };
 
-export default function PaymentRow({ payer, currency }: Props) {
-  const member = useExpenseStore((s) => s.members.find((m) => m.memberId === payer.memberId));
-
-  const setPayer = useExpenseStore((s) => s.setPayer);
-  const updatePayAmount = useExpenseStore((s) => s.updatePayAmount);
-
-  const isChecked = !!member?.isPayer;
-  const payAmount = member?.payAmount ?? null;
-
-  const toggleCheck = useCallback(() => {
-    setPayer(payer.memberId, !isChecked);
-    if (isChecked) {
-      updatePayAmount(payer.memberId, null);
-    }
-  }, [setPayer, payer.memberId, isChecked, updatePayAmount]);
+export default function PaymentRow({ payer, currency, membersState, handleCheck, updateAmount }: Props) {
+  const isChecked = membersState[payer.memberId]?.isPayer;
+  const payAmount = membersState[payer.memberId]?.payAmount;
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      const amount = Number(value) || null;
-      updatePayAmount(payer.memberId, amount);
+      const amount = Number(value) || 0;
+      updateAmount(payer.memberId, 'payAmount', amount);
     },
-    [payer.memberId, updatePayAmount]
+    [payer.memberId, updateAmount]
   );
 
   return (
@@ -44,7 +35,7 @@ export default function PaymentRow({ payer, currency }: Props) {
         <div className="flex items-center justify-center w-20">
           <button
             type="button"
-            onClick={toggleCheck}
+            onClick={() => handleCheck(payer.memberId, 'isPayer')}
             className={`flex items-center justify-center w-6 h-6 rounded-full ${
               isChecked ? 'bg-primary text-white' : 'border-[1px] border-grey-250'
             }`}
@@ -57,7 +48,7 @@ export default function PaymentRow({ payer, currency }: Props) {
             />
           </button>
         </div>
-        <AmountInput value={payAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
+        <AmountInput value={payAmount?.toString() || '0'} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );
