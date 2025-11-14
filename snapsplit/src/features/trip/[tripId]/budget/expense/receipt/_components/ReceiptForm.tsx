@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use client';
 
 import Button from '@/shared/components/Button';
@@ -11,7 +13,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { ExpensePageDataResponse } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
 import { getExpensePageData } from '@/features/trip/[tripId]/budget/expense/api/expense-api';
 import { MemberState } from '@/features/trip/[tripId]/budget/expense/_components/ExpenseForm';
-import { OcrResult, useReceiptStore } from '@/lib/zustand/useReceiptStore';
+import { OcrResult, ReceiptItem, useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import type { CreateExpenseRequest } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 
@@ -60,7 +62,7 @@ export default function ReceiptForm() {
 
   // ✅ OCR item 변경
   const handleItemChange = useCallback(
-    (items: any[]) => {
+    (items: ReceiptItem[]) => {
       setOcrResult({ ...ocrResult, items } as OcrResult);
     },
     [ocrResult, setOcrResult]
@@ -99,7 +101,7 @@ export default function ReceiptForm() {
     };
 
     fetchExpensePageData();
-  }, [tripId, date]);
+  }, [tripId, date, currency, form, ocrResult]);
 
   const handleAmountChange = (amount: number) => {
     setForm((prev) => ({
