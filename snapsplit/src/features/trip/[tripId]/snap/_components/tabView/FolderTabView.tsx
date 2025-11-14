@@ -30,8 +30,8 @@ export default function FolderTabView({ folders }: FolderTabViewProps) {
                 router.push(`/trip/${tripId}/snap/${folder.id}?${params.toString()}`);
               }}
             >
-              {/* 썸네일 */}
-              <FolderThumbnailPreview />
+              {/* 썸네일 - 폴더 내 사진 4개를 그리드로 표시 */}
+              <FolderThumbnailPreview memberId={folder.id.toString()} />
               {/* 폴더 이름 */}
               <div className="flex justify-center items-center pt-2 h-8 text-body-1">{folder.name}의 사진</div>
             </div>

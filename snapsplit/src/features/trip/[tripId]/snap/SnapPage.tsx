@@ -14,6 +14,7 @@ import { GetPhotosDto } from '@/features/trip/[tripId]/snap/types/snap-dto-types
 import { getTripBudgetData } from '../budget/api/budget-api';
 import { GetTripBudgetDto } from '../budget/types/budget-dto-type';
 import { Folder } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
+import { useSnapStore } from './store/snapStore';
 
 type SnapPageProps = {
   tripId: string;
@@ -34,6 +35,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
 
   // photos
+  const { setAllPhotos } = useSnapStore();
   const [photos, setPhotos] = useState<GetPhotosDto['photos']>([]);
   const [photosError, setPhotosError] = useState<Error | null>(null);
 
@@ -57,7 +59,10 @@ export default function SnapPage({ tripId }: SnapPageProps) {
       const sort = selectedSort === '최신순' ? 'date_desc' : 'date_asc';
       const res = await getPhotos(Number(tripId), pageToLoad, sort);
 
-      setPhotos((prev) => [...prev, ...res.photos]);
+      const newPhotos = pageToLoad === 0 ? res.photos : [...photos, ...res.photos];
+      setPhotos(newPhotos);
+      // Zustand 스토어에 전체 사진 데이터 저장
+      setAllPhotos(newPhotos);
       setPage(pageToLoad);
       setHasNext(!res.last);
     } catch (e) {

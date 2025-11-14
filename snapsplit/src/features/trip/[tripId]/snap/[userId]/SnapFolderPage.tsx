@@ -40,8 +40,6 @@ const SnapFolderPage = () => {
   const folderName = searchParams.get('name') || '사용자';
   const profileImageUrl = searchParams.get('profileImageUrl') || undefined;
 
-  console.log("[tripId, userId, folderName]:", tripId, userId, folderName);
-
   // Fetch photos for the current folder
   const fetchPhotos = useCallback(async (pageToLoad: number) => {
     if (isFetchingRef.current || !tripId || !userId) return;
