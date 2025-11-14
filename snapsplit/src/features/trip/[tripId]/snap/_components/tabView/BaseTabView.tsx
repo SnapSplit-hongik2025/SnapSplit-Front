@@ -17,6 +17,7 @@ type BaseTabViewProps = {
   isLoading: boolean; // 로딩 중인지
   selectedSort: string;
   setSelectedSort: (sort: string) => void;
+  onRefresh?: () => void;
 };
 
 export default function BaseTabView({
@@ -27,6 +28,7 @@ export default function BaseTabView({
   isLoading,
   selectedSort,
   setSelectedSort,
+  onRefresh,
 }: BaseTabViewProps) {
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -85,24 +87,14 @@ export default function BaseTabView({
   // -------------------------------
   useEffect(() => {
     if (!bottomRef.current) {
-      console.log('❌ bottomRef.current 없음 — observer 설치 안 됨');
       return;
     }
 
-    console.log('🔍 Observer 등록:', bottomRef.current);
-
     const observer = new IntersectionObserver(
       (entries) => {
-        console.log('📌 Observer 콜백 실행됨!', entries[0]);
         if (entries[0].isIntersecting) {
-          console.log("isIntersecting = TRUE");
-
-          console.log("isLoading 값: ", isLoading);
           if (!isLoading) {
-            console.log("onLoadMore 호출");
             onLoadMore();
-          } else {
-            console.log("isLoading이 TRUE이므로 onLoadMore 호출하지 않음")
           }
         }
       },
@@ -135,7 +127,13 @@ export default function BaseTabView({
       <div className={filters.days.length > 0 || filters.people.length > 0 ? 'min-h-27' : 'min-h-16'} />
 
       {/* 사진 그리드 */}
-      <PhotoGrid images={filteredImages} />
+      <PhotoGrid 
+        images={filteredImages} 
+        onRefresh={onRefresh} 
+        isSelectionMode={false}
+        selectedImageIds={[]}
+        onToggleSelect={() => {}}
+      />
 
       {/* 로딩 스피너 */}
       {isLoading && <div className="w-full py-4 flex justify-center text-neutral-400 text-sm">로딩 중...</div>}

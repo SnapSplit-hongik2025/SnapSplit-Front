@@ -8,18 +8,17 @@ import Modal from '@/shared/components/modal/Modal';
 import PhotoDeleteModalContent from './photo-grid/PhotoDeleteModalContent';
 import { deleteImages } from '@/features/trip/[tripId]/snap/api/snap-api';
 import { useParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 
 type PhotoGridProps = {
   images: GetPhotosDto['photos'];
   isSelectionMode?: boolean;
   selectedImageIds?: string[];
   onToggleSelect?: (idx: string) => void;
+  onRefresh?: () => void;
 };
 
-export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, onToggleSelect }: PhotoGridProps) {
+export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, onToggleSelect, onRefresh }: PhotoGridProps) {
   const tripId = useParams<{ tripId: string }>();
-  const router = useRouter();
   const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -33,10 +32,19 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
       alert('유효하지 않은 이미지 ID입니다.');
       return;
     }
-    await deleteImages(Number(tripId.tripId), [selectedImageId]);
-    setIsDeleteModalOpen(false);
-    setIsPhotoModalOpen(false);
-    router.refresh(); // ✅ 이걸로 강제 refetch
+    try {
+      await deleteImages(Number(tripId.tripId), [selectedImageId]);
+      // 상위 컴포넌트의 refresh 함수 호출
+      if (onRefresh) {
+        await onRefresh();
+      }
+      // 모달 닫기
+      setIsDeleteModalOpen(false);
+      setIsPhotoModalOpen(false);
+    } catch (error) {
+      console.error('이미지 삭제 중 오류 발생:', error);
+      alert('이미지 삭제 중 오류가 발생했습니다.');
+    }
   };
   
 

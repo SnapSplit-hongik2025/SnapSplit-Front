@@ -67,16 +67,21 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   };
 
   /** ===========================
+   * 🔄 사진 목록 새로고침
+   * =========================== */
+  const handleRefresh = async () => {
+    setPhotos([]);
+    setPage(0);
+    await fetchPhotos(0);
+  };
+
+  /** ===========================
    * 📸 이미지 업로드 → 전체 리프레시
    * =========================== */
   const imageSubmit = async (file: File) => {
     try {
       await uploadImage(Number(tripId), file);
-
-      // 초기화 후 첫 페이지 다시 불러오기
-      setPhotos([]);
-      setPage(0);
-      await fetchPhotos(0);
+      await handleRefresh();
     } catch (e) {
       console.error(e);
     }
@@ -173,6 +178,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           isLoading={loading}
           selectedSort={selectedSort}
           setSelectedSort={setSelectedSort}
+          onRefresh={handleRefresh}
         />
       ) : (
         <FolderTabView />
