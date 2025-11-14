@@ -152,22 +152,6 @@ export default function ReceiptForm() {
 
         {/* OCR 분석 항목 */}
         <ReceiptAnalysisSection items={ocrResult?.items || []} setItems={handleItemChange} />
-
-        {/* 결제자 / 분할자 */}
-        <PaySection
-          currency={form.expense.currency}
-          members={pageData.members}
-          membersState={membersState}
-          handleCheck={toggle}
-          updateAmount={updateAmount}
-        />
-        <SplitSection
-          currency={form.expense.currency}
-          members={pageData.members}
-          membersState={membersState}
-          handleCheck={toggle}
-          updateAmount={updateAmount}
-        />
       </div>
 
       <div className="flex items-center justify-center w-full py-5">
