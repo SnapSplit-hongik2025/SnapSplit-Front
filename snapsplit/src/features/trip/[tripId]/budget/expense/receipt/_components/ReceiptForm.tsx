@@ -116,6 +116,13 @@ export default function ReceiptForm() {
     fetchExpensePageData();
   }, [tripId, date]);
 
+  const handleAmountChange = (amount: number) => {
+    setForm((prev) => ({
+      ...prev,
+      expense: { ...prev.expense, amount: amount },
+    }));
+  };
+
   const handleNext = () => {
     setOcrResult({
       ...ocrResult,
@@ -151,7 +158,7 @@ export default function ReceiptForm() {
         />
 
         {/* OCR 분석 항목 */}
-        <ReceiptAnalysisSection items={ocrResult?.items || []} setItems={handleItemChange} />
+        <ReceiptAnalysisSection items={ocrResult?.items || []} setItems={handleItemChange} setAmount={handleAmountChange} />
       </div>
 
       <div className="flex items-center justify-center w-full py-5">

@@ -5,9 +5,10 @@ import { ReceiptItem } from '@/lib/zustand/useReceiptStore';
 type ReceiptAnalysisSectionProps = {
   items: ReceiptItem[];
   setItems: (items: ReceiptItem[]) => void;
+  setAmount: (amount: number) => void;
 };
 
-export default function ReceiptAnalysisSection({ items, setItems }: ReceiptAnalysisSectionProps) {
+export default function ReceiptAnalysisSection({ items, setItems, setAmount }: ReceiptAnalysisSectionProps) {
   const handleAddItem = () => {
     setItems([...items, { id: items.length + 1, name: '', amount: '' }]);
   };
@@ -17,7 +18,12 @@ export default function ReceiptAnalysisSection({ items, setItems }: ReceiptAnaly
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    setItems(items.map((item) => (item.id === id ? { ...item, amount: e.target.value } : item)));
+    const newItems = items.map((item) => (item.id === id ? { ...item, amount: e.target.value } : item));
+
+    setItems(newItems);
+
+    const totalAmount = newItems.reduce((acc, item) => acc + Number(item.amount || 0), 0);
+    setAmount(Number(totalAmount.toFixed(2)));
   };
 
   return (
