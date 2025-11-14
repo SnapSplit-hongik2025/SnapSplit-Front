@@ -33,3 +33,11 @@ export type CreateExpenseRequest = {
     splitAmount: number;
   }[];
 };
+
+export type CreateExpenseRequestWithReceipt = CreateExpenseRequest & {
+  receiptUrl: string;
+  items: {
+    name: string;
+    amount: number;
+  }[];
+};

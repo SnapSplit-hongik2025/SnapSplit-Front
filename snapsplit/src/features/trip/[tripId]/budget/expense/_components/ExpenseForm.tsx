@@ -12,7 +12,7 @@ import Button from '@/shared/components/Button';
 
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { createExpense, getExpensePageData } from '../api/expense-api';
+import { createExpense, createExpenseWithReceipt, getExpensePageData } from '../api/expense-api';
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import type { CreateExpenseRequest, ExpensePageDataResponse } from '../api/expense-dto-type';
@@ -34,7 +34,7 @@ export default function ExpenseForm() {
   // ✅ ReceiptForm에서 넘어온 상태 감지
   const from = searchParams.get('from');
   const isFromReceipt = from === 'receipt';
-  const { ocrResult, clearReceiptData } = useReceiptStore();
+  const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
   console.log("ocrResult: ", ocrResult);
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
@@ -165,6 +165,44 @@ export default function ExpenseForm() {
     }
   };
 
+  const handleSubmitWithReceipt = async () => {
+    if (!tripId) return;
+    if (!receiptUrl) return;
+    if (!items) return;
+
+    const refinedForm = {
+      ...form,
+      payers: Object.entries(membersState)
+        .filter(([_, m]) => m.isPayer)
+        .map(([id, m]) => ({ memberId: Number(id), payerAmount: m.payAmount })),
+      splitters: Object.entries(membersState)
+        .filter(([_, m]) => m.isSplitter)
+        .map(([id, m]) => ({ memberId: Number(id), splitAmount: m.splitAmount })),
+      expense: {
+        ...form.expense,
+        category: form.expense.category.toLowerCase(),
+        paymentMethod: form.expense.paymentMethod.toUpperCase(),
+      },
+      receiptUrl: receiptUrl,
+      items: items.map((item) => {
+        return {
+          name: item.name,
+          amount: item.amount as number,
+        };
+      }),
+    };
+
+    try {
+      await createExpenseWithReceipt(Number(tripId), refinedForm);
+      alert('지출이 성공적으로 등록되었습니다.');
+      clearReceiptData(); // ✅ Receipt 상태 초기화 (이름 맞게 수정됨)
+      router.push(`/trip/${tripId}/budget`);
+    } catch (error) {
+      console.error('지출 등록 실패:', error);
+      alert('지출 등록 중 오류가 발생했습니다.');
+    }
+  };
+
   if (!pageData) return null;
 
   return (
@@ -230,7 +268,7 @@ export default function ExpenseForm() {
 
       {/* 제출 버튼 */}
       <div className="flex items-center justify-center w-full py-5">
-        <Button label="추가하기" onClick={handleSubmit} enabled={true} />
+        <Button label="추가하기" onClick={isFromReceipt ? handleSubmitWithReceipt : handleSubmit} enabled={true} />
       </div>
     </div>
   );
