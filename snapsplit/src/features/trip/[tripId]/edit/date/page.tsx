@@ -1,28 +1,58 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import SelectDateSection from '@/shared/components/steps/Step2_SelectDate';
-import mock from '@public/mocks/edit-date-mock.json';
-import { EditDatePageProps } from './type';
-import { parseISO } from 'date-fns'; // 원하면 parseISO 사용 가능
+import { EditDatePageProps, GetTripDateDto } from './type';
+import { format, parseISO } from 'date-fns'; // 원하면 parseISO 사용 가능
+import { useQuery } from '@tanstack/react-query';
+import { editTripDates, getTripDates } from '../api/edit-trip-api';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function EditDatePage({ tripId }: EditDatePageProps) {
-  console.log('tripId : ' + tripId);
+  // Date 상태 관리
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
   const router = useRouter();
 
-  // ISO 문자열 → Date 객체로 변환
-  const initialStart = parseISO(mock.data.startDate);
-  const initialEnd = parseISO(mock.data.endDate);
+  const { data, isLoading, isError, error } = useQuery<GetTripDateDto, Error>({
+    queryKey: ['tripDate', tripId],
+    queryFn: () => getTripDates(tripId),
+    enabled: !!tripId,
+  });
 
-  // Date 상태 관리
-  const [startDate, setStartDate] = useState<Date | null>(initialStart);
-  const [endDate, setEndDate] = useState<Date | null>(initialEnd);
+  useEffect(() => {
+    if (data) {
+      setStartDate(parseISO(data.startDate));
+      setEndDate(parseISO(data.endDate));
+    }
+  }, [data]);
 
-  const handleNext = () => {
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div>오류가 발생했습니다: {error.message}</div>;
+  }
+
+  const handleNext = async () => {
+    if (startDate && endDate) {
+      const startDateString = format(startDate, 'yyyy-MM-dd');
+      const endDateString = format(endDate, 'yyyy-MM-dd');
+      const res = await editTripDates(tripId, startDateString, endDateString);
+      console.log(res);
+      router.push(`/trip/${tripId}/budget`);
+    } else {
+      alert('시작일과 종료일을 모두 선택해주세요.');
+    }
     router.back();
-    // 편집 API 호출
   };
 
   return (

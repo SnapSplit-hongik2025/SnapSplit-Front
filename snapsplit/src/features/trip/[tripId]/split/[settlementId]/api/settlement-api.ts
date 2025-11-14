@@ -5,7 +5,7 @@ import { GetSettlementDto } from '../types/settlement-dto-type';
 
 export const getSettlementData = async (tripId: string, settlementId: string): Promise<GetSettlementDto> => {
     try {
-        const finalPath = apiPath.settlement.replace('{tripId}', encodeURIComponent(tripId)).replace('{settlementId}', encodeURIComponent(settlementId));
+        const finalPath = apiPath.SETTLEMENT.replace('{tripId}', encodeURIComponent(tripId)).replace('{settlementId}', encodeURIComponent(settlementId));
         const res = await privateInstance.get<ApiEnvelope<GetSettlementDto>>(finalPath);
         return res.data.data;
     } catch (error) {

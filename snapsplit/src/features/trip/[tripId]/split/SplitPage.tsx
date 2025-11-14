@@ -9,6 +9,7 @@ import SplitDatePickSection from './_components/SplitDatePickSection';
 import SplitReciptCard from './_components/SplitReciptCard';
 import { SplitPageProps } from './types/split-type';
 import { convertSettlementToDays } from '@/shared/utils/DatetoDay/convertSettlementToDays';
+import Loading from '@/shared/components/loading/Loading';
 
 const SplitPage = ({ tripId }: SplitPageProps) => {
   const { data, isLoading, isError, error } = useQuery({
@@ -17,7 +18,11 @@ const SplitPage = ({ tripId }: SplitPageProps) => {
   });
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-light_grey">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

@@ -5,7 +5,7 @@ import { GetTripCodeDto } from '../types/trip-type';
 
 export const getTripCodeData = async (tripId: string, signal?: AbortSignal): Promise<GetTripCodeDto> => {
     try {
-        const finalPath = apiPath.tripCode.replace('{tripId}', tripId);
+        const finalPath = apiPath.TRIPCODE.replace('{tripId}', tripId);
         const res = await privateInstance.get<ApiEnvelope<GetTripCodeDto>>(finalPath, { signal });
         return res.data.data;
     } catch (error) {

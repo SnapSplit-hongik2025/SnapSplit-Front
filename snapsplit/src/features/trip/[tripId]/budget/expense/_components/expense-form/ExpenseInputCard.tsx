@@ -10,12 +10,14 @@ type Props = {
   amount: number | null;
   setAmount: (amount: number | null) => void;
   exchangeRates: Record<string, number>;
+  setExchangeRate: (exchangeRate: number) => void;
   currency: string;
   setCurrency: (currency: string) => void;
+  availCurrencies: string[];
   mode: 'receipt' | 'expense';
 };
 
-export default function ExpenseInputCard({amount, setAmount, exchangeRates, currency, setCurrency, mode}: Props) {
+export default function ExpenseInputCard({amount, setAmount, exchangeRates, setExchangeRate, currency, setCurrency, availCurrencies, mode}: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,16 +38,16 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
     // 입력이 무시됩니다.
   };
 
-  const exchangeAmount = (KRWAmount: number, currency: string) => {
+  const toKRW = (amount: number, currency: string) => {
     const exchangeRate = exchangeRates[currency];
     if (exchangeRate === null || !Number.isFinite(exchangeRate)) return 0;
-    return KRWAmount * exchangeRate;
+    return amount * exchangeRate;
   };
 
   return (
     <div className="flex flex-col items-center gap-4 w-full px-5 py-4 rounded-xl bg-grey-150">
       <div className="flex flex-col items-start justify-between w-full gap-3">
-        <CurrencyButton onClick={() => setIsOpen(true)} />
+        <CurrencyButton onClick={() => setIsOpen(true)} currency={currency} />
         <div className="flex flex-col items-start justify-between gap-1 w-full">
           <input
             type="text"
@@ -56,13 +58,13 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
           />
           <div className="text-body-3 text-grey-550">
             {'= '}
-            {exchangeAmount(amount || 0, currency).toLocaleString()}원
+            {toKRW(amount || 0, currency).toLocaleString()}원
           </div>
         </div>
       </div>
       {mode === 'expense' ? <ReceiptRegisterButton /> : null}
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} setCurrency={setCurrency} />
+        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} handleCurrencyChange={(currency) => {setCurrency(currency); setExchangeRate(exchangeRates[currency])}} availableCurrencies={availCurrencies} />
       </BottomSheet>
     </div>
   );

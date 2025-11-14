@@ -1,5 +1,4 @@
-import { GroupedExpenses } from '@/shared/utils/groupExpenses';
-import { ExpenseDto, TopCategoryExpenseDto, SharedFundDto } from './budget-dto-type';
+import { ExpenseDto, TopCategoryExpenseDto, SharedFundDto, DailyExpenseDto } from './budget-dto-type';
 
 export type BudgetPageProps = {
   tripId: string;
@@ -40,11 +39,14 @@ export type UserIconListProps = {
 };
 
 export type DailyExpenseListProps = {
-  groupedExpenses: GroupedExpenses[];
+  dailyExpenses: DailyExpenseDto[];
+  tripStartDate: string;
+  tripId: string;
 };
 
 export type ExpenseDateBarProps = {
-  label: string;
+  expenseDate: string;
+  tripStartDate: string;
 };
 
 // GetSharedBudgetDto 서브 타입

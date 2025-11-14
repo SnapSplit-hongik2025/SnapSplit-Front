@@ -2,18 +2,21 @@ import { parseISO, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { DetailExpensesProps } from '../types/settlement-member-type';
 import { expenseItemDto } from '../types/settlement-member-dto-type';
+import { getSymbol } from '@/shared/utils/currency';
 
 interface ExpenseItemProps {
   expense: expenseItemDto;
 }
 
 const ExpenseItem = ({ expense }: ExpenseItemProps) => {
+  const symbol = getSymbol(expense.expenseCurrency);
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex justify-between text-label-1">
         <span>{expense.expenseName}</span>
         <span>
-          {expense.amount.toLocaleString()} {expense.expenseCurrency}
+          {expense.amount.toLocaleString()} {symbol}
         </span>
       </div>
       <div className="flex justify-between text-caption-1 text-grey-550">
@@ -28,10 +31,9 @@ export default function DetailExpenses({ settlementDetailsByMember }: DetailExpe
   return (
     <div className="space-y-[16px] px-5 w-full">
       {settlementDetailsByMember.map((dayDetail, dayIdx) => {
-        // 날짜 파싱 & 포맷: 2025-04-09 → "4.9/수"
         const dt = parseISO(dayDetail.date);
         const monthDay = format(dt, 'M.d', { locale: ko });
-        const weekday = format(dt, 'EE', { locale: ko }); // ex: "수"
+        const weekday = format(dt, 'EE', { locale: ko });
 
         return (
           <div key={dayDetail.date} className="pt-5">

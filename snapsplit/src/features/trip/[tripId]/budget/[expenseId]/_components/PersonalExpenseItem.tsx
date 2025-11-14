@@ -1,4 +1,4 @@
-import { PersonalExpenseItemProps } from '../type';
+import { PersonalExpenseItemProps } from '../types/expense-detail-type';
 
 export default function PersonalExpenseItem({ variant, member, symbol }: PersonalExpenseItemProps) {
   const isPayer = variant === 'payers';

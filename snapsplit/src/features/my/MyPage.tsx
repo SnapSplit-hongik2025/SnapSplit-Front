@@ -1,11 +1,12 @@
 'use client';
 
-import ActionBar from "@/features/my/_components/ActionBar";
-import ProfileSection from "@/features/my/_components/ProfileSection";
-import MenuSection from "@/features/my/_components/MenuSection";
-import { getMyData } from "./api/my-api";
-import { GetMyResponseDto } from "./types/my-type";
-import { useEffect, useState } from "react";
+import ActionBar from '@/features/my/_components/ActionBar';
+import ProfileSection from '@/features/my/_components/ProfileSection';
+import MenuSection from '@/features/my/_components/MenuSection';
+import { getMyData } from './api/my-api';
+import { GetMyResponseDto } from './types/my-type';
+import { useEffect, useState } from 'react';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function MyPage() {
   const [myData, setMyData] = useState<GetMyResponseDto | null>(null);
@@ -40,15 +41,19 @@ export default function MyPage() {
     };
   }, []);
 
-  if (loading) return <div>로딩중...</div>;
+  if (loading)
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   if (!myData) return <div>데이터를 불러오지 못했습니다.</div>;
 
   return (
     <div className="flex flex-col items-center h-screen">
       <ActionBar />
-      <ProfileSection name={myData.name} profileImage={myData.profileImageUrl} userCode={myData.userCode}/>
+      <ProfileSection name={myData.name} profileImage={myData.profileImageUrl} userCode={myData.userCode} />
       <MenuSection />
     </div>
   );
 }
- 

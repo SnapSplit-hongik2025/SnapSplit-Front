@@ -1,21 +1,75 @@
 'use client';
 
 import InputTripNameSection from '@/shared/components/steps/Step4_InputTripName';
-import { EditNamePageProps } from './type';
-
-import mock from '@public/mocks/edit-name-mock.json';
+import { EditNamePageProps, GetCountryInfoDto } from './type';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { editTripInfo, getTripInfo } from '../api/edit-trip-api';
+import { useRouter } from 'next/navigation';
+import Loading from '@/shared/components/loading/Loading';
 
 const EditNamePage = ({ tripId }: EditNamePageProps) => {
-  console.log('- tripId: ' + tripId);
+  const router = useRouter();
+
+  const [tripName, setTripName] = useState<string>('');
+  const [tripImageUrl, setTripImageUrl] = useState<string | null>(null);
+  const [tripImageFile, setTripImageFile] = useState<File | null>(null);
+
+  const { data, isLoading, isError, error } = useQuery<GetCountryInfoDto, Error>({
+    queryKey: ['tripInfo', tripId],
+    queryFn: () => getTripInfo(tripId),
+    enabled: !!tripId,
+  });
+
+  const beforeTripName = data?.tripName;
+
+  useEffect(() => {
+    if (data) {
+      setTripName(data.tripName);
+      setTripImageUrl(data.tripImage);
+      setTripImageFile(null);
+    }
+  }, [data]);
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div>오류가 발생했습니다: {error.message}</div>;
+  }
+
+  const handleNext = async () => {
+    if (!tripName) {
+      alert('여행 이름을 입력해주세요.');
+      return;
+    }
+
+    if (tripName) {
+      if (tripName == beforeTripName) {
+        console.log('tripName == beforeTripName, API 실행');
+        await editTripInfo(tripId, null, tripImageFile);
+      } else if (tripName != beforeTripName) {
+        console.log('tripName != beforeTripName, API 실행');
+        await editTripInfo(tripId, tripName, tripImageFile);
+      }
+      router.push(`/trip/${tripId}/budget`);
+    }
+  };
 
   return (
     <InputTripNameSection
-      tripName={mock.data.tripName}
-      tripImage={mock.data.tripImage}
-      onClick={() => {
-        /* api 호출 */
-      }}
+      tripName={tripName}
+      tripImageUrl={tripImageUrl}
+      onClick={handleNext}
       variant="edit"
+      setTripName={setTripName}
+      setTripImageUrl={setTripImageUrl}
+      setTripImageFile={setTripImageFile}
     />
   );
 };

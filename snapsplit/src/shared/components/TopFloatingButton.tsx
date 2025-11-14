@@ -15,12 +15,12 @@ const TopFloatingButton = () => {
   };
 
   return (
-    <div className="display-fixed display-w-full z-floating bottom-[134px] flex justify-end pr-5">
+    <div className="fixed bottom-[134px] right-[max(calc((100vw-415px)/2+1.25rem),1.25rem)] lg:right-[max(calc((100vw-360px)/2+1.25rem),1.25rem)] z-floating">
       <button
         onClick={handleScrollTop}
         aria-label="맨 위로 스크롤"
         title="맨 위로 이동"
-        className="w-11 h-11 p-2 cursor-pointer bg-primary rounded-[40px] shadow-[0px_0px_2px_0px_rgba(34,34,34,0.25)] inline-flex justify-center items-center"
+        className="w-11 h-11 p-2 cursor-pointer bg-primary rounded-[40px] shadow-[0_0_2px_rgba(34,34,34,0.25)] inline-flex justify-center items-center"
       >
         <Image alt="" src={arrow} width={20} height={20} />
       </button>

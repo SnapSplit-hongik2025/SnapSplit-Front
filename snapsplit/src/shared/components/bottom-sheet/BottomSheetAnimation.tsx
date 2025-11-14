@@ -1,13 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import {
-  motion,
-  useMotionValue,
-  useDragControls,
-  animate,
-  PanInfo,
-} from 'framer-motion';
+import { motion, useMotionValue, useDragControls, animate, PanInfo } from 'framer-motion';
 import grabber from '@public/svg/grabber.svg';
 import { ReactNode, useRef } from 'react';
 
@@ -16,10 +10,7 @@ type BottomSheetAnimationProps = {
   onClose: () => void;
 };
 
-const BottomSheetAnimation = ({
-  children,
-  onClose,
-}: BottomSheetAnimationProps) => {
+const BottomSheetAnimation = ({ children, onClose }: BottomSheetAnimationProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const y = useMotionValue(0);
   const controls = useDragControls();
@@ -85,7 +76,7 @@ const BottomSheetAnimation = ({
       </div>
 
       {/* 실제 콘텐츠가 렌더링될 영역 */}
-      <div className="px-5 pb-8">{children}</div>
+      <div className="px-5 pb-8 overflow-y-auto max-h-[60vh] min-h-0 scrollbar-hide">{children}</div>
     </motion.div>
   );
 };

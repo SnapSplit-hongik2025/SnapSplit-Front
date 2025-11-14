@@ -3,37 +3,36 @@ import Image from 'next/image';
 type Props = {
   onClose: () => void;
   date: string;
-  setDate: (date: string) => void;
+  handleSelectDate: (dayIndex: number) => void;
+  daysCount: number;
 };
 
-const DATE_OPTIONS = [
-  { value: 'Day 1', label: 'Day 1' },
-  { value: 'Day 2', label: 'Day 2' },
-  { value: 'Day 3', label: 'Day 3' },
-  { value: 'Day 4', label: 'Day 4' },
-  { value: 'Day 5', label: 'Day 5' },
-  { value: 'Day 6', label: 'Day 6' },
-];
+export default function DateSelectSheet({ onClose, date, handleSelectDate, daysCount }: Props) {
+  const days = Array.from({ length: daysCount }, (_, index) => index + 1);
 
-export default function DateSelectSheet({ onClose, date, setDate }: Props) {
+  const calculateDate = (dayIndex: number): string => {
+    const start = new Date(date);
+    const next = new Date(start.setDate(start.getDate() + dayIndex - 1));
+    return next.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+  };
 
   return (
     <div className="flex flex-col items-center w-full">
-      {DATE_OPTIONS.map((option) => (
+      {days.map((option) => (
         <button
-          key={option.value}
+          key={option}
           onClick={() => {
-            setDate(option.value);
+            handleSelectDate(option);
             onClose();
           }}
-          className={`flex items-center gap-1 w-full py-3 text-body-3 ${date === option.value ? 'text-primary' : 'text-grey-1000'}`}
+          className={`flex items-center gap-1 w-full py-3 text-body-3 ${date === calculateDate(option) ? 'text-primary' : 'text-grey-1000'}`}
         >
-          {date === option.value ? (
+          {date === calculateDate(option) ? (
             <Image src="/svg/check-green.svg" alt="selected" width={24} height={24} />
           ) : (
             <Image src="/svg/check_grey.svg" alt="unselected" width={24} height={24} />
           )}
-          <div className="flex-1 text-body-3 text-start">{option.label}</div>
+          <div className="flex-1 text-body-3 text-start">Day {option}</div>
         </button>
       ))}
     </div>
