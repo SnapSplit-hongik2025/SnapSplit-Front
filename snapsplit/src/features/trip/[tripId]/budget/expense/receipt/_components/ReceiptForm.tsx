@@ -23,7 +23,7 @@ export default function ReceiptForm() {
   const date = searchParams.get('date') as string;
   
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
-  const { ocrResult, receiptUrl, setOcrResult } = useReceiptStore();
+  const { ocrResult, receiptUrl, setOcrResult, currency, setCurrency } = useReceiptStore();
 
   const [zoomOpen, setZoomOpen] = useState(false);
 
@@ -55,18 +55,18 @@ export default function ReceiptForm() {
         <ExpenseInputCard
           amount={0}
           setAmount={() => {}}
-          currency={pageData.defaultCurrency}
-          setCurrency={() => {}}
+          currency={currency}
+          setCurrency={(currency) => setCurrency(currency)}
           availCurrencies={pageData.availCurrencies}
           exchangeRates={pageData.exchangeRates}
           mode="receipt"
         />
         <ReceiptAnalysisSection items={ocrResult?.items || []} setItems={(items) => setOcrResult({ ...ocrResult, items })} />
-        <PaySection currency={pageData.defaultCurrency} members={pageData.members} membersState={pageData.members.reduce((acc, member) => {
+        <PaySection currency={currency} members={pageData.members} membersState={pageData.members.reduce((acc, member) => {
           acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
           return acc;
         }, {} as Record<number, MemberState>)} handleCheck={() => {}} updateAmount={() => {}} />
-        <SplitSection currency={pageData.defaultCurrency} members={pageData.members} membersState={pageData.members.reduce((acc, member) => {
+        <SplitSection currency={currency} members={pageData.members} membersState={pageData.members.reduce((acc, member) => {
           acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
           return acc;
         }, {} as Record<number, MemberState>)} handleCheck={() => {}} updateAmount={() => {}} />

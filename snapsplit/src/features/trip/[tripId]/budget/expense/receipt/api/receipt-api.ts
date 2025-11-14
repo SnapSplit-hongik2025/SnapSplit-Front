@@ -5,8 +5,8 @@ import { ApiEnvelope } from '@/lib/api/type';
 export type OcrResponse = {
   parsedText: string;
   totalAmount?: number;
-  storeName?: string;
-  items?: Array<{ name: string; price: number }>;
+  items?: Array<{ name: string; amount: number }>;
+  currency: string;
 };
 
 /**

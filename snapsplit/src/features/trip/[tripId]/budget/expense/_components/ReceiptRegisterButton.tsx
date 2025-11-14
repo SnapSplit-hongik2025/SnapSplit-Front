@@ -16,7 +16,7 @@ export default function ReceiptRegisterButton() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const { setOcrResult, setReceiptUrl } = useReceiptStore();
+  const { setOcrResult, setReceiptUrl, setCurrency } = useReceiptStore();
 
   const openCamera = () => {
     inputRef.current?.click();
@@ -34,6 +34,7 @@ export default function ReceiptRegisterButton() {
       // (3) 결과 sessionStorage에 저장
       setOcrResult(ocrResult);
       setReceiptUrl(URL.createObjectURL(file));
+      setCurrency(ocrResult.currency);
 
       // (4) receipt 페이지로 이동
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);

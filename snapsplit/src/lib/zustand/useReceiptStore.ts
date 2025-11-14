@@ -11,41 +11,48 @@ export type ReceiptItem = {
 }
 
 type ReceiptState = {
-  // 기존 항목
+  // 영수증 항목
   items: ReceiptItem[]
   setItems: (items: ReceiptItem[]) => void
+  currency: string
+  setCurrency: (currency: string) => void
 
-  // ✅ OCR 관련 추가 상태
+  // OCR 결과
   ocrResult: any | null
   setOcrResult: (data: any) => void
 
-  // ✅ 영수증 원본 이미지 URL
+  // 영수증 원본 이미지 URL
   receiptUrl: string | null
   setReceiptUrl: (url: string) => void
 
-  // ✅ 전체 리셋
+  // 전체 리셋
   clearReceiptData: () => void
 }
 
 export const useReceiptStore = create<ReceiptState>()(
   persist(
     (set) => ({
-      // 🧾 기본 영수증 아이템 리스트
+      // 영수증 항목 리스트
       items: [],
       setItems: (items) => set({ items }),
 
-      // 🔍 OCR 결과
+      // 기준 통화
+      currency: 'KRW',
+      setCurrency: (currency) => set({ currency }),
+
+      // OCR 결과
       ocrResult: null,
       setOcrResult: (data) => set({ ocrResult: data }),
 
-      // 🖼️ 원본 이미지 URL
+      // 영수증 원본 이미지 URL
       receiptUrl: null,
       setReceiptUrl: (url) => set({ receiptUrl: url }),
 
-      // 🧹 전체 리셋
+      // 전체 리셋
       clearReceiptData: () =>
         set({
           items: [],
+          currency: 'KRW',
           ocrResult: null,
           receiptUrl: null,
         }),
