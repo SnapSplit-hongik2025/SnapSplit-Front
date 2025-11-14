@@ -16,7 +16,9 @@ export default function ZoomModal({ onClose, receiptUrl }: ZoomModalProps) {
         </button>
       </div>
       <div className="zoom flex-1 flex items-center justify-center w-full h-full">
-        <Image src={receiptUrl || ''} alt="영수증" width={128} height={128} className="w-full h-auto" />
+        {receiptUrl && (
+          <Image src={receiptUrl} alt="영수증" width={128} height={128} className="w-full h-auto" />
+        )}
       </div>
     </div>
   );

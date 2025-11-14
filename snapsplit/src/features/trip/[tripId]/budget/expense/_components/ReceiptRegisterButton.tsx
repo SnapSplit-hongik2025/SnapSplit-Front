@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 'use client';
 
 import Image from 'next/image';
@@ -21,7 +19,7 @@ export default function ReceiptRegisterButton() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const { setOcrResult, setReceiptUrl, setCurrency } = useReceiptStore();
+  const { setOcrResult, setReceiptUrl } = useReceiptStore();
 
   const openCamera = () => {
     inputRef.current?.click();
@@ -52,11 +50,9 @@ export default function ReceiptRegisterButton() {
     try {
       const ocrResult = await getParsedReceipt(file);
       const refined = mapOcrResponseToResult(ocrResult);
-      console.log("[refined]: ", refined);
 
       setOcrResult(refined);
       setReceiptUrl(URL.createObjectURL(file));
-      setCurrency(ocrResult.currency);
 
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);
     } catch (err) {
@@ -89,30 +85,4 @@ export default function ReceiptRegisterButton() {
       </button>
     </>
   );
-}
-
-/** 이미지 크기 줄이는 헬퍼 */
-async function downscaleIfNeeded(file: File, maxSide: number): Promise<File> {
-  if (!file.type.startsWith('image/')) return file;
-
-  const imgBitmap = await createImageBitmap(file).catch(() => null);
-  if (!imgBitmap) return file;
-
-  const { width, height } = imgBitmap;
-  const scale = Math.min(1, maxSide / Math.max(width, height));
-  if (scale >= 1) return file;
-
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.round(width * scale);
-  canvas.height = Math.round(height * scale);
-
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return file;
-
-  ctx.drawImage(imgBitmap, 0, 0, canvas.width, canvas.height);
-
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.9));
-  if (!blob) return file;
-
-  return new File([blob], file.name || 'receipt.jpg', { type: 'image/jpeg' });
 }

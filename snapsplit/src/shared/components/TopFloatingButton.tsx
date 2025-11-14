@@ -15,7 +15,7 @@ const TopFloatingButton = () => {
   };
 
   return (
-    <div className="fixed bottom-[134px] right-[max(calc((100vw-415px)/2+1.25rem),1.25rem)] lg:right-[max(calc((100vw-360px)/2+1.25rem),1.25rem)] z-[9999]">
+    <div className="fixed bottom-[134px] right-[max(calc((100vw-415px)/2+1.25rem),1.25rem)] lg:right-[max(calc((100vw-360px)/2+1.25rem),1.25rem)] z-floating">
       <button
         onClick={handleScrollTop}
         aria-label="맨 위로 스크롤"

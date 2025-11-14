@@ -63,6 +63,7 @@ export default function ReceiptForm() {
   // ✅ OCR item 변경
   const handleItemChange = useCallback(
     (items: ReceiptItem[]) => {
+      if (!ocrResult) return;
       setOcrResult({ ...ocrResult, items } as OcrResult);
     },
     [ocrResult, setOcrResult]
@@ -82,7 +83,7 @@ export default function ReceiptForm() {
             ...prev.expense,
             currency: currency,
             exchangeRate: expensePageData.exchangeRates[currency],
-            amount: ocrResult?.totalAmount ?? 0,
+            amount: ocrResult?.totalAmount ?? prev.expense.amount,
           },
         }));
         console.log('form.amount: ', form.expense.amount);
@@ -101,7 +102,7 @@ export default function ReceiptForm() {
     };
 
     fetchExpensePageData();
-  }, [tripId, date, currency, form, ocrResult]);
+  }, [tripId, date]);
 
   const handleAmountChange = (amount: number) => {
     setForm((prev) => ({
@@ -158,7 +159,7 @@ export default function ReceiptForm() {
         <Button label="다음으로" onClick={handleNext} enabled={true} />
       </div>
 
-      {zoomOpen && (
+      {zoomOpen && receiptUrl && (
         <FullScreenModal>
           <ZoomModal onClose={() => setZoomOpen(false)} receiptUrl={receiptUrl} />
         </FullScreenModal>

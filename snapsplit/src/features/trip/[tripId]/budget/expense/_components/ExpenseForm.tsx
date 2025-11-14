@@ -188,9 +188,12 @@ export default function ExpenseForm() {
       },
       receiptUrl: receiptUrl,
       items: items.map((item) => {
+        const rawAmount = item.amount;
+        const parsedAmount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount;
+        
         return {
           name: item.name,
-          amount: item.amount as number,
+          amount: parsedAmount,
         };
       }),
     };
