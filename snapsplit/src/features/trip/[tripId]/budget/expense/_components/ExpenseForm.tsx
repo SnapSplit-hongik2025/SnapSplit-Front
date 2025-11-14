@@ -17,6 +17,7 @@ import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import { getExpensePageData } from '../api/expense-api';
 import type { CreateExpenseRequest, ExpensePageDataResponse } from '../api/expense-dto-type';
+import router from 'next/router';
 
 export type MemberState = {
   isPayer: boolean;
@@ -132,7 +133,7 @@ export default function ExpenseForm() {
         paymentMethod: form.expense.paymentMethod.toUpperCase(),
       }
     };
-    const res = await createExpense(Number(tripId), refinedForm);
+    await createExpense(Number(tripId), refinedForm);
   };
 
   if (!pageData) return null;

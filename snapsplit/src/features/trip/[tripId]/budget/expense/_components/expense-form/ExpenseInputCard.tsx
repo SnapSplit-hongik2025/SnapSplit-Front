@@ -37,10 +37,11 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
     // 입력이 무시됩니다.
   };
 
-  const exchangeAmount = (KRWAmount: number, currency: string) => {
+  const toKRW = (amount: number, currency: string) => {
+    console.log(amount, currency);
     const exchangeRate = exchangeRates[currency];
     if (exchangeRate === null || !Number.isFinite(exchangeRate)) return 0;
-    return KRWAmount * exchangeRate;
+    return amount * exchangeRate;
   };
 
   return (
@@ -57,7 +58,7 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
           />
           <div className="text-body-3 text-grey-550">
             {'= '}
-            {exchangeAmount(amount || 0, currency).toLocaleString()}원
+            {toKRW(amount || 0, currency).toLocaleString()}원
           </div>
         </div>
       </div>
