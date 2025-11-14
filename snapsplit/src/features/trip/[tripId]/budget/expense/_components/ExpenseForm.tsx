@@ -176,6 +176,7 @@ export default function ExpenseForm() {
         currency={form.expense.currency}
         setCurrency={(currency) => handleExpenseChange('currency', currency)}
         exchangeRates={pageData.exchangeRates}
+        setExchangeRate={(exchangeRate) => handleExpenseChange('exchangeRate', exchangeRate)}
         availCurrencies={pageData.availCurrencies}
         mode="expense"
       />

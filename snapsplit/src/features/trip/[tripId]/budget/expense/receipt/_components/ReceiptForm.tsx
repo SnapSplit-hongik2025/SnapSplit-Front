@@ -146,6 +146,7 @@ export default function ReceiptForm() {
           setCurrency={(currency) => handleExpenseChange('currency', currency)}
           availCurrencies={pageData.availCurrencies}
           exchangeRates={pageData.exchangeRates}
+          setExchangeRate={(exchangeRate) => handleExpenseChange('exchangeRate', exchangeRate)}
           mode="receipt"
         />
 

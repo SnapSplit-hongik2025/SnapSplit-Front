@@ -10,13 +10,14 @@ type Props = {
   amount: number | null;
   setAmount: (amount: number | null) => void;
   exchangeRates: Record<string, number>;
+  setExchangeRate: (exchangeRate: number) => void;
   currency: string;
   setCurrency: (currency: string) => void;
   availCurrencies: string[];
   mode: 'receipt' | 'expense';
 };
 
-export default function ExpenseInputCard({amount, setAmount, exchangeRates, currency, setCurrency, availCurrencies, mode}: Props) {
+export default function ExpenseInputCard({amount, setAmount, exchangeRates, setExchangeRate, currency, setCurrency, availCurrencies, mode}: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +64,7 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
       </div>
       {mode === 'expense' ? <ReceiptRegisterButton /> : null}
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} handleCurrencyChange={setCurrency} availableCurrencies={availCurrencies} />
+        <CurrencyBottomSheet onClose={() => setIsOpen(false)} selectedCurrency={currency} handleCurrencyChange={(currency) => {setCurrency(currency); setExchangeRate(exchangeRates[currency])}} availableCurrencies={availCurrencies} />
       </BottomSheet>
     </div>
   );
