@@ -16,6 +16,7 @@ import { createExpense, createExpenseWithReceipt, getExpensePageData } from '../
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import type { CreateExpenseRequest, ExpensePageDataResponse } from '../api/expense-dto-type';
+import Loading from '@/shared/components/loading/Loading';
 
 export type MemberState = {
   isPayer: boolean;
@@ -203,7 +204,14 @@ export default function ExpenseForm() {
     }
   };
 
-  if (!pageData) return null;
+  if (!pageData) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  };
+  
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">

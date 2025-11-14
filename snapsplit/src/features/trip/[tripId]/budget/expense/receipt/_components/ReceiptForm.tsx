@@ -2,8 +2,6 @@
 
 import Button from '@/shared/components/Button';
 import ExpenseInputCard from '@/features/trip/[tripId]/budget/expense/_components/expense-form/ExpenseInputCard';
-import PaySection from '@/features/trip/[tripId]/budget/expense/_components/expense-form/PaySection';
-import SplitSection from '@/features/trip/[tripId]/budget/expense/_components/expense-form/SplitSection';
 import ReceiptAnalysisSection from '@/features/trip/[tripId]/budget/expense/receipt/_components/receipt-form/ReceiptAnalysisSection';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import ReceiptThumbnail from './receipt-form/ReceiptThumbnail';
@@ -15,6 +13,7 @@ import { getExpensePageData } from '@/features/trip/[tripId]/budget/expense/api/
 import { MemberState } from '@/features/trip/[tripId]/budget/expense/_components/ExpenseForm';
 import { OcrResult, useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import type { CreateExpenseRequest } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function ReceiptForm() {
   const router = useRouter();
@@ -46,21 +45,7 @@ export default function ReceiptForm() {
   });
 
   // ✅ 멤버 상태
-  const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
-
-  const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
-    setMembersState((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [key]: !prev[id][key] },
-    }));
-  };
-
-  const updateAmount = (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => {
-    setMembersState((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [key]: value },
-    }));
-  };
+  const [_, setMembersState] = useState<Record<number, MemberState>>({});
 
   // ✅ expense 필드 변경
   const handleExpenseChange = useCallback(
@@ -136,7 +121,13 @@ export default function ReceiptForm() {
     router.push(`/trip/${tripId}/budget/expense?from=receipt&date=${date}`);
   };
 
-  if (!pageData) return null;
+  if (!pageData) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  };
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
