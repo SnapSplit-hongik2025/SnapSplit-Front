@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useRef, useEffect } from 'react';
 import TabSelector from '@/features/trip/[tripId]/snap/_components/TabSelector';
 import UploadButton from '@/features/trip/[tripId]/snap/_components/UploadButton';
@@ -19,46 +20,41 @@ type SnapPageProps = {
 
 export default function SnapPage({ tripId }: SnapPageProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('전체');
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollToTop, setScrollToTop] = useState<(() => void) | null>(null);
+
+  const [selectedSort, setSelectedSort] = useState('최신순');
 
   // trip info
   const [data, setData] = useState<GetTripBudgetDto | null>(null);
   const [tripError, setTripError] = useState<Error | null>(null);
 
-  // photo list
+  // photos
   const [photos, setPhotos] = useState<GetPhotosDto['photos']>([]);
   const [photosError, setPhotosError] = useState<Error | null>(null);
 
-  // paging state
+  // pagination
   const [page, setPage] = useState(0);
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
-  const isFetchingRef = useRef(false); // ✅ 중복 요청 방지 ref
 
-  /** 📸 이미지 업로드 */
-  const imageSubmit = async (file: File) => {
-    try {
-      await uploadImage(Number(tripId), file);
-      // 업로드 후 첫 페이지부터 다시 불러오기
-      setPhotos([]);
-      setPage(0);
-      fetchPhotos(0);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  // 중복 요청 방지
+  const isFetchingRef = useRef(false);
 
-  /** 📷 사진 목록 요청 (페이지네이션) */
+  /** ===========================
+   * 📷 사진 API 요청 (중복 방지)
+   * =========================== */
   const fetchPhotos = async (pageToLoad: number) => {
-    // ✅ 중복 요청 방지
-    if (isFetchingRef.current || loading) return;
+    if (isFetchingRef.current) return;
     isFetchingRef.current = true;
     setLoading(true);
 
     try {
-      const res = await getPhotos(Number(tripId), pageToLoad);
+      const sort = selectedSort === '최신순' ? 'date_desc' : 'date_asc';
+      const res = await getPhotos(Number(tripId), pageToLoad, sort);
+
       setPhotos((prev) => [...prev, ...res.photos]);
       setPage(pageToLoad);
       setHasNext(!res.last);
@@ -70,7 +66,25 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     }
   };
 
-  /** 📄 readiness(멤버 등록 여부) 확인 — 최초 한 번만 */
+  /** ===========================
+   * 📸 이미지 업로드 → 전체 리프레시
+   * =========================== */
+  const imageSubmit = async (file: File) => {
+    try {
+      await uploadImage(Number(tripId), file);
+
+      // 초기화 후 첫 페이지 다시 불러오기
+      setPhotos([]);
+      setPage(0);
+      await fetchPhotos(0);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  /** ===========================
+   * 📄 readiness 체크 (최초 1번)
+   * =========================== */
   useEffect(() => {
     (async () => {
       try {
@@ -84,12 +98,18 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     })();
   }, [tripId]);
 
-  /** 📘 여행 기본 정보 & 첫 페이지 사진 불러오기 */
+  /** ======================================
+   * 📘 여행 기본 정보 + 첫 페이지 사진 로드
+   * ====================================== */
   useEffect(() => {
     (async () => {
       try {
-        const res = await getTripBudgetData(Number(tripId));
-        setData(res);
+        const trip = await getTripBudgetData(Number(tripId));
+        setData(trip);
+
+        // 초기 fetch
+        setPhotos([]);
+        setPage(0);
         await fetchPhotos(0);
       } catch (e) {
         setTripError(e as Error);
@@ -97,9 +117,23 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     })();
   }, [tripId]);
 
-  /** 📥 추가 페이지 요청 */
+  /** ======================================
+   * 🔄 정렬 변경 시 → 전체 리셋 + 첫 페이지 로딩
+   * ====================================== */
+  useEffect(() => {
+    if (!data) return; // trip info가 아직 로드 안 됐으면 스킵
+
+    setPhotos([]);
+    setPage(0);
+
+    fetchPhotos(0);
+  }, [selectedSort]);
+
+  /** ===========================
+   * 📥 추가 페이지 요청
+   * =========================== */
   const handleLoadMore = () => {
-    if (!loading && hasNext) {
+    if (!loading && hasNext && !isFetchingRef.current) {
       fetchPhotos(page + 1);
     }
   };
@@ -129,7 +163,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
       {/* 탭 선택 */}
       <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* 컨텐츠 영역 */}
+      {/* 컨텐츠 */}
       {activeTab === '전체' ? (
         <BaseTabView
           setIsScrolled={setIsScrolled}
@@ -137,6 +171,8 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           photos={photos}
           onLoadMore={handleLoadMore}
           isLoading={loading}
+          selectedSort={selectedSort}
+          setSelectedSort={setSelectedSort}
         />
       ) : (
         <FolderTabView />
@@ -151,7 +187,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         />
       </FloatingModal>
 
-      {/* 숨겨진 파일 input */}
+      {/* 파일 input */}
       <input
         type="file"
         accept="image/*"

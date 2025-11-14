@@ -15,6 +15,8 @@ type BaseTabViewProps = {
   photos: PhotoResponse[]; // null 제거!
   onLoadMore: () => void; // 무한 스크롤 트리거
   isLoading: boolean; // 로딩 중인지
+  selectedSort: string;
+  setSelectedSort: (sort: string) => void;
 };
 
 export default function BaseTabView({
@@ -23,10 +25,11 @@ export default function BaseTabView({
   photos,
   onLoadMore,
   isLoading,
+  selectedSort,
+  setSelectedSort,
 }: BaseTabViewProps) {
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState('최신순');
 
   const [filters, setFilters] = useState<FilterState>({
     days: [],
