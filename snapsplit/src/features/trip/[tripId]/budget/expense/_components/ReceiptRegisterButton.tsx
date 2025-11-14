@@ -2,15 +2,17 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 
 export default function ReceiptRegisterButton() {
   const params = useParams();
   const tripId = params.tripId as string;
+  const searchParams = useSearchParams();
+  const date = searchParams.get('date') as string;
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/trip/${tripId}/budget/expense/receipt`);
+    router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);
   };
   return (
     <button

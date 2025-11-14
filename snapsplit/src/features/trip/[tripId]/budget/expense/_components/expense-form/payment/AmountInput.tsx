@@ -1,6 +1,5 @@
 'use client';
 
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 import { getSymbol } from '@/shared/utils/currency';
 
 type Props = {

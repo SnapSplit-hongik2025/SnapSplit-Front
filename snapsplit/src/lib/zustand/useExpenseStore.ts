@@ -193,28 +193,3 @@ export const useExpenseStore = create<ExpenseState>()(
     }
   )
 );
-
-// =========================
-// Derived helpers & selectors
-// =========================
-
-export const sumPay = (members: Member[]) => members.reduce((a, m) => a + (m.payAmount || 0), 0);
-export const sumSplit = (members: Member[]) => members.reduce((a, m) => a + (m.splitAmount || 0), 0);
-export const hasPayer = (members: Member[]) => members.some((m) => m.isPayer);
-export const hasSplitter = (members: Member[]) => members.some((m) => m.isSplitter);
-
-export const selectIsValid = (s: ExpenseState) => {
-  const amountOk = s.amount !== null && s.amount > 0;
-  const nameOk = s.expenseName.trim().length > 0;
-  const memoOk = s.expenseMemo.trim().length > 0;
-  const categoryOk = s.category.trim().length > 0;
-  const methodOk = s.paymentMethod.trim().length > 0;
-  const payerOk = hasPayer(s.members) && s.amount === sumPay(s.members);
-  const splitterOk = hasSplitter(s.members) && s.amount === sumSplit(s.members);
-  return amountOk && nameOk && memoOk && categoryOk && methodOk && payerOk && splitterOk;
-};
-
-export const selectIsInitialized = (s: ExpenseState) => s.isInitialized;
-export const selectHasPayer = (s: ExpenseState) => hasPayer(s.members);
-export const selectPaySum = (s: ExpenseState) => sumPay(s.members);
-export const selectSplitSum = (s: ExpenseState) => sumSplit(s.members);

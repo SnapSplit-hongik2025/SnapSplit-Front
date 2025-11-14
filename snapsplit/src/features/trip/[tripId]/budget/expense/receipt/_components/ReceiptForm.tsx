@@ -1,32 +1,27 @@
 'use client';
 import Button from '@/shared/components/Button';
 import ExpenseInputCard from '@/features/trip/[tripId]/budget/expense/_components/expense-form/ExpenseInputCard';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
-import { useExpenseInitStore } from '@/lib/zustand/useExpenseInitStore';
 import PaySection from '@/features/trip/[tripId]/budget/expense/_components/expense-form/PaySection';
 import SplitSection from '@/features/trip/[tripId]/budget/expense/_components/expense-form/SplitSection';
 import ReceiptAnalysisSection from '@/features/trip/[tripId]/budget/expense/receipt/_components/receipt-form/ReceiptAnalysisSection';
-import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import ReceiptThumbnail from './receipt-form/ReceiptThumbnail';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import FullScreenModal from '@/shared/components/modal/FullScreenModal';
 import ZoomModal from './receipt-form/ZoomModal';
+import { ExpensePageDataResponse } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
+import { getExpensePageData } from '@/features/trip/[tripId]/budget/expense/api/expense-api';
+import { MemberState } from '@/features/trip/[tripId]/budget/expense/_components/ExpenseForm';
 
 export default function ReceiptForm() {
   const router = useRouter();
   const params = useParams();
   const tripId = params.tripId as string;
-
-  const amount = useExpenseStore((state) => state.amount);
-  const setAmount = useExpenseStore((state) => state.setAmount);
-  const currency = useExpenseStore((state) => state.currency);
-  const setCurrency = useExpenseStore((state) => state.setCurrency);
-  const exchangeRates = useExpenseInitStore((state) => state.exchangeRates);
+  const searchParams = useSearchParams();
+  const date = searchParams.get('date') as string;
   
-  const items = useReceiptStore((state) => state.items);
-  const setItems = useReceiptStore((state) => state.setItems);
+  const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
 
   const [zoomOpen, setZoomOpen] = useState(false);
 
@@ -34,22 +29,45 @@ export default function ReceiptForm() {
     router.push(`/trip/${tripId}/budget/expense?from=receipt`);
   };
 
+  useEffect(() => {
+    if (!tripId) return;
+    const fetchExpensePageData = async () => {
+      try {
+        const expensePageData = await getExpensePageData(Number(tripId), date);
+        setPageData(expensePageData);
+      } catch (error) {
+        console.error('지출 초기화 데이터 가져오기 실패 : ', error);
+        // TODO: 에러 상태 표시
+      }
+    };
+    fetchExpensePageData();
+  }, [tripId]);
+
+  if (!pageData) return null;
+
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
       <div className="text-title-1 w-full pb-4">영수증 정보가 맞나요?</div>
       <div className="flex flex-col items-center w-full gap-6">
         <ReceiptThumbnail setZoomOpen={setZoomOpen} />
         <ExpenseInputCard
-          amount={amount}
-          setAmount={setAmount}
-          currency={currency}
-          setCurrency={setCurrency}
-          exchangeRates={exchangeRates}
+          amount={0}
+          setAmount={() => {}}
+          currency={pageData.defaultCurrency}
+          setCurrency={() => {}}
+          availCurrencies={pageData.availCurrencies}
+          exchangeRates={pageData.exchangeRates}
           mode="receipt"
         />
-        <ReceiptAnalysisSection items={items} setItems={setItems} />
-        <PaySection />
-        <SplitSection />
+        <ReceiptAnalysisSection items={[]} setItems={() => {}} />
+        <PaySection currency={pageData.defaultCurrency} members={pageData.members} membersState={pageData.members.reduce((acc, member) => {
+          acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
+          return acc;
+        }, {} as Record<number, MemberState>)} handleCheck={() => {}} updateAmount={() => {}} />
+        <SplitSection currency={pageData.defaultCurrency} members={pageData.members} membersState={pageData.members.reduce((acc, member) => {
+          acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
+          return acc;
+        }, {} as Record<number, MemberState>)} handleCheck={() => {}} updateAmount={() => {}} />
       </div>
 
       <div className="flex items-center justify-center w-full py-5">
