@@ -19,16 +19,20 @@ export interface UploadImageDto {
   }[];
 }
 
-export interface GetPhotosDto {
-  photos: {
-    photoId: number;
-    photoUrl: string;
-    photoDate: string;
-    taggedUsers: {
-      userId: number;
-      name: string;
-    }[];
+export interface PhotoResponse {
+  photoId: number;
+  photoUrl: string;
+  photoDate: string;
+  taggedUsers: {
+    userId: number;
+    name: string;
   }[];
+}
+
+export interface GetPhotosDto {
+  photos: PhotoResponse[];
+  currentPage: number;
+  last: boolean;
 }
 
 export interface GetReadinessDto {

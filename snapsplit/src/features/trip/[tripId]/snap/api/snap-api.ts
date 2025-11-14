@@ -58,8 +58,8 @@ export const getReadiness = async (tripId: number) => {
   }
 }
 
-export const getPhotos = async (tripId: number) => {
-  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/photos';
+export const getPhotos = async (tripId: number, page: number) => {
+  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/photos' + `?page=${page}`;
   try {
     const res = await privateInstance.get<ApiEnvelope<GetPhotosDto>>(finalPath);
     console.log(`[API] Fetched photos for tripId ${tripId}:`, res.data.data);

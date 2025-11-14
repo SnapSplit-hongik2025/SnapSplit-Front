@@ -26,25 +26,50 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   const [data, setData] = useState<GetTripBudgetDto | null>(null);
   const [tripError, setTripError] = useState<Error | null>(null);
 
-  const [photos, setPhotos] = useState<GetPhotosDto | null>(null);
+  const [photos, setPhotos] = useState<GetPhotosDto['photos']>([]);
   const [photosError, setPhotosError] = useState<Error | null>(null);
+
+  // paging states
+  const [page, setPage] = useState(0);
+  const [hasNext, setHasNext] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const imageSubmit = (file: File) => {
     uploadImage(Number(tripId), file)
       .then((res) => console.log(res))
       .catch((e) => console.log(e));
-    fetchPhotos().catch((e) => setPhotosError(e));
+    fetchPhotos(page).catch((e) => setPhotosError(e));
   };
 
-  const fetchPhotos = async () => {
-    const readiness = await getReadiness(Number(tripId));
-    if (!readiness.allMembersRegistered) {
-      alert('모든 멤버가 얼굴 정보를 등록해야 합니다.');
-      // throw new Error('모든 멤버가 얼굴 정보를 등록해야 합니다.');
+  const fetchPhotos = async (pageToLoad: number) => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const readiness = await getReadiness(Number(tripId));
+      if (!readiness.allMembersRegistered) {
+        alert('모든 멤버가 얼굴 정보를 등록해야 합니다.');
+        // return;
+      }
+
+      const res = await getPhotos(Number(tripId), pageToLoad);
+      // backend: GET /photos?tripId=1&page=pageToLoad
+
+      setPhotos((prev) => [...prev, ...res.photos]);
+      setPage(res.currentPage);
+      setHasNext(!res.last);
+    } catch (e) {
+      setPhotosError(e as Error);
+    } finally {
+      setLoading(false);
     }
-    await getPhotos(Number(tripId))
-      .then((res) => setPhotos(res))
-      .catch((e) => setPhotosError(e));
+  };
+
+  // 추가 페이지 요청
+  const handleLoadMore = () => {
+    if (!loading && hasNext) {
+      fetchPhotos(page + 1);
+    }
   };
 
   useEffect(() => {
@@ -54,7 +79,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         .catch((e) => setTripError(e));
     };
     fetchData().catch((e) => setTripError(e));
-    fetchPhotos().catch((e) => setPhotosError(e));
+    fetchPhotos(page).catch((e) => setPhotosError(e));
   }, [tripId]);
 
   if (tripError || photosError) return null;
@@ -82,7 +107,13 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
       {/* 컨텐츠 영역 */}
       {activeTab === '전체' ? (
-        <BaseTabView setIsScrolled={setIsScrolled} setScrollToTop={setScrollToTop} photos={photos!} />
+        <BaseTabView
+          setIsScrolled={setIsScrolled}
+          setScrollToTop={setScrollToTop}
+          photos={photos}
+          onLoadMore={handleLoadMore}
+          isLoading={loading}
+        />
       ) : (
         <FolderTabView />
       )}
