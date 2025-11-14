@@ -30,8 +30,9 @@ export default function ExpenseForm() {
   const params = useParams();
   const tripId = params.tripId as string;
 
-  // mock
-  const date = '2025-10-13';
+  // date
+  const searchParams = useSearchParams();
+  const date = searchParams.get('date') as string;
 
   // 초기 상태
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
@@ -54,7 +55,6 @@ export default function ExpenseForm() {
   const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
 
   const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
-    console.log(id, key);
     setMembersState((prev) => ({
       ...prev,
       [id]: { ...prev[id], [key]: !prev[id][key] },
@@ -80,20 +80,17 @@ export default function ExpenseForm() {
   };
 
   // receipt
-  const searchParams = useSearchParams();
   const from = searchParams.get('from');
   const isFromReceipt = from === 'receipt';
   const receiptItems = useReceiptStore((s) => s.items);
 
   // init
   useEffect(() => {
-    const date = '2025-10-13'; // 임시 데이터
     if (!tripId || !date) return;
 
     const fetchExpensePageData = async () => {
       try {
         const expensePageData = await getExpensePageData(Number(tripId), date);
-        console.log('expensePageData : ', expensePageData);
         setPageData(expensePageData);
         setForm((prev) => ({
           ...prev,
@@ -136,7 +133,6 @@ export default function ExpenseForm() {
       }
     };
     const res = await createExpense(Number(tripId), refinedForm);
-    console.log('res : ', res);
   };
 
   if (!pageData) return null;
