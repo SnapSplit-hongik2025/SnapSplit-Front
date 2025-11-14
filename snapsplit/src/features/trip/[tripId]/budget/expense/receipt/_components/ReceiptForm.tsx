@@ -13,6 +13,7 @@ import ZoomModal from './receipt-form/ZoomModal';
 import { ExpensePageDataResponse } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
 import { getExpensePageData } from '@/features/trip/[tripId]/budget/expense/api/expense-api';
 import { MemberState } from '@/features/trip/[tripId]/budget/expense/_components/ExpenseForm';
+import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 
 export default function ReceiptForm() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function ReceiptForm() {
   const date = searchParams.get('date') as string;
   
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
+  const { ocrResult, receiptUrl, setOcrResult } = useReceiptStore();
 
   const [zoomOpen, setZoomOpen] = useState(false);
 
@@ -49,7 +51,7 @@ export default function ReceiptForm() {
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
       <div className="text-title-1 w-full pb-4">영수증 정보가 맞나요?</div>
       <div className="flex flex-col items-center w-full gap-6">
-        <ReceiptThumbnail setZoomOpen={setZoomOpen} />
+        <ReceiptThumbnail setZoomOpen={setZoomOpen} receiptUrl={receiptUrl} />
         <ExpenseInputCard
           amount={0}
           setAmount={() => {}}
@@ -59,7 +61,7 @@ export default function ReceiptForm() {
           exchangeRates={pageData.exchangeRates}
           mode="receipt"
         />
-        <ReceiptAnalysisSection items={[]} setItems={() => {}} />
+        <ReceiptAnalysisSection items={ocrResult?.items || []} setItems={(items) => setOcrResult({ ...ocrResult, items })} />
         <PaySection currency={pageData.defaultCurrency} members={pageData.members} membersState={pageData.members.reduce((acc, member) => {
           acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
           return acc;
@@ -76,7 +78,7 @@ export default function ReceiptForm() {
 
       {zoomOpen && (
         <FullScreenModal>
-          <ZoomModal onClose={() => setZoomOpen(false)} />
+          <ZoomModal onClose={() => setZoomOpen(false)} receiptUrl={receiptUrl} />
         </FullScreenModal>
       )}
     </div>

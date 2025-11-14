@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { getParsedReceipt } from '@/features/trip/[tripId]/budget/expense/receipt/api/receipt-api';
+import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 
 export default function ReceiptRegisterButton() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function ReceiptRegisterButton() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const { setOcrResult, setReceiptUrl } = useReceiptStore();
+
   const openCamera = () => {
     inputRef.current?.click();
   };
@@ -25,14 +28,12 @@ export default function ReceiptRegisterButton() {
     setLoading(true);
 
     try {
-      // (1) 필요시 리사이즈
-      // const processed = await downscaleIfNeeded(file, 1600);
-
       // (2) axios 기반 OCR 요청 함수 호출
       const ocrResult = await getParsedReceipt(file);
 
       // (3) 결과 sessionStorage에 저장
-      sessionStorage.setItem('ocrDraft', JSON.stringify(ocrResult));
+      setOcrResult(ocrResult);
+      setReceiptUrl(URL.createObjectURL(file));
 
       // (4) receipt 페이지로 이동
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);

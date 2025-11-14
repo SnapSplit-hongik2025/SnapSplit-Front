@@ -5,15 +5,16 @@ import { ReceiptItem } from '@/lib/zustand/useReceiptStore';
 import { useEffect } from 'react';
 
 type ReceiptAnalysisSectionProps = {
-    items: ReceiptItem[];
-    setItems: (items: ReceiptItem[]) => void;
-}
+  items: ReceiptItem[];
+  setItems: (items: ReceiptItem[]) => void;
+};
 
 export default function ReceiptAnalysisSection({ items, setItems }: ReceiptAnalysisSectionProps) {
-  // TODO: Mock data DB에 들어가면 store 접근 로직 lift
   useEffect(() => {
-    setItems(RECEIPT_ITEMS);
-  }, [setItems]);
+    if (items.length === 0) {
+      setItems(RECEIPT_ITEMS);
+    }
+  }, [items.length, setItems]);
 
   const handleAddItem = () => {
     setItems([...items, { id: items.length + 1, name: '', amount: '' }]);
@@ -33,9 +34,9 @@ export default function ReceiptAnalysisSection({ items, setItems }: ReceiptAnaly
         <div className="flex-2">상품명</div>
         <div className="flex-1">금액</div>
       </div>
-      {items.map((item) => (
+      {items.map((item, index) => (
         <ReceiptAnalysisItem
-          key={item.id}
+          key={item.id ?? index}
           id={item.id}
           name={item.name}
           amount={item.amount}
@@ -67,10 +68,20 @@ function ReceiptAnalysisItem({ id, name, amount, handleNameChange, handleAmountC
   return (
     <div className="flex items-center w-full gap-3">
       <div className="flex-2 px-4 flex items-center justify-start h-12 rounded-xl border-[1px] border-grey-250">
-        <input className="w-full text-body-2 focus:outline-none" value={name} placeholder="상품명" onChange={(e) => handleNameChange(e, id)} />
+        <input
+          className="w-full text-body-2 focus:outline-none"
+          value={name}
+          placeholder="상품명"
+          onChange={(e) => handleNameChange(e, id)}
+        />
       </div>
       <div className="flex-1 px-4 flex items-center justify-start h-12 rounded-xl border-[1px] border-grey-250">
-        <input className="w-full text-body-2 focus:outline-none" value={amount} placeholder="금액" onChange={(e) => handleAmountChange(e, id)} />
+        <input
+          className="w-full text-body-2 focus:outline-none"
+          value={amount}
+          placeholder="금액"
+          onChange={(e) => handleAmountChange(e, id)}
+        />
       </div>
     </div>
   );
