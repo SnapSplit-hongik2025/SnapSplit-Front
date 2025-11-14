@@ -28,6 +28,9 @@ export const updateMyData = async ({ name, profileImage, onProgress }: UpdateMyR
       const percent = e.total ? Math.round((e.loaded * 100) / e.total) : 0;
       onProgress(percent);
     },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 
   return res.data.data;
