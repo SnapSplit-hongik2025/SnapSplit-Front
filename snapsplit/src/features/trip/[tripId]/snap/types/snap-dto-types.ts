@@ -45,3 +45,9 @@ export interface GetReadinessDto {
     currentUser: boolean;
   }[];
 }
+
+export interface Folder {
+  name: string;
+  id: number;
+  profileImageUrl?: string;
+}

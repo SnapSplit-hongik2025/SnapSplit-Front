@@ -46,7 +46,13 @@ export const deleteImages = async (tripId: number, photoIds: number[]) => {
   }
 }
 
-export const getReadiness = async (tripId: number) => {
+export const getPhotosByFolder = async (tripId: number, memberId: string, page: number = 0, sort: string = 'date_desc') => {
+  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/folders/' + memberId + '?page=' + page + '&sort=' + sort;
+  const res = await privateInstance.get<ApiEnvelope<GetPhotosDto>>(finalPath);
+  return res.data.data;
+};
+
+export const getReadiness = async (tripId: number): Promise<GetReadinessDto> => {
   const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/readiness';
   try {
     const res = await privateInstance.get<ApiEnvelope<GetReadinessDto>>(finalPath);

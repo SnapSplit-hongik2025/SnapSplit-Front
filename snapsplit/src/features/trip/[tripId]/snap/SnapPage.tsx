@@ -13,6 +13,7 @@ import { uploadImage, getPhotos, getReadiness } from '@/features/trip/[tripId]/s
 import { GetPhotosDto } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 import { getTripBudgetData } from '../budget/api/budget-api';
 import { GetTripBudgetDto } from '../budget/types/budget-dto-type';
+import { Folder } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 
 type SnapPageProps = {
   tripId: string;
@@ -30,6 +31,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   // trip info
   const [data, setData] = useState<GetTripBudgetDto | null>(null);
   const [tripError, setTripError] = useState<Error | null>(null);
+  const [folders, setFolders] = useState<Folder[]>([]);
 
   // photos
   const [photos, setPhotos] = useState<GetPhotosDto['photos']>([]);
@@ -91,16 +93,30 @@ export default function SnapPage({ tripId }: SnapPageProps) {
    * 📄 readiness 체크 (최초 1번)
    * =========================== */
   useEffect(() => {
-    (async () => {
+    const checkReadiness = async () => {
       try {
         const readiness = await getReadiness(Number(tripId));
+        
+        // Show alert if not all members are registered
         if (!readiness.allMembersRegistered) {
           alert('모든 멤버가 얼굴 정보를 등록해야 합니다.');
         }
-      } catch (e) {
-        console.error(e);
+
+        // Process members with face data into folders
+        const memberFolders = readiness.members
+          .filter(member => member.hasFaceData)
+          .map(member => ({
+            id: member.userId,
+            name: member.name
+          }));
+
+        setFolders([...memberFolders]);
+      } catch (error) {
+        console.error('Readiness check failed:', error);
       }
-    })();
+    };
+
+    checkReadiness();
   }, [tripId]);
 
   /** ======================================
@@ -181,7 +197,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           onRefresh={handleRefresh}
         />
       ) : (
-        <FolderTabView />
+        <FolderTabView folders={folders}/>
       )}
 
       {/* 플로팅 업로드 버튼 */}
