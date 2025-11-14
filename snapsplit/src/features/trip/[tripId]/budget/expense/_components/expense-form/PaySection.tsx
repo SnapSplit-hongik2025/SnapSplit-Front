@@ -1,10 +1,17 @@
 'use client';
 
 import PaymentRow from "./payment/PaymentRow";
-import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
+import type { MemberState } from '../ExpenseForm';
 
-export default function PaySection() {
-  const members = useExpenseStore((s) => s.members);
+type PaySectionProps = {
+  currency: string;
+  members: { memberId: number; name: string; memberType: string }[];
+  membersState: Record<number, MemberState>;
+  handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => void;
+};
+
+export default function PaySection({ currency, members, membersState, handleCheck, updateAmount }: PaySectionProps) {
   const sharedFund = members.find((member) => member.memberType === 'SHARED_FUND');
 
   return (
@@ -18,12 +25,12 @@ export default function PaySection() {
       </div>
       <div className="flex flex-col items-center w-full">
         {sharedFund && (
-          <PaymentRow payer={{ memberId: sharedFund.memberId, name: "공동경비" }} />
+          <PaymentRow payer={{ memberId: sharedFund.memberId, name: "공동경비" }} currency={currency} membersState={membersState} handleCheck={handleCheck} updateAmount={updateAmount} />
         )}
         {members.map((member) => {
           if(member.memberType === 'SHARED_FUND') return null;
           return (
-            <PaymentRow key={member.memberId} payer={{ memberId: member.memberId, name: member.name }} />
+            <PaymentRow key={member.memberId} payer={{ memberId: member.memberId, name: member.name }} currency={currency} membersState={membersState} handleCheck={handleCheck} updateAmount={updateAmount} />
           );
         })}
       </div>

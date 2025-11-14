@@ -1,11 +1,17 @@
 'use client';
 
 import SplitRow from "./payment/SplitRow";
-import { useExpenseStore } from "@/lib/zustand/useExpenseStore";
+import type { MemberState } from '../ExpenseForm';
 
-export default function SplitSection() {
-  const members = useExpenseStore((s) => s.members);
+type SplitSectionProps = {
+  currency: string;
+  members: { memberId: number; name: string; memberType: string }[];
+  membersState: Record<number, MemberState>;
+  handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => void;
+};
 
+export default function SplitSection({ currency, members, membersState, handleCheck, updateAmount }: SplitSectionProps) {
   return (
     <div className="flex flex-col items-center gap-3 w-full text-body-3">
       <div className="flex items-center justify-between w-full">
@@ -19,7 +25,7 @@ export default function SplitSection() {
         {members.map((member) => {
           if(member.memberType === 'SHARED_FUND') return null;
           return (
-            <SplitRow key={member.memberId} splitter={{ memberId: member.memberId, name: member.name }} />
+            <SplitRow key={member.memberId} splitter={{ memberId: member.memberId, name: member.name }} currency={currency} membersState={membersState} handleCheck={handleCheck} updateAmount={updateAmount} />
           );
         })}
       </div>

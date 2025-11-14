@@ -20,7 +20,7 @@ export default function SortFilterBar({ selectedSort, onSortOpen, onFilterOpen, 
             onClick={onSortOpen}
             className="self-start flex items-center h-8 text-body-2 pl-3 pr-1 py-1 rounded-full bg-white border-1 border-grey-250"
           >
-            {selectedSort} <Image src="/svg/arrow_bottom.svg" alt="arrowBottom" width={24} height={24} />
+            {selectedSort} <Image src="/svg/arrow-bottom.svg" alt="arrowBottom" width={24} height={24} />
           </button>
         </div>
         <button

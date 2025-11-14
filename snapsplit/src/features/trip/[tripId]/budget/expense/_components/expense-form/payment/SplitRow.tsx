@@ -2,38 +2,30 @@
 
 import Image from 'next/image';
 import { useCallback } from 'react';
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 import AmountInput from './AmountInput';
+import type { MemberState } from '../../ExpenseForm';
 
 type Props = {
   splitter: {
     memberId: number;
     name: string;
   };
+  currency: string;
+  membersState: Record<number, MemberState>;
+  handleCheck: (id: number, key: 'isPayer' | 'isSplitter') => void;
+  updateAmount: (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => void;
 };
 
-export default function SplitRow({ splitter }: Props) {
-  const member = useExpenseStore((s) => s.members.find((m) => m.memberId === splitter.memberId));
-
-  const setSplitter = useExpenseStore((s) => s.setSplitter);
-  const updateSplitAmount = useExpenseStore((s) => s.updateSplitAmount);
-
-  const isChecked = !!member?.isSplitter;
-  const splitAmount = member?.splitAmount ?? null;
-
-  const toggleCheck = useCallback(() => {
-    setSplitter(splitter.memberId, !isChecked);
-    if (isChecked) {
-      updateSplitAmount(splitter.memberId, null);
-    }
-  }, [setSplitter, splitter.memberId, isChecked, updateSplitAmount]);
+export default function SplitRow({ splitter, currency, membersState, handleCheck, updateAmount }: Props) {
+  const isChecked = membersState[splitter.memberId]?.isSplitter;
+  const splitAmount = membersState[splitter.memberId]?.splitAmount || null;
 
   const handleAmountChange = useCallback(
     (value: string) => {
       const amount = Number(value) || null;
-      updateSplitAmount(splitter.memberId, amount);
+      updateAmount(splitter.memberId, 'splitAmount', amount);
     },
-    [splitter.memberId, updateSplitAmount]
+    [splitter.memberId, updateAmount]
   );
 
   return (
@@ -43,7 +35,7 @@ export default function SplitRow({ splitter }: Props) {
         <div className="flex items-center justify-center w-20">
           <button
             type="button"
-            onClick={toggleCheck}
+            onClick={() => handleCheck(splitter.memberId, 'isSplitter')}
             className={`flex items-center justify-center w-6 h-6 rounded-full ${
               isChecked ? 'bg-primary text-white' : 'border-[1px] border-grey-250'
             }`}
@@ -56,7 +48,7 @@ export default function SplitRow({ splitter }: Props) {
             />
           </button>
         </div>
-        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} />
+        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );

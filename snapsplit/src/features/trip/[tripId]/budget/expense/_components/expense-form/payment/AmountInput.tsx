@@ -1,16 +1,14 @@
 'use client';
 
-import { useExpenseStore } from '@/lib/zustand/useExpenseStore';
 import { getSymbol } from '@/shared/utils/currency';
 
 type Props = {
   value: string;
   updateValue: (value: string) => void;
+  currency: string;
 };
 
-const AmountInput = ({ value, updateValue }: Props) => {
-  const currency = useExpenseStore((s) => s.currency);
-
+const AmountInput = ({ value, updateValue, currency }: Props) => {
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     console.log('[AmountInput] inputValue:', inputValue, typeof inputValue);

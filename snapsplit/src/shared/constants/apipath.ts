@@ -21,5 +21,6 @@ export const enum apiPath {
   MY_FACE = '/home/myPage/face',
   SNAP_FACE = '/api/snap/face',
   STATISTICS = '/trips/{tripId}/statistics',
-  EXPENSE_DETAIL = '/trips/{tripId}/expense/{expenseId}'
+  EXPENSE_DETAIL = '/trips/{tripId}/expense/{expenseId}',
+  OCR = '/receipts/parse',
 }

@@ -3,8 +3,15 @@ import ExpenseItem from './ExpenseItem';
 import { DailyExpenseListProps } from '../types/budget-type';
 import AddExpenseButton from './AddExpenseButton';
 import TopFloatingButton from '@/shared/components/TopFloatingButton';
+import { useRouter } from 'next/navigation';
 
 export default function DailyExpenseList({ dailyExpenses, tripStartDate, tripId }: DailyExpenseListProps) {
+  const router = useRouter();
+  
+  const handleClickAddExpense = (date: string) => {
+    router.push(`/trip/${tripId}/budget/expense?date=${date}`);
+  };
+
   return (
     <div
       id="scroll-target-top"
@@ -17,7 +24,7 @@ export default function DailyExpenseList({ dailyExpenses, tripStartDate, tripId 
             {expenses.map((e) => (
               <ExpenseItem key={e.expenseId} expense={e} tripId={tripId} />
             ))}
-            <AddExpenseButton />
+            <AddExpenseButton onClick={() => handleClickAddExpense(date)}/>
           </div>
         );
       })}
