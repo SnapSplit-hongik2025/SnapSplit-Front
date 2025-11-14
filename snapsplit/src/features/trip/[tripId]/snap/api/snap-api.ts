@@ -9,7 +9,7 @@ export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
     throw new Error('유효하지 않은 여행 ID입니다.');
   }
   try {
-    const finalPath = apiPath.budget.replace('{tripId}', String(tripId));
+    const finalPath = apiPath.BUDGET.replace('{tripId}', String(tripId));
     const res = await privateInstance.get<ApiEnvelope<GetTripDataDto>>(finalPath);
     console.log(`[API] Fetched trip data for tripId ${tripId}:`, res.data.data);
     return res.data.data;
@@ -20,7 +20,7 @@ export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
 };
 
 export const uploadImage = async (tripId: number, file: File) => {
-  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/photos';
+  const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/photos';
   const formData = new FormData();
   console.log("[UploadImage API] file ->", file);
   formData.append('images', file);
@@ -35,7 +35,7 @@ export const uploadImage = async (tripId: number, file: File) => {
 }
 
 export const deleteImages = async (tripId: number, photoIds: number[]) => {
-  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/photos';
+  const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/photos';
   try {
     const res = await privateInstance.delete<ApiEnvelope<null>>(finalPath, { data: { photoIds } });
     console.log(`[API] Deleted images for tripId ${tripId}:`, res.data.data);
@@ -47,13 +47,13 @@ export const deleteImages = async (tripId: number, photoIds: number[]) => {
 }
 
 export const getPhotosByFolder = async (tripId: number, memberId: string, page: number = 0, sort: string = 'date_desc') => {
-  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/folders/' + memberId + '?page=' + page + '&sort=' + sort;
+  const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/folders/' + memberId + '?page=' + page + '&sort=' + sort;
   const res = await privateInstance.get<ApiEnvelope<GetPhotosDto>>(finalPath);
   return res.data.data;
 };
 
 export const getReadiness = async (tripId: number): Promise<GetReadinessDto> => {
-  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/readiness';
+  const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/readiness';
   try {
     const res = await privateInstance.get<ApiEnvelope<GetReadinessDto>>(finalPath);
     console.log(`[API] Fetched readiness for tripId ${tripId}:`, res.data.data);
@@ -65,7 +65,7 @@ export const getReadiness = async (tripId: number): Promise<GetReadinessDto> => 
 }
 
 export const getPhotos = async (tripId: number, page: number, sort: string) => {
-  const finalPath = apiPath.snap.replace('{tripId}', String(tripId)) + '/photos' + `?page=${page}` + `&sort=${sort}`;
+  const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/photos' + `?page=${page}` + `&sort=${sort}`;
   try {
     const res = await privateInstance.get<ApiEnvelope<GetPhotosDto>>(finalPath);
     console.log(`[API] Fetched photos for tripId ${tripId}:`, res.data.data);

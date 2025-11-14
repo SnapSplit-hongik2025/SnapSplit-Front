@@ -12,11 +12,11 @@ import { PhotoResponse } from '@/features/trip/[tripId]/snap/types/snap-dto-type
 type BaseTabViewProps = {
   setIsScrolled: (show: boolean) => void;
   setScrollToTop: (fn: () => void) => void;
-  photos: PhotoResponse[]; // null 제거!
-  onLoadMore: () => void; // 무한 스크롤 트리거
-  isLoading: boolean; // 로딩 중인지
-  selectedSort: string;
-  setSelectedSort: (sort: string) => void;
+  photos?: PhotoResponse[]; // null 제거!
+  onLoadMore?: () => void; // 무한 스크롤 트리거
+  isLoading?: boolean; // 로딩 중인지
+  selectedSort?: string;
+  setSelectedSort?: (sort: string) => void;
   onRefresh?: () => void;
 };
 
@@ -45,7 +45,7 @@ export default function BaseTabView({
   // -------------------------------
   // 1. 필터 반영된 이미지 목록
   // -------------------------------
-  const filteredImages = photos.filter((img) => {
+  const filteredImages = photos?.filter((img) => {
     const dateStr = img.photoDate ?? ''; // null-safe
 
     const matchDay = filters.days.length === 0 || filters.days.some((d) => dateStr.includes(String(d)));
@@ -94,7 +94,7 @@ export default function BaseTabView({
       (entries) => {
         if (entries[0].isIntersecting) {
           if (!isLoading) {
-            onLoadMore();
+            onLoadMore?.();
           }
         }
       },
@@ -116,7 +116,7 @@ export default function BaseTabView({
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
       <SortFilterBar
-        selectedSort={selectedSort}
+        selectedSort={selectedSort ?? ''}
         onSortOpen={() => setSortOpen(true)}
         onFilterOpen={() => setFilterOpen(true)}
         filters={filters}
@@ -128,7 +128,7 @@ export default function BaseTabView({
 
       {/* 사진 그리드 */}
       <PhotoGrid 
-        images={filteredImages} 
+        images={filteredImages ?? []} 
         onRefresh={onRefresh} 
         isSelectionMode={false}
         selectedImageIds={[]}
@@ -144,8 +144,8 @@ export default function BaseTabView({
       {/* 정렬 BottomSheet */}
       <BottomSheet isOpen={sortOpen} onClose={() => setSortOpen(false)}>
         <SortBottomSheet
-          selectedSort={selectedSort}
-          onSelectSort={(opt) => setSelectedSort(opt)}
+          selectedSort={selectedSort ?? ''}
+          onSelectSort={(opt) => setSelectedSort?.(opt)}
           onClose={() => setSortOpen(false)}
         />
       </BottomSheet>
