@@ -38,7 +38,6 @@ export default function ExpenseInputCard({amount, setAmount, exchangeRates, curr
   };
 
   const toKRW = (amount: number, currency: string) => {
-    console.log(amount, currency);
     const exchangeRate = exchangeRates[currency];
     if (exchangeRate === null || !Number.isFinite(exchangeRate)) return 0;
     return amount * exchangeRate;

@@ -3,10 +3,10 @@ import { apiPath } from '@/shared/constants/apipath';
 import { ApiEnvelope } from '@/lib/api/type';
 
 export type OcrResponse = {
-  parsedText: string;
-  totalAmount?: number;
-  items?: Array<{ name: string; amount: number }>;
   currency: string;
+  totalAmount: number;
+  receiptUrl: string;
+  items: { name: string; amount: number }[];
 };
 
 /**

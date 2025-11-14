@@ -13,7 +13,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { ExpensePageDataResponse } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
 import { getExpensePageData } from '@/features/trip/[tripId]/budget/expense/api/expense-api';
 import { MemberState } from '@/features/trip/[tripId]/budget/expense/_components/ExpenseForm';
-import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
+import { OcrResult, useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import type { CreateExpenseRequest } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
 
 export default function ReceiptForm() {
@@ -27,7 +27,7 @@ export default function ReceiptForm() {
   const [zoomOpen, setZoomOpen] = useState(false);
 
   // ✅ Zustand에서 OCR 결과 / 통화정보 관리
-  const { ocrResult, receiptUrl, currency, setOcrResult } = useReceiptStore();
+  const { ocrResult, receiptUrl, currency, setOcrResult, clearReceiptData } = useReceiptStore();
 
   // ✅ form 상태 초기화
   const [form, setForm] = useState<CreateExpenseRequest>({
@@ -37,7 +37,7 @@ export default function ReceiptForm() {
       currency: currency,
       exchangeRate: 1,
       category: '',
-      expenseName: '영수증 결제',
+      expenseName: '',
       expenseMemo: '',
       paymentMethod: 'cash',
     },
@@ -64,10 +64,7 @@ export default function ReceiptForm() {
 
   // ✅ expense 필드 변경
   const handleExpenseChange = useCallback(
-    <K extends keyof CreateExpenseRequest['expense']>(
-      key: K,
-      value: CreateExpenseRequest['expense'][K] | null,
-    ) => {
+    <K extends keyof CreateExpenseRequest['expense']>(key: K, value: CreateExpenseRequest['expense'][K] | null) => {
       setForm((prev) => ({
         ...prev,
         expense: { ...prev.expense, [key]: value },
@@ -79,7 +76,7 @@ export default function ReceiptForm() {
   // ✅ OCR item 변경
   const handleItemChange = useCallback(
     (items: any[]) => {
-      setOcrResult({ ...ocrResult, items });
+      setOcrResult({ ...ocrResult, items } as OcrResult);
     },
     [ocrResult, setOcrResult]
   );
@@ -101,12 +98,15 @@ export default function ReceiptForm() {
             amount: ocrResult?.totalAmount ?? 0,
           },
         }));
-        console.log("form.amount: ", form.expense.amount);
+        console.log('form.amount: ', form.expense.amount);
         setMembersState(
-          expensePageData.members.reduce((acc, member) => {
-            acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
-            return acc;
-          }, {} as Record<number, MemberState>)
+          expensePageData.members.reduce(
+            (acc, member) => {
+              acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
+              return acc;
+            },
+            {} as Record<number, MemberState>
+          )
         );
       } catch (error) {
         console.error('지출 초기화 데이터 가져오기 실패 : ', error);
@@ -117,14 +117,16 @@ export default function ReceiptForm() {
   }, [tripId, date]);
 
   const handleNext = () => {
-    // Zustand로 form 상태를 저장해서 ExpenseForm에서 이어받도록
     setOcrResult({
       ...ocrResult,
       totalAmount: form.expense.amount,
       currency: form.expense.currency,
-      items: ocrResult.items,
+      items: ocrResult?.items ?? [],
+      receiptUrl: receiptUrl ?? '',
     });
-    router.push(`/trip/${tripId}/budget/expense?from=receipt`);
+
+    // ✅ date를 URL 쿼리로 같이 전달
+    router.push(`/trip/${tripId}/budget/expense?from=receipt&date=${date}`);
   };
 
   if (!pageData) return null;
@@ -148,10 +150,7 @@ export default function ReceiptForm() {
         />
 
         {/* OCR 분석 항목 */}
-        <ReceiptAnalysisSection
-          items={ocrResult?.items || []}
-          setItems={handleItemChange}
-        />
+        <ReceiptAnalysisSection items={ocrResult?.items || []} setItems={handleItemChange} />
 
         {/* 결제자 / 분할자 */}
         <PaySection

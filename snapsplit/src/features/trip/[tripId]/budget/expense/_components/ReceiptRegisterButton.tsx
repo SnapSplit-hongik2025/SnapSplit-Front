@@ -5,6 +5,9 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { getParsedReceipt } from '@/features/trip/[tripId]/budget/expense/receipt/api/receipt-api';
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
+import { ReceiptItem } from '@/lib/zustand/useReceiptStore';
+import { OcrResponse } from '@/features/trip/[tripId]/budget/expense/receipt/api/receipt-api';
+import { OcrResult } from '@/lib/zustand/useReceiptStore';
 
 export default function ReceiptRegisterButton() {
   const router = useRouter();
@@ -22,21 +25,37 @@ export default function ReceiptRegisterButton() {
     inputRef.current?.click();
   };
 
+  const mapOcrResponseToResult = (response: OcrResponse): OcrResult => {
+    if (!response) return null;
+
+    return {
+      currency: response.currency,
+      totalAmount: response.totalAmount,
+      receiptUrl: response.receiptUrl,
+      items: response.items.map(
+        (item, index): ReceiptItem => ({
+          id: index + 1,
+          name: item.name,
+          amount: String(item.amount),
+        })
+      ),
+    };
+  };
+
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setLoading(true);
 
     try {
-      // (2) axios 기반 OCR 요청 함수 호출
       const ocrResult = await getParsedReceipt(file);
+      const refined = mapOcrResponseToResult(ocrResult);
+      console.log("[refined]: ", refined);
 
-      // (3) 결과 sessionStorage에 저장
-      setOcrResult(ocrResult);
+      setOcrResult(refined);
       setReceiptUrl(URL.createObjectURL(file));
       setCurrency(ocrResult.currency);
 
-      // (4) receipt 페이지로 이동
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);
     } catch (err) {
       console.error(err);
@@ -64,9 +83,7 @@ export default function ReceiptRegisterButton() {
         aria-busy={loading}
       >
         <Image src="/svg/snap-white.svg" alt="사진 등록" width={24} height={24} />
-        <div className="text-body-1 text-white">
-          {loading ? '업로드 중...' : '영수증으로 등록'}
-        </div>
+        <div className="text-body-1 text-white">{loading ? '업로드 중...' : '영수증으로 등록'}</div>
       </button>
     </>
   );
@@ -92,9 +109,7 @@ async function downscaleIfNeeded(file: File, maxSide: number): Promise<File> {
 
   ctx.drawImage(imgBitmap, 0, 0, canvas.width, canvas.height);
 
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.9)
-  );
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.9));
   if (!blob) return file;
 
   return new File([blob], file.name || 'receipt.jpg', { type: 'image/jpeg' });
