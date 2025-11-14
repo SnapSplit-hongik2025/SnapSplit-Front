@@ -14,7 +14,7 @@ interface SortFilterBarProps {
 export default function SortFilterBar({ selectedSort, onSortOpen, onFilterOpen, filters, setFilters, onSortChange }: SortFilterBarProps) {
   const handleSortClick = () => {
     if (onSortChange) {
-      onSortChange(selectedSort === '최신순' ? '오래된순' : '최신순');
+      onSortChange(selectedSort === '최신순' ? '시간순' : '최신순');
     } else {
       onSortOpen();
     }

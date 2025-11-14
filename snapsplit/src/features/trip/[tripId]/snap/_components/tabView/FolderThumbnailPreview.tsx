@@ -10,7 +10,7 @@ export default function FolderThumbnailPreview({ memberId }: FolderThumbnailPrev
   const memberPhotos = useMemberPhotos(memberId);
   
   // 부족한 사진 수만큼 빈 슬롯 추가
-  const emptySlots = 4 - memberPhotos.length;
+  const emptySlots = Math.max(0, 4 - memberPhotos.length);
   
   return (
     <div className="grid grid-cols-2 gap-2 bg-white rounded-lg p-3">

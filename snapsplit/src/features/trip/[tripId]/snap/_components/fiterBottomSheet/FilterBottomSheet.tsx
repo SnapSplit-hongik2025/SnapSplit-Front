@@ -1,7 +1,6 @@
 import { FilterState } from '@/features/trip/[tripId]/snap/type';
 import DaySection from './DaySection';
 import PeopleSection from './PeopleSection';
-import LocationSection from './LocationSection';
 import ButtonSection from './ButtonSection';
 
 interface FilterBottomSheetProps {
@@ -17,8 +16,6 @@ export default function FilterBottomSheet({ filters, setFilters, onClose, tab }:
       <DaySection filters={filters} setFilters={setFilters} />
 
       {tab === 'base' && <PeopleSection filters={filters} setFilters={setFilters} />}
-
-      <LocationSection filters={filters} setFilters={setFilters} />
 
       <ButtonSection onClose={onClose} setFilters={setFilters}/>
     </div>

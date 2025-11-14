@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import TabSelector from '@/features/trip/[tripId]/snap/_components/TabSelector';
 import UploadButton from '@/features/trip/[tripId]/snap/_components/UploadButton';
 import TripHeader from '../../../../shared/components/TripHeader';
@@ -15,6 +15,7 @@ import { getTripBudgetData } from '../budget/api/budget-api';
 import { GetTripBudgetDto } from '../budget/types/budget-dto-type';
 import { Folder } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 import { useSnapStore } from './store/snapStore';
+import Loading from '@/shared/components/loading/Loading';
 
 type SnapPageProps = {
   tripId: string;
@@ -50,28 +51,36 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   /** ===========================
    * 📷 사진 API 요청 (중복 방지)
    * =========================== */
-  const fetchPhotos = async (pageToLoad: number) => {
-    if (isFetchingRef.current) return;
-    isFetchingRef.current = true;
-    setLoading(true);
+  const fetchPhotos = useCallback(
+    async (pageToLoad: number) => {
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+      setLoading(true);
 
-    try {
-      const sort = selectedSort === '최신순' ? 'date_desc' : 'date_asc';
-      const res = await getPhotos(Number(tripId), pageToLoad, sort);
+      try {
+        const sort = selectedSort === '최신순' ? 'date_desc' : 'date_asc';
+        const res = await getPhotos(Number(tripId), pageToLoad, sort);
 
-      const newPhotos = pageToLoad === 0 ? res.photos : [...photos, ...res.photos];
-      setPhotos(newPhotos);
-      // Zustand 스토어에 전체 사진 데이터 저장
-      setAllPhotos(newPhotos);
-      setPage(pageToLoad);
-      setHasNext(!res.last);
-    } catch (e) {
-      setPhotosError(e as Error);
-    } finally {
-      isFetchingRef.current = false;
-      setLoading(false);
-    }
-  };
+        setPhotos((prevPhotos) => {
+          const newPhotos = pageToLoad === 0 ? res.photos : [...prevPhotos, ...res.photos];
+
+          // Zustand 저장
+          setAllPhotos(newPhotos);
+
+          return newPhotos;
+        });
+
+        setPage(pageToLoad);
+        setHasNext(!res.last);
+      } catch (e) {
+        setPhotosError(e as Error);
+      } finally {
+        isFetchingRef.current = false;
+        setLoading(false);
+      }
+    },
+    [tripId, selectedSort, setAllPhotos]
+  );
 
   /** ===========================
    * 🔄 사진 목록 새로고침
@@ -101,7 +110,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     const checkReadiness = async () => {
       try {
         const readiness = await getReadiness(Number(tripId));
-        
+
         // Show alert if not all members are registered
         if (!readiness.allMembersRegistered) {
           alert('모든 멤버가 얼굴 정보를 등록해야 합니다.');
@@ -109,10 +118,10 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
         // Process members with face data into folders
         const memberFolders = readiness.members
-          .filter(member => member.hasFaceData)
-          .map(member => ({
+          .filter((member) => member.hasFaceData)
+          .map((member) => ({
             id: member.userId,
-            name: member.name
+            name: member.name,
           }));
 
         setFolders([...memberFolders]);
@@ -164,8 +173,13 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     }
   };
 
-  if (tripError || photosError) return null;
-  if (!data) return null;
+  if (tripError || photosError) {
+    return <Loading />;
+  }
+
+  if (!data) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col h-screen bg-light_grey">
@@ -202,16 +216,12 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           onRefresh={handleRefresh}
         />
       ) : (
-        <FolderTabView folders={folders}/>
+        <FolderTabView folders={folders} />
       )}
 
       {/* 플로팅 업로드 버튼 */}
       <FloatingModal>
-        <UploadButton
-          isScrolled={isScrolled}
-          inputRef={fileInputRef}
-          scrollToTop={scrollToTop}
-        />
+        <UploadButton isScrolled={isScrolled} inputRef={fileInputRef} scrollToTop={scrollToTop} />
       </FloatingModal>
 
       {/* 파일 input */}

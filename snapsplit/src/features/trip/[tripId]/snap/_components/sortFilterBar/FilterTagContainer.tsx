@@ -8,14 +8,13 @@ type FilterTagContainerProps = {
 };
 
 function FilterTagContainer({ filters, setFilters }: FilterTagContainerProps) {
-  const isTagExist = filters.days.length > 0 || filters.people.length > 0 || filters.locations.length > 0;
+  const isTagExist = filters.days.length > 0 || filters.people.length > 0;
 
   if (!isTagExist) {
     return null;
   } else {
     const sortedDays = [...filters.days].sort((a, b) => a - b);
     const sortedPeople = [...filters.people].sort((a, b) => a.localeCompare(b));
-    const sortedLocations = [...filters.locations].sort((a, b) => a.localeCompare(b));
 
     const generateLabel = (data: string[] | number[]) => {
       if (data.length === 1) {
@@ -38,7 +37,6 @@ function FilterTagContainer({ filters, setFilters }: FilterTagContainerProps) {
         <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
           {sortedDays.length > 0 && <FilterTag label={`Day ${generateLabel(sortedDays)}`} />}
           {sortedPeople.length > 0 && <FilterTag label={`${generateLabel(sortedPeople)}`} />}
-          {sortedLocations.length > 0 && <FilterTag label={`${generateLabel(sortedLocations)}`} />}
         </div>
       </div>
     );

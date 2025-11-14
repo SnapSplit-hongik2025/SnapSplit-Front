@@ -8,7 +8,6 @@ interface SortBottomSheetProps {
   onClose: () => void;
 }
 
-// 테스트 데이터
 const sortOptions = ['최신순', '시간순'];
 
 export default function SortBottomSheet({ selectedSort, onSelectSort, onClose }: SortBottomSheetProps) {
