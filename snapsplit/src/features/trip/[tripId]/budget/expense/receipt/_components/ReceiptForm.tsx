@@ -102,7 +102,7 @@ export default function ReceiptForm() {
     };
 
     fetchExpensePageData();
-  }, [tripId, date]);
+  }, [tripId, date, currency, form.expense.amount, ocrResult?.totalAmount]);
 
   const handleAmountChange = (amount: number) => {
     setForm((prev) => ({

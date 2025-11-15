@@ -1,3 +1,5 @@
+'use client';
+
 import devider from '@public/svg/devider.svg';
 import Image from 'next/image';
 import { TripInfoProps } from '../types/budget-type';
