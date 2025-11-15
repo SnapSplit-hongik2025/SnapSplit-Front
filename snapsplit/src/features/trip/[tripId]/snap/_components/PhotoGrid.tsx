@@ -75,7 +75,9 @@ export default function PhotoGrid({
       a.remove();
 
       // 메모리 해제
-      window.URL.revokeObjectURL(url);
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 100);
 
       setIsPhotoModalOpen(false);
     } catch (error) {
