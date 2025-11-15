@@ -5,17 +5,20 @@ import arrowLeft from '@public/svg/arrow-left-grey-1000.svg';
 import Link from 'next/link';
 import { useState } from 'react';
 import DeleteExpenseModal from './modal/DeleteExpenseModal';
+import { deleteExpense } from '../api/expense-detail';
 
 interface ExpenseDetailHeaderProps {
   tripId: string;
+  expenseId: string;
 }
 
-export default function ExpenseDetailHeader({ tripId }: ExpenseDetailHeaderProps) {
+export default function ExpenseDetailHeader({ tripId, expenseId }: ExpenseDetailHeaderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDelete = () => {
     // TODO: 삭제 API 호출
     console.log('지출 삭제됨!');
+    deleteExpense(tripId, expenseId);
     setIsModalOpen(false);
   };
 
