@@ -31,6 +31,10 @@ export default function ExpenseDetailHeader({ tripId, expenseId }: ExpenseDetail
     router.push(`/trip/${tripId}/budget`);
   };
 
+  const navigateToEdit = () => {
+    router.push(`/trip/${tripId}/budget/expense/edit?expenseId=${expenseId}`);
+  };
+
   return (
     <header className="flex items-center justify-between px-5 py-3">
       <Link href={`/trip/${tripId}/budget`}>
@@ -38,7 +42,7 @@ export default function ExpenseDetailHeader({ tripId, expenseId }: ExpenseDetail
       </Link>
 
       <div className="flex items-center space-x-4 text-body-1">
-        <button className="cursor-pointer">수정</button>
+        <button className="cursor-pointer" onClick={navigateToEdit}>수정</button>
         <button
           className="cursor-pointer text-status_error"
           onClick={() => {
