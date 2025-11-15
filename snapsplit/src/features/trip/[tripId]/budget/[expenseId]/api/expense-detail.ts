@@ -26,10 +26,12 @@ export const getExpenseDetail = async (tripId: string, expenseId: string): Promi
 export const deleteExpense = async (tripId: string, expenseId: string): Promise<void> => {
   if (!tripId) {
     alert('유효하지 않은 여행 ID입니다. 다시 시도해주세요.');
+    return;
   }
     
   if (!expenseId) {
-    alert('유효하지 않은 exepnse ID입니다. 다시 시도해주세요.');
+    alert('유효하지 않은 exepense ID입니다. 다시 시도해주세요.');
+    return;
   }
 
   try {

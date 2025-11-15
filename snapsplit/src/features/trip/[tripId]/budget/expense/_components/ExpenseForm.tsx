@@ -41,7 +41,6 @@ export default function ExpenseForm() {
   const from = searchParams.get('from');
   const isFromReceipt = from === 'receipt';
   const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
-  console.log('ocrResult: ', ocrResult);
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
 
@@ -130,7 +129,7 @@ export default function ExpenseForm() {
               category: '',
               expenseName: '',
               expenseMemo: '',
-              paymentMethod: 'cash',
+              paymentMethod: 'CASH',
             },
             payers: [],
             splitters: [],

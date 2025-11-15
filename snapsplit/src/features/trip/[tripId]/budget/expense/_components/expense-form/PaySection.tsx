@@ -12,7 +12,6 @@ type PaySectionProps = {
 };
 
 export default function PaySection({ currency, members, membersState, handleCheck, updateAmount }: PaySectionProps) {
-  console.log('[PaySection] membersState', membersState);
   const sharedFund = members.find((member) => member.memberType === 'SHARED_FUND');
 
   return (
