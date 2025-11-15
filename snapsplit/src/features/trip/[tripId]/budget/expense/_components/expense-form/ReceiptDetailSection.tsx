@@ -9,7 +9,7 @@ type Props = {
 export default function ReceiptDetailSection({ items }: Props) {
   const arrowBottom = '/svg/arrow-bottom-grey-450.svg';
   const arrowTop = '/svg/arrow-top-grey-450.svg';
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <div className="flex flex-col items-center gap-3 w-full text-body-3">
       <button className="flex items-center w-full" onClick={() => setIsOpen(!isOpen)}>

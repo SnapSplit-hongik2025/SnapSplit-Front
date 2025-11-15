@@ -7,6 +7,7 @@ import NameSection from '../_components/expense-form/NameSection';
 import MemoSection from '../_components/expense-form/MemoSection';
 import CategorySection from '../_components/expense-form/CategorySection';
 import ReceiptDetailSection from '../_components/expense-form/ReceiptDetailSection';
+import { ReceiptItem } from '@/lib/zustand/useReceiptStore';
 import PaySection from '../_components/expense-form/PaySection';
 import SplitSection from '../_components/expense-form/SplitSection';
 import Button from '@/shared/components/Button';
@@ -74,9 +75,13 @@ export default function ExpenseEditForm() {
 
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [items, setItems] = useState<ResponseItem[] | null>(null);
+  const [isReceiptMode, setIsReceiptMode] = useState(false);
 
   useEffect(() => {
     if (!expenseDetail) return;
+
+    console.log('expenseDetail:', expenseDetail);
+    console.log('expenseDetail.receiptUrl:', expenseDetail.receiptUrl);
 
     const initialState: Record<number, MemberState> = {};
 
@@ -99,6 +104,15 @@ export default function ExpenseEditForm() {
     });
 
     setMembersState(initialState);
+
+    // receiptUrl이 있으면 영수증 모드로 전환
+    if (expenseDetail.receiptUrl) {
+      console.log('Setting receipt mode with:', expenseDetail.receiptUrl, expenseDetail.receiptItems);
+      setReceiptUrl(expenseDetail.receiptUrl);
+      // receiptItems를 items로 변환
+      setItems(expenseDetail.receiptItems || null);
+      setIsReceiptMode(true);
+    }
   }, [expenseDetail]);
 
   if (!pageData) {
@@ -241,7 +255,18 @@ export default function ExpenseEditForm() {
         <CategorySection category={form.expense.category} setCategory={(c) => handleExpenseChange('category', c)} />
 
         {/* ✅ ReceiptForm에서 넘어온 경우 영수증 상세 표시 */}
-        {isFromReceipt && <ReceiptDetailSection items={[]} />}
+        {isReceiptMode && (
+          <>
+            {console.log('isReceiptMode:', isReceiptMode, 'items:', items)}
+            <ReceiptDetailSection 
+              items={items?.map((item, index) => ({
+                id: index,
+                name: item.name,
+                amount: item.amount
+              })) || []} 
+            />
+          </>
+        )}
 
         {/* 결제자/분할자 */}
         <PaySection
@@ -262,7 +287,7 @@ export default function ExpenseEditForm() {
 
       {/* 제출 버튼 */}
       <div className="flex items-center justify-center w-full py-5">
-        <Button label="추가하기" onClick={isFromReceipt ? handleSubmitWithReceipt : handleSubmit} enabled={true} />
+        <Button label="수정하기" onClick={isReceiptMode ? handleSubmitWithReceipt : handleSubmit} enabled={true} />
       </div>
     </div>
   );

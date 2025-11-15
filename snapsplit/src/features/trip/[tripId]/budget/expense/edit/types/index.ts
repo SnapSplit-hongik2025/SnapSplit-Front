@@ -30,5 +30,6 @@ export type ExpenseDetail = {
         amount: number;
     }[];
     receiptUrl?: string;
+    receiptItems?: ResponseItem[];
     items?: ResponseItem[];
 };

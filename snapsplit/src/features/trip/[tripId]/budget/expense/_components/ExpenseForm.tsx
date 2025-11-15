@@ -55,7 +55,7 @@ export default function ExpenseForm() {
       category: '',
       expenseName: '',
       expenseMemo: '',
-      paymentMethod: 'cash',
+      paymentMethod: 'CASH',
     },
     payers: [],
     splitters: [],
