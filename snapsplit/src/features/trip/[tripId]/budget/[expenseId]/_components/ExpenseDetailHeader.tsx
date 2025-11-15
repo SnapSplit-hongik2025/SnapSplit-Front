@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import DeleteExpenseModal from './modal/DeleteExpenseModal';
 import { deleteExpense } from '../api/expense-detail';
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ExpenseDetailHeaderProps {
   tripId: string;
@@ -13,13 +15,20 @@ interface ExpenseDetailHeaderProps {
 }
 
 export default function ExpenseDetailHeader({ tripId, expenseId }: ExpenseDetailHeaderProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDelete = () => {
-    // TODO: 삭제 API 호출
-    console.log('지출 삭제됨!');
-    deleteExpense(tripId, expenseId);
+  const handleDelete = async () => {
+    await deleteExpense(tripId, expenseId);
+    queryClient.invalidateQueries({
+      queryKey: ['tripBudget', tripId],
+    });
+    queryClient.refetchQueries({
+      queryKey: ['tripBudget', tripId],
+    });
     setIsModalOpen(false);
+    router.push(`/trip/${tripId}/budget`);
   };
 
   return (
