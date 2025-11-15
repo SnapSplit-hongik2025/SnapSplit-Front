@@ -5,18 +5,34 @@ import arrowLeft from '@public/svg/arrow-left-grey-1000.svg';
 import Link from 'next/link';
 import { useState } from 'react';
 import DeleteExpenseModal from './modal/DeleteExpenseModal';
+import { deleteExpense } from '../api/expense-detail';
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ExpenseDetailHeaderProps {
   tripId: string;
+  expenseId: string;
 }
 
-export default function ExpenseDetailHeader({ tripId }: ExpenseDetailHeaderProps) {
+export default function ExpenseDetailHeader({ tripId, expenseId }: ExpenseDetailHeaderProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDelete = () => {
-    // TODO: 삭제 API 호출
-    console.log('지출 삭제됨!');
+  const handleDelete = async () => {
+    await deleteExpense(tripId, expenseId);
+    queryClient.invalidateQueries({
+      queryKey: ['tripBudget', tripId],
+    });
+    queryClient.refetchQueries({
+      queryKey: ['tripBudget', tripId],
+    });
     setIsModalOpen(false);
+    router.push(`/trip/${tripId}/budget`);
+  };
+
+  const navigateToEdit = () => {
+    router.push(`/trip/${tripId}/budget/expense/edit?expenseId=${expenseId}`);
   };
 
   return (
@@ -26,7 +42,7 @@ export default function ExpenseDetailHeader({ tripId }: ExpenseDetailHeaderProps
       </Link>
 
       <div className="flex items-center space-x-4 text-body-1">
-        <button className="cursor-pointer">수정</button>
+        <button className="cursor-pointer" onClick={navigateToEdit}>수정</button>
         <button
           className="cursor-pointer text-status_error"
           onClick={() => {

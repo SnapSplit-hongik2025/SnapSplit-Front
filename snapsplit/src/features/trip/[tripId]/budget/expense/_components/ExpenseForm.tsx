@@ -19,6 +19,7 @@ import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import type { CreateExpenseRequest, ExpensePageDataResponse } from '../api/expense-dto-type';
 import Loading from '@/shared/components/loading/Loading';
+import { useQueryClient } from '@tanstack/react-query';
 
 export type MemberState = {
   isPayer: boolean;
@@ -34,11 +35,12 @@ export default function ExpenseForm() {
   const searchParams = useSearchParams();
   const date = searchParams.get('date') as string;
 
+  const queryClient = useQueryClient();
+
   // ✅ ReceiptForm에서 넘어온 상태 감지
   const from = searchParams.get('from');
   const isFromReceipt = from === 'receipt';
   const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
-  console.log("ocrResult: ", ocrResult);
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
 
@@ -52,7 +54,7 @@ export default function ExpenseForm() {
       category: '',
       expenseName: '',
       expenseMemo: '',
-      paymentMethod: 'cash',
+      paymentMethod: 'CASH',
     },
     payers: [],
     splitters: [],
@@ -78,7 +80,7 @@ export default function ExpenseForm() {
   // ✅ expense 필드 변경
   const handleExpenseChange = <K extends keyof CreateExpenseRequest['expense']>(
     key: K,
-    value: CreateExpenseRequest['expense'][K] | null,
+    value: CreateExpenseRequest['expense'][K] | null
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -97,10 +99,13 @@ export default function ExpenseForm() {
 
         // ✅ 멤버 상태 초기화
         setMembersState(
-          expensePageData.members.reduce((acc, member) => {
-            acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
-            return acc;
-          }, {} as Record<number, MemberState>)
+          expensePageData.members.reduce(
+            (acc, member) => {
+              acc[member.memberId] = { isPayer: false, isSplitter: false, payAmount: 0, splitAmount: 0 };
+              return acc;
+            },
+            {} as Record<number, MemberState>
+          )
         );
 
         // ✅ 기본 폼 상태 초기화
@@ -124,7 +129,7 @@ export default function ExpenseForm() {
               category: '',
               expenseName: '',
               expenseMemo: '',
-              paymentMethod: 'cash',
+              paymentMethod: 'CASH',
             },
             payers: [],
             splitters: [],
@@ -161,6 +166,12 @@ export default function ExpenseForm() {
       await createExpense(Number(tripId), refinedForm);
       alert('지출이 성공적으로 등록되었습니다.');
       clearReceiptData(); // ✅ Receipt 상태 초기화 (이름 맞게 수정됨)
+      queryClient.invalidateQueries({
+        queryKey: ['tripBudget', tripId],
+      });
+      queryClient.refetchQueries({
+        queryKey: ['tripBudget', tripId],
+      });
       router.push(`/trip/${tripId}/budget`);
     } catch (error) {
       console.error('지출 등록 실패:', error);
@@ -190,7 +201,7 @@ export default function ExpenseForm() {
       items: items.map((item) => {
         const rawAmount = item.amount;
         const parsedAmount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount;
-        
+
         return {
           name: item.name,
           amount: parsedAmount,
@@ -202,6 +213,12 @@ export default function ExpenseForm() {
       await createExpenseWithReceipt(Number(tripId), refinedForm);
       alert('지출이 성공적으로 등록되었습니다.');
       clearReceiptData(); // ✅ Receipt 상태 초기화 (이름 맞게 수정됨)
+      queryClient.invalidateQueries({
+        queryKey: ['tripBudget', tripId],
+      });
+      queryClient.refetchQueries({
+        queryKey: ['tripBudget', tripId],
+      });
       router.push(`/trip/${tripId}/budget`);
     } catch (error) {
       console.error('지출 등록 실패:', error);
@@ -215,8 +232,7 @@ export default function ExpenseForm() {
         <Loading />
       </div>
     );
-  };
-  
+  }
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
@@ -252,15 +268,10 @@ export default function ExpenseForm() {
           expenseMemo={form.expense.expenseMemo}
           setExpenseMemo={(memo) => handleExpenseChange('expenseMemo', memo)}
         />
-        <CategorySection
-          category={form.expense.category}
-          setCategory={(c) => handleExpenseChange('category', c)}
-        />
+        <CategorySection category={form.expense.category} setCategory={(c) => handleExpenseChange('category', c)} />
 
         {/* ✅ ReceiptForm에서 넘어온 경우 영수증 상세 표시 */}
-        {isFromReceipt && (
-          <ReceiptDetailSection items={ocrResult?.items || []} />
-        )}
+        {isFromReceipt && <ReceiptDetailSection items={ocrResult?.items || []} />}
 
         {/* 결제자/분할자 */}
         <PaySection
