@@ -7,7 +7,6 @@ import NameSection from '../_components/expense-form/NameSection';
 import MemoSection from '../_components/expense-form/MemoSection';
 import CategorySection from '../_components/expense-form/CategorySection';
 import ReceiptDetailSection from '../_components/expense-form/ReceiptDetailSection';
-import { ReceiptItem } from '@/lib/zustand/useReceiptStore';
 import PaySection from '../_components/expense-form/PaySection';
 import SplitSection from '../_components/expense-form/SplitSection';
 import Button from '@/shared/components/Button';
@@ -29,7 +28,6 @@ export default function ExpenseEditForm() {
   const tripId = params.tripId as string;
   const expenseId = searchParams.get('expenseId') as string;
   const queryClient = useQueryClient();
-  const isFromReceipt = searchParams.get('from') === 'receipt';
 
   const expenseDetail: ExpenseDetail | null = queryClient.getQueryData(['expenseDetail', tripId, expenseId]) || null;
 
@@ -57,7 +55,7 @@ export default function ExpenseEditForm() {
       date,
       amount: expenseDetail.amount,
       currency: expenseDetail.currency,
-      exchangeRate: expenseDetail.exchangeRate,
+      exchangeRate: 1,
       category: expenseDetail.category,
       expenseName: expenseDetail.expenseName,
       expenseMemo: expenseDetail.expenseMemo,
@@ -72,6 +70,21 @@ export default function ExpenseEditForm() {
       splitAmount: s.amount,
     })),
   });
+
+  // pageData가 로드되면 환율 설정
+  useEffect(() => {
+    if (pageData && pageData.exchangeRates) {
+      const exchangeRate = pageData.exchangeRates[expenseDetail.currency] ?? 1;
+
+      setForm((prev) => ({
+        ...prev,
+        expense: {
+          ...prev.expense,
+          exchangeRate,
+        },
+      }));
+    }
+  }, [pageData, expenseDetail.currency]);
 
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [items, setItems] = useState<ResponseItem[] | null>(null);
@@ -168,13 +181,13 @@ export default function ExpenseEditForm() {
 
     try {
       await editExpense(Number(tripId), Number(expenseId), refinedForm);
-      alert('지출이 성공적으로 등록되었습니다.');
+      alert('지출이 성공적으로 수정되었습니다.');
       // Todo: receipt 전역 공유 데이터 청소
       // Todo: react query 업데이트
       // Todo: routing
     } catch (error) {
-      console.error('지출 등록 실패:', error);
-      alert('지출 등록 중 오류가 발생했습니다.');
+      console.error('지출 수정 실패:', error);
+      alert('지출 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -210,13 +223,13 @@ export default function ExpenseEditForm() {
 
     try {
       await editExpense(Number(tripId), Number(expenseId), refinedForm);
-      alert('지출이 성공적으로 등록되었습니다.');
+      alert('지출이 성공적으로 수정되었습니다.');
       // Todo: receipt 전역 공유 데이터 청소
       // Todo: react query 업데이트
       // Todo: routing
     } catch (error) {
-      console.error('지출 등록 실패:', error);
-      alert('지출 등록 중 오류가 발생했습니다.');
+      console.error('지출 수정 실패:', error);
+      alert('지출 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -258,12 +271,14 @@ export default function ExpenseEditForm() {
         {isReceiptMode && (
           <>
             {console.log('isReceiptMode:', isReceiptMode, 'items:', items)}
-            <ReceiptDetailSection 
-              items={items?.map((item, index) => ({
-                id: index,
-                name: item.name,
-                amount: item.amount
-              })) || []} 
+            <ReceiptDetailSection
+              items={
+                items?.map((item, index) => ({
+                  id: index,
+                  name: item.name,
+                  amount: item.amount,
+                })) || []
+              }
             />
           </>
         )}
