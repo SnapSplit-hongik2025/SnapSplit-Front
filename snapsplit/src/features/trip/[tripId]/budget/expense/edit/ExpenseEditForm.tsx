@@ -12,7 +12,7 @@ import SplitSection from '../_components/expense-form/SplitSection';
 import Button from '@/shared/components/Button';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 
 import { getExpensePageData } from '../api/expense-api';
 import Loading from '@/shared/components/loading/Loading';
@@ -27,6 +27,7 @@ export default function ExpenseEditForm() {
   /* ───────────────────────────
    *  params / 기본 세팅
    * ─────────────────────────── */
+  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const tripId = params.tripId as string;
@@ -35,7 +36,6 @@ export default function ExpenseEditForm() {
 
   /* ───────────────────────────
    * 1) expenseDetail 가져오기
-   * (❗ 조건부 return X)
    * ─────────────────────────── */
   const expenseDetail: ExpenseDetail | null = queryClient.getQueryData(['expenseDetail', tripId, expenseId]) || null;
 
@@ -43,7 +43,6 @@ export default function ExpenseEditForm() {
 
   /* ───────────────────────────
    * 2) pageData 불러오기
-   * — enabled로만 제어 (Hook은 항상 실행)
    * ─────────────────────────── */
   const { data: pageData, isLoading: isPageLoading } = useQuery({
     queryKey: ['expensePageData', tripId, date],
@@ -65,9 +64,25 @@ export default function ExpenseEditForm() {
    * expenseDetail 들어오면 form 초기화
    * ─────────────────────────── */
   useEffect(() => {
-    if (!expenseDetail) return;
+    if (!expenseDetail || !pageData) return;
 
-    // form 구성
+    const initialState: Record<number, MemberState> = {};
+
+    pageData.members.forEach((m) => {
+      const payer = expenseDetail.payers.find((p) => p.memberId === m.memberId);
+      const splitter = expenseDetail.splitters.find((s) => s.memberId === m.memberId);
+
+      initialState[m.memberId] = {
+        isPayer: !!payer,
+        isSplitter: !!splitter,
+        payAmount: payer?.amount ?? 0,
+        splitAmount: splitter?.amount ?? 0,
+      };
+    });
+
+    setMembersState(initialState);
+
+    // form 구성도 pageData 의존으로 옮기기
     setForm({
       expense: {
         date: expenseDetail.date,
@@ -89,35 +104,12 @@ export default function ExpenseEditForm() {
       })),
     });
 
-    // membersState 구성
-    const initialState: Record<number, MemberState> = {};
-
-    expenseDetail.payers.forEach((p) => {
-      initialState[p.memberId] = {
-        isPayer: true,
-        isSplitter: initialState[p.memberId]?.isSplitter ?? false,
-        payAmount: p.amount,
-        splitAmount: initialState[p.memberId]?.splitAmount ?? 0,
-      };
-    });
-
-    expenseDetail.splitters.forEach((s) => {
-      initialState[s.memberId] = {
-        isPayer: initialState[s.memberId]?.isPayer ?? false,
-        isSplitter: true,
-        payAmount: initialState[s.memberId]?.payAmount ?? 0,
-        splitAmount: s.amount,
-      };
-    });
-    setMembersState(initialState);
-
-    // receipt 모드 설정
     if (expenseDetail.receiptUrl) {
       setReceiptUrl(expenseDetail.receiptUrl);
       setItems(expenseDetail.receiptItems || null);
       setIsReceiptMode(true);
     }
-  }, [expenseDetail]);
+  }, [expenseDetail, pageData]);
 
   /* ───────────────────────────
    * pageData → exchangeRate 업데이트
@@ -198,7 +190,11 @@ export default function ExpenseEditForm() {
     if (!tripId) return;
     try {
       await editExpense(Number(tripId), Number(expenseId), buildPayload());
+      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
+      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
       alert('지출이 성공적으로 수정되었습니다.');
+      router.push(`/trip/${tripId}/budget`);
     } catch (error) {
       console.error(error);
       alert('지출 수정 중 오류가 발생했습니다.');
@@ -219,7 +215,11 @@ export default function ExpenseEditForm() {
 
     try {
       await editExpense(Number(tripId), Number(expenseId), payload);
+      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
+      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
       alert('지출이 성공적으로 수정되었습니다.');
+      router.push(`/trip/${tripId}/budget`);
     } catch (error) {
       console.error(error);
       alert('지출 수정 중 오류가 발생했습니다.');
