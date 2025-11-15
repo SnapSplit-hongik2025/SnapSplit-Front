@@ -6,7 +6,7 @@ import { useState } from 'react';
 import FullScreenModal from '@/shared/components/modal/FullScreenModal';
 import Modal from '@/shared/components/modal/Modal';
 import PhotoDeleteModalContent from './photo-grid/PhotoDeleteModalContent';
-import { deleteImages } from '@/features/trip/[tripId]/snap/api/snap-api';
+import { deleteImages, downloadImage } from '@/features/trip/[tripId]/snap/api/snap-api';
 import { useParams } from 'next/navigation';
 
 type PhotoGridProps = {
@@ -17,7 +17,13 @@ type PhotoGridProps = {
   onRefresh?: () => void;
 };
 
-export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, onToggleSelect, onRefresh }: PhotoGridProps) {
+export default function PhotoGrid({
+  images,
+  isSelectionMode,
+  selectedImageIds,
+  onToggleSelect,
+  onRefresh,
+}: PhotoGridProps) {
   const tripId = useParams<{ tripId: string }>();
   const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
@@ -46,7 +52,37 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
       alert('이미지 삭제 중 오류가 발생했습니다.');
     }
   };
-  
+
+  const handleDownloadImage = async () => {
+    if (!selectedImageId || !tripId.tripId) {
+      alert('유효하지 않은 이미지 ID입니다.');
+      return;
+    }
+
+    try {
+      // 📌 Blob 받기
+      const blob = await downloadImage(Number(tripId.tripId), selectedImageId);
+
+      // 📌 Blob을 URL로 변환
+      const url = window.URL.createObjectURL(blob);
+
+      // 📌 다운로드 자동 트리거
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'photo.zip'; // 원하는 파일명
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      // 메모리 해제
+      window.URL.revokeObjectURL(url);
+
+      setIsPhotoModalOpen(false);
+    } catch (error) {
+      console.error('이미지 다운로드 중 오류 발생:', error);
+      alert('이미지 다운로드 중 오류가 발생했습니다.');
+    }
+  };
 
   return (
     <div className="grid grid-cols-3 gap-2 pb-15">
@@ -90,6 +126,9 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
               <button onClick={() => setIsDeleteModalOpen(true)}>
                 <Image src="/svg/trash-black.svg" alt="삭제" width={24} height={24} />
               </button>
+              <button onClick={() => handleDownloadImage()}>
+                <Image src="/svg/download.svg" alt="다운로드" width={24} height={24} />
+              </button>
               <button onClick={() => setIsPhotoModalOpen(false)}>
                 <Image src="/svg/exit-grey-1000.svg" alt="닫기" width={24} height={24} />
               </button>
@@ -113,10 +152,7 @@ export default function PhotoGrid({ images, isSelectionMode, selectedImageIds, o
 
       {isDeleteModalOpen && (
         <Modal layer="toast">
-          <PhotoDeleteModalContent
-            onClose={() => setIsDeleteModalOpen(false)}
-            onClickDelete={handleDeleteImage}
-          />
+          <PhotoDeleteModalContent onClose={() => setIsDeleteModalOpen(false)} onClickDelete={handleDeleteImage} />
         </Modal>
       )}
     </div>

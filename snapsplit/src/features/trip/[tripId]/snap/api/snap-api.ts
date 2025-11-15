@@ -75,4 +75,15 @@ export const getPhotos = async (tripId: number, page: number, sort: string) => {
     throw new Error('이미지를 불러오는 데 실패했습니다.');
   }
 }
-  
+
+export const downloadImage = async (tripId: number, photoId: number) => {
+  const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/download';
+  try {
+    const res = await privateInstance.post<Blob>(finalPath, { photoIds: [photoId] }, { responseType: 'blob' });
+    console.log(`[API] Fetched photos for tripId ${tripId}:`, res.data);
+    return res.data;
+  } catch (error) {
+    console.error(`[API Error] Failed to get photos for tripId ${tripId}:`, error);
+    throw new Error('이미지를 다운로드하는 데 실패했습니다.');
+  }
+}
