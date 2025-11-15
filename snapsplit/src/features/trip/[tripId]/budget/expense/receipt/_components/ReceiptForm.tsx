@@ -28,7 +28,7 @@ export default function ReceiptForm() {
   const [zoomOpen, setZoomOpen] = useState(false);
 
   // ✅ Zustand에서 OCR 결과 / 통화정보 관리
-  const { ocrResult, receiptUrl, currency, setOcrResult, clearReceiptData } = useReceiptStore();
+  const { ocrResult, receiptUrl, currency, setOcrResult } = useReceiptStore();
 
   // ✅ form 상태 초기화
   const [form, setForm] = useState<CreateExpenseRequest>({
@@ -131,6 +131,8 @@ export default function ReceiptForm() {
       </div>
     );
   };
+
+  console.log("[receiptForm] receiptUrl: ", receiptUrl);
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">

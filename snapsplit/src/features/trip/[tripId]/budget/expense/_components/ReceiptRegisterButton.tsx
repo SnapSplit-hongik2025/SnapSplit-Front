@@ -52,7 +52,7 @@ export default function ReceiptRegisterButton() {
       const refined = mapOcrResponseToResult(ocrResult);
 
       setOcrResult(refined);
-      setReceiptUrl(URL.createObjectURL(file));
+      setReceiptUrl(ocrResult.receiptUrl);
 
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);
     } catch (err) {
