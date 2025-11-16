@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { createExpense, createExpenseWithReceipt, getExpensePageData } from '../api/expense-api';
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
-import type { CreateExpenseRequest, ExpensePageDataResponse } from '../api/expense-dto-type';
+import type { CreateExpenseRequest, CreateExpenseRequestWithReceipt, ExpensePageDataResponse } from '../api/expense-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 import { useMutation, useQueryClient } from '@tanstack/react-query'; // ✅ useMutation 임포트
 
@@ -162,7 +162,7 @@ export default function ExpenseForm() {
   // 2. 영수증 포함 지출 등록 Mutation
   // refinedForm의 타입을 DTO에 맞게 정의하면 더 좋습니다. (현재 any)
   const { mutate: createExpenseWithReceiptMutate, isPending: isCreatingWithReceipt } = useMutation({
-    mutationFn: (refinedForm: any) => createExpenseWithReceipt(Number(tripId), refinedForm),
+    mutationFn: (refinedForm: CreateExpenseRequestWithReceipt) => createExpenseWithReceipt(Number(tripId), refinedForm),
 
     onSuccess: async () => {
       alert('지출이 성공적으로 등록되었습니다.');
