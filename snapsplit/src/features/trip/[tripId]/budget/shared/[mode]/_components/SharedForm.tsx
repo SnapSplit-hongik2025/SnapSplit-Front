@@ -18,6 +18,7 @@ import {
   updateDefaultCurrency,
 } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { UpdateSharedBudgetRequestDto } from '../../../types/budget-dto-type';
+import Loading from '@/shared/components/loading/Loading';
 
 const result = '$9805596000000';
 
@@ -91,7 +92,7 @@ const SharedForm = () => {
       } else {
         await removeSharedBudget(Number(tripId), payload);
       }
-    
+
       setIsSubmitting(false);
       alert('공동 경비 정보를 저장했습니다.');
       router.back();
@@ -115,11 +116,19 @@ const SharedForm = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {error ?? ''}</p>
+      </div>
+    );
   }
 
   // TODO: BottomNavBar fixed 제거 시 pb-15 제거
