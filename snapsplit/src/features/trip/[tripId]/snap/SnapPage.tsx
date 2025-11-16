@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import TabSelector from '@/features/trip/[tripId]/snap/_components/TabSelector';
 import UploadButton from '@/features/trip/[tripId]/snap/_components/UploadButton';
 import TripHeader from '../../../../shared/components/TripHeader';
@@ -12,15 +13,16 @@ import FloatingModal from '@/shared/components/modal/FloatingModal';
 import { uploadImage, getPhotos, getReadiness } from '@/features/trip/[tripId]/snap/api/snap-api';
 import { GetPhotosDto, Folder } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 import { getTripBudgetData } from '../budget/api/budget-api';
-import { GetTripBudgetDto } from '../budget/types/budget-dto-type';
 import { useSnapStore } from './store/snapStore';
 import Loading from '@/shared/components/loading/Loading';
+import { useQuery } from '@tanstack/react-query';
 
 type SnapPageProps = {
   tripId: string;
 };
 
 export default function SnapPage({ tripId }: SnapPageProps) {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('전체');
@@ -30,8 +32,12 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   const [selectedSort, setSelectedSort] = useState('최신순');
 
   // trip info
-  const [data, setData] = useState<GetTripBudgetDto | null>(null);
-  const [tripError, setTripError] = useState<Error | null>(null);
+  const { data: tripData, isError: tripError } = useQuery({
+    queryKey: ['tripBudget', tripId],
+    queryFn: () => getTripBudgetData(Number(tripId)),
+    staleTime: 1000 * 60 * 2,
+  });
+
   const [folders, setFolders] = useState<Folder[]>([]);
 
   // photos
@@ -46,6 +52,12 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
   // 중복 요청 방지 flag
   const isFetchingRef = useRef(false);
+
+  const { data: readiness, isLoading: readinessLoading, isError: isReadinessError, error: readinessError } = useQuery({
+    queryKey: ['readiness', tripId],
+    queryFn: () => getReadiness(Number(tripId)),
+    staleTime: 1000 * 60 * 2,
+  });
 
   /** ======================================
    * 🔥 사진 목록 불러오기 (안전한 비동기 실행)
@@ -78,10 +90,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     [tripId, selectedSort] // 🚨 <--- 의존성 배열에서 'setAllPhotos' 삭제!
   );
 
-  /** ======================================
-   * 🔥 초기 데이터 로딩 (여행 정보만)
-   * ====================================== */
   useEffect(() => {
+    if (!readiness) return;
+
     let mounted = true;
 
     const loadInitial = async () => {
@@ -91,13 +102,13 @@ export default function SnapPage({ tripId }: SnapPageProps) {
       if (!mounted) return;
 
       try {
-        const trip = await getTripBudgetData(Number(tripId));
         if (!mounted) return;
-        setData(trip);
 
-        // readiness
-        const readiness = await getReadiness(Number(tripId));
-        if (!mounted) return;
+        // allMembersRegistered가 false이면 face-test 페이지로 리다이렉트
+        if (!readiness?.allMembersRegistered) {
+          router.push(`/trip/${tripId}/snap/face-test`);
+          return;
+        }
 
         const memberFolders = readiness.members
           .filter((m) => m.hasFaceData)
@@ -105,7 +116,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
         setFolders(memberFolders);
       } catch (err) {
-        setTripError(err as Error);
+        console.error(err);
       }
     };
 
@@ -114,7 +125,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     return () => {
       mounted = false;
     };
-  }, [tripId]); // 👈 1차 수정된 부분
+  }, [tripId, readiness]);
 
   /** ======================================
    * 🔄 정렬 변경 시 → 전체 리셋 + 첫 페이지 로딩
@@ -133,12 +144,12 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     };
 
     // 'data'가 로드된 이후에만 사진 로딩 실행
-    if (data) reload();
+    if (tripData) reload();
 
     return () => {
       mounted = false;
     };
-  }, [selectedSort, data, fetchPhotos]);
+  }, [selectedSort, tripData, fetchPhotos]);
 
   /** ======================================
    * ✨ (새로 추가) 로컬 state -> 전역 store 동기화
@@ -171,8 +182,37 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     }
   };
 
-  if (tripError || photosError) return <Loading />;
-  if (!data) return <Loading />;
+  if (tripError || photosError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  };
+
+  if (isReadinessError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {readinessError?.message ?? ''}</p>
+      </div>
+    );
+  }
+
+  if (readinessLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!tripData || !readiness){
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col h-screen bg-light_grey">
@@ -180,14 +220,14 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         <TripHeader tripId={tripId} />
         {isScrolled ? (
           <div className="px-5">
-            <span className="text-label-1">{data.tripName}</span>
+            <span className="text-label-1">{tripData.tripName}</span>
           </div>
         ) : (
           <TripInfo
-            tripName={data.tripName}
-            countries={data.countries}
-            startDate={data.startDate ?? ''}
-            endDate={data.endDate ?? ''}
+            tripName={tripData.tripName}
+            countries={tripData.countries}
+            startDate={tripData.startDate ?? ''}
+            endDate={tripData.endDate ?? ''}
           />
         )}
       </div>

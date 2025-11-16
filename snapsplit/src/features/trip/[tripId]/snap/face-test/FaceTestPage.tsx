@@ -10,17 +10,11 @@ import FloatingModal from '@/shared/components/modal/FloatingModal';
 import TripHeader from '@/shared/components/TripHeader';
 import TripInfo from '../../budget/_components/TripInfo';
 import { EnrollmentMemberItem } from './_components/EnrollmentMemberItem';
-
-const tripInfo = {
-  tripName: '스냅스플릿 연구팟',
-  countries: [
-    { countryId: 1, countryName: '런던' },
-    { countryId: 2, countryName: '파리' },
-    { countryId: 3, countryName: '취리히' },
-  ],
-  startDate: '2025.4.7',
-  endDate: '4.12',
-};
+import { useQuery } from '@tanstack/react-query';
+import { GetTripBudgetDto } from '../../budget/types/budget-dto-type';
+import { getTripBudgetData } from '../../budget/api/budget-api';
+import { getReadiness } from '../api/snap-api';
+import Loading from '@/shared/components/loading/Loading';
 
 type SnapPageProps = {
   tripId: string;
@@ -28,11 +22,11 @@ type SnapPageProps = {
 
 // SNAP 페이지에서 추가로 필요한 멤버 데이터 타입
 export type MemberData = {
-  memberId: number;
+  userId: number;
   name: string;
-  profileImageUrl?: string;
+  profileImageUrl: string;
   hasFaceData: boolean;
-  isCurrentUser: boolean;
+  currentUser: boolean;
 };
 
 type FaceEnrollmentSectionProps = {
@@ -47,7 +41,7 @@ const FaceEnrollmentSection = ({ members }: FaceEnrollmentSectionProps) => {
       <div className="relative">
         <div className="space-y-5 bg-white rounded-2xl p-5 max-h-72 overflow-y-auto scrollbar-hide">
           {members.map((m) => (
-            <EnrollmentMemberItem key={m.memberId} member={m} />
+            <EnrollmentMemberItem key={m.userId} member={m} />
           ))}
         </div>
         {/* 상/하 스크롤 힌트 그라데이션 */}
@@ -59,11 +53,53 @@ const FaceEnrollmentSection = ({ members }: FaceEnrollmentSectionProps) => {
 };
 
 export default function FaceTestPage({ tripId }: SnapPageProps) {
-  const isAllMemberHasFace = false;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<ActiveTab>('전체');
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollToTop, setScrollToTop] = useState<(() => void) | null>(null);
+  const { data: tripInfo, isLoading: isTripLoading, isError: isTripError, error: tripError } = useQuery<GetTripBudgetDto, Error>({
+    queryKey: ['tripBudget', tripId],
+    queryFn: () => getTripBudgetData(Number(tripId)),
+    staleTime: 1000 * 60 * 2, //
+  });
+
+  const { data: readiness, isLoading: isReadinessLoading, isError: isReadinessError, error: readinessError } = useQuery({
+    queryKey: ['readiness', tripId],
+    queryFn: () => getReadiness(Number(tripId)),
+    staleTime: 1000 * 60 * 2, //
+  });
+
+  if (isTripLoading || isReadinessLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (isTripError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {tripError?.message ?? ''}</p>
+      </div>
+    );
+  }
+
+  if (isReadinessError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {readinessError?.message ?? ''}</p>
+      </div>
+    );
+  }
+
+  if (!tripInfo || !readiness) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen bg-light_grey">
@@ -77,7 +113,7 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
         {!isScrolled && (
           <TripInfo
             tripName={tripInfo.tripName}
-            countries={tripInfo.countries.map((c) => c.countryName)}
+            countries={tripInfo.countries}
             startDate={tripInfo.startDate}
             endDate={tripInfo.endDate}
           />
@@ -85,19 +121,10 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
       </div>
       <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {!isAllMemberHasFace ? (
+      {!readiness.allMembersRegistered ? (
         // 추가한 코드
         <FaceEnrollmentSection
-          members={[
-            { memberId: 1, name: '김스냅', hasFaceData: false, isCurrentUser: true },
-            { memberId: 2, name: '이스플릿', hasFaceData: true, isCurrentUser: false },
-            { memberId: 3, name: '박연구', hasFaceData: true, isCurrentUser: false },
-            { memberId: 4, name: '최테스트', hasFaceData: false, isCurrentUser: false },
-            { memberId: 5, name: '홍길동', hasFaceData: false, isCurrentUser: false },
-            { memberId: 6, name: '고길동', hasFaceData: true, isCurrentUser: false },
-            { memberId: 7, name: '장길동', hasFaceData: false, isCurrentUser: false },
-            { memberId: 8, name: '임꺽정', hasFaceData: true, isCurrentUser: false },
-          ]}
+          members={readiness.members}
         />
       ) : // 추가한 코드 끝
       activeTab === '전체' ? (

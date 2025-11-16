@@ -4,12 +4,12 @@ import { FaceEnrollButton } from './FaceEnrollButton';
 
 export const EnrollmentMemberItem = ({ member }: { member: MemberData }) => {
   return (
-    <div key={member.memberId} className="flex items-center justify-between">
+    <div key={member.userId} className="flex items-center justify-between">
       <div className="flex items-center justify-center gap-3">
         <div className="relative w-10 h-10">
           {/* 프로필 이미지 */}
           <div
-            className={clsx('w-10 h-10 bg-grey-450 rounded-full', { 'border border-primary': member.isCurrentUser })}
+            className={clsx('w-10 h-10 bg-grey-450 rounded-full', { 'border border-primary': member.currentUser })}
           />
           {/* 체크 아이콘 */}
           {member.hasFaceData && (
@@ -20,10 +20,10 @@ export const EnrollmentMemberItem = ({ member }: { member: MemberData }) => {
         </div>
 
         <span className="text-body-1 whitespace-nowrap text-grey-850">
-          {member.isCurrentUser ? '(나)' : member.name}
+          {member.currentUser ? '(나)' : member.name}
         </span>
       </div>
-      <FaceEnrollButton hasFaceData={member.hasFaceData} isCurrentUser={member.isCurrentUser} />
+      <FaceEnrollButton hasFaceData={member.hasFaceData} isCurrentUser={member.currentUser} />
     </div>
   );
 };
