@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { kakaoLogin } from '@/lib/api/auth';
 import { useAuthStore } from '@/lib/zustand/useAuthStore';
 import { User } from '@/shared/types/auth';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function KaKaoRedirect() {
   const hasRequested = useRef(false);
@@ -43,5 +44,9 @@ export default function KaKaoRedirect() {
     login();
   }, [router, setUser, setToken]);
 
-  return <div>Redirecting...</div>;
+  return (
+    <div className="h-screen w-full flex items-center justify-center">
+      <Loading />
+    </div>
+  );
 }
