@@ -53,7 +53,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   // 중복 요청 방지 flag
   const isFetchingRef = useRef(false);
 
-  const { data: readiness } = useQuery({
+  const { data: readiness, isLoading: readinessLoading, isError: isReadinessError, error: readinessError } = useQuery({
     queryKey: ['readiness', tripId],
     queryFn: () => getReadiness(Number(tripId)),
     staleTime: 1000 * 60 * 2,
@@ -189,6 +189,22 @@ export default function SnapPage({ tripId }: SnapPageProps) {
       </div>
     );
   };
+
+  if (isReadinessError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {readinessError?.message ?? ''}</p>
+      </div>
+    );
+  }
+
+  if (readinessLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   if (!tripData || !readiness){
     return (

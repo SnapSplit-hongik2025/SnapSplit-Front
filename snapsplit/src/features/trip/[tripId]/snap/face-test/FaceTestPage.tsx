@@ -57,19 +57,19 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
   const [activeTab, setActiveTab] = useState<ActiveTab>('전체');
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollToTop, setScrollToTop] = useState<(() => void) | null>(null);
-  const { data: tripInfo, isLoading, isError, error } = useQuery<GetTripBudgetDto, Error>({
+  const { data: tripInfo, isLoading: isTripLoading, isError: isTripError, error: tripError } = useQuery<GetTripBudgetDto, Error>({
     queryKey: ['tripBudget', tripId],
     queryFn: () => getTripBudgetData(Number(tripId)),
     staleTime: 1000 * 60 * 2, //
   });
 
-  const { data: readiness } = useQuery({
+  const { data: readiness, isLoading: isReadinessLoading, isError: isReadinessError, error: readinessError } = useQuery({
     queryKey: ['readiness', tripId],
     queryFn: () => getReadiness(Number(tripId)),
     staleTime: 1000 * 60 * 2, //
   });
 
-  if (isLoading) {
+  if (isTripLoading || isReadinessLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loading />
@@ -77,10 +77,18 @@ export default function FaceTestPage({ tripId }: SnapPageProps) {
     );
   }
 
-  if (isError) {
+  if (isTripError) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
-        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {error?.message ?? ''}</p>
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {tripError?.message ?? ''}</p>
+      </div>
+    );
+  }
+
+  if (isReadinessError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {readinessError?.message ?? ''}</p>
       </div>
     );
   }
