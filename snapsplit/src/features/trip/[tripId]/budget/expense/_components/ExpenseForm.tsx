@@ -34,6 +34,9 @@ export default function ExpenseForm() {
   const tripId = params.tripId as string;
   const searchParams = useSearchParams();
   const date = searchParams.get('date') as string;
+  const tripStartDate = searchParams.get('tripStartDate') as string;
+  const tripEndDate = searchParams.get('tripEndDate') as string;
+  const allDatesAvailable = tripStartDate && tripEndDate && date;
 
   const queryClient = useQueryClient();
 
@@ -42,6 +45,7 @@ export default function ExpenseForm() {
   const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
+  console.log(pageData);
 
   const [form, setForm] = useState<CreateExpenseRequest>({
     expense: {
@@ -58,10 +62,8 @@ export default function ExpenseForm() {
     splitters: [],
   });
 
-  // ✅ 멤버별 상태
   const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
 
-  // ... (toggle, updateAmount, handleExpenseChange 함수 동일) ...
   const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
     setMembersState((prev) => ({
       ...prev,
@@ -141,12 +143,14 @@ export default function ExpenseForm() {
   const { mutate: createExpenseMutate, isPending: isCreating } = useMutation({
     mutationFn: (refinedForm: CreateExpenseRequest) => createExpense(Number(tripId), refinedForm),
 
-    onSuccess: () => {
+    onSuccess: async () => {
       alert('지출이 성공적으로 등록되었습니다.');
       clearReceiptData();
-      queryClient.invalidateQueries({
+
+      await queryClient.invalidateQueries({
         queryKey: ['tripBudget', tripId],
       });
+
       router.push(`/trip/${tripId}/budget`);
     },
     onError: (error) => {
@@ -160,12 +164,13 @@ export default function ExpenseForm() {
   const { mutate: createExpenseWithReceiptMutate, isPending: isCreatingWithReceipt } = useMutation({
     mutationFn: (refinedForm: any) => createExpenseWithReceipt(Number(tripId), refinedForm),
 
-    onSuccess: () => {
+    onSuccess: async () => {
       alert('지출이 성공적으로 등록되었습니다.');
       clearReceiptData();
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ['tripBudget', tripId],
       });
+
       router.push(`/trip/${tripId}/budget`);
     },
     onError: (error) => {
@@ -174,7 +179,6 @@ export default function ExpenseForm() {
     },
   });
 
-  // ✅ 3. handleSubmit 함수 (Mutation 호출)
   const handleSubmit = () => {
     if (!tripId) return;
 
@@ -193,10 +197,9 @@ export default function ExpenseForm() {
       },
     };
 
-    createExpenseMutate(refinedForm); // ✅ try...catch 대신 Mutation 실행
+    createExpenseMutate(refinedForm);
   };
 
-  // ✅ 4. handleSubmitWithReceipt 함수 (Mutation 호출)
   const handleSubmitWithReceipt = () => {
     if (!tripId || !receiptUrl || !items) return;
 
@@ -225,6 +228,27 @@ export default function ExpenseForm() {
     createExpenseWithReceiptMutate(refinedForm);
   };
 
+  if (!allDatesAvailable) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">
+          잘못된 접근입니다.
+          <br />
+          날짜 정보가 URL에 포함되어 있어야 합니다.
+        </p>
+      </div>
+    );
+  }
+
+  // ✅ 2. URL 파라미터가 있다면, pageData 로딩을 확인합니다.
+  if (!pageData) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
   if (!pageData) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
@@ -251,12 +275,16 @@ export default function ExpenseForm() {
 
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         {/* 기본 폼 */}
-        <TripDateSection
-          date={form.expense.date}
-          setDate={(date) => handleExpenseChange('date', date)}
-          startDate={pageData.settledDates[0]}
-          endDate={pageData.settledDates[pageData.settledDates.length - 1]}
-        />
+
+        {allDatesAvailable && (
+          <TripDateSection
+            date={form.expense.date}
+            setDate={(date) => handleExpenseChange('date', date)}
+            startDate={tripStartDate}
+            endDate={tripEndDate}
+          />
+        )}
+
         <PaymentMethodSection
           paymentMethod={form.expense.paymentMethod}
           setPaymentMethod={(m) => handleExpenseChange('paymentMethod', m)}
