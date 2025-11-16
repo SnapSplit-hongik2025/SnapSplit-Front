@@ -41,8 +41,7 @@ export default function ExpenseEditForm() {
   /* ───────────────────────────
    * 1) expenseDetail 가져오기 (캐시에서)
    * ─────────────────────────── */
-  const expenseDetail: ExpenseDetail | null =
-    queryClient.getQueryData(['expenseDetail', tripId, expenseId]) || null;
+  const expenseDetail: ExpenseDetail | null = queryClient.getQueryData(['expenseDetail', tripId, expenseId]) || null;
 
   const date = expenseDetail?.date ?? null;
 
@@ -146,13 +145,12 @@ export default function ExpenseEditForm() {
    * Mutation 적용
    * ─────────────────────────── */
   const { mutate: editExpenseMutate, isPending: isEditing } = useMutation({
-    mutationFn: (payload: CreateExpenseRequest) =>
-      editExpense(Number(tripId), Number(expenseId), payload),
+    mutationFn: (payload: CreateExpenseRequest) => editExpense(Number(tripId), Number(expenseId), payload),
 
     onSuccess: () => {
-      alert('지출이 성공적으로 수정되었습니다.');
-
-      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({
+        queryKey: ['tripBudget', tripId],
+      });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -163,14 +161,10 @@ export default function ExpenseEditForm() {
   });
 
   const { mutate: editExpenseWithReceiptMutate, isPending: isEditingWithReceipt } = useMutation({
-    mutationFn: (payload: CreateExpenseRequestWithReceipt) =>
-      editExpense(Number(tripId), Number(expenseId), payload),
+    mutationFn: (payload: CreateExpenseRequestWithReceipt) => editExpense(Number(tripId), Number(expenseId), payload),
 
     onSuccess: () => {
-      alert('지출이 성공적으로 수정되었습니다.');
-
-      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
-      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
