@@ -26,7 +26,7 @@ const getUTCDate = (dateString: string): Date => {
 
 /**
  * Day N을 'YYYY-MM-DD' 실제 날짜로 변환합니다.
- * Day 0은 여행 시작일 - 1일입니다.
+ * Day 1은 여행 시작일입니다.
  */
 const calculateDate = (startDate: string, dayIndex: number): string => {
   const start = getUTCDate(startDate);
@@ -63,10 +63,10 @@ const getTotalDays = (startDate: string, endDate: string): number => {
 export default function TripDateSection({ startDate, endDate, date, setDate }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // 현재 선택된 날짜(date)를 기준으로 Day Index (0, 1, 2...)를 계산
+  // 현재 선택된 날짜(date)를 기준으로 Day Index (1, 2...)를 계산
   const dayIndex = calculateDayIndex(startDate, date);
 
-  // DateSelectSheet에서 Day Index(e.g. 0)를 선택했을 때
+  // DateSelectSheet에서 Day Index(e.g. 1)를 선택했을 때
   const handleSelectDate = (selectedDayIndex: number) => {
     // Day Index를 실제 날짜(e.g. '2025-09-12')로 변환
     const actualDate = calculateDate(startDate, selectedDayIndex);
@@ -90,7 +90,7 @@ export default function TripDateSection({ startDate, endDate, date, setDate }: P
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
         {/*
           DateSelectSheet는 daysCount={3}을 받으면
-          내부적으로 0부터 3까지 (Day 0, Day 1, Day 2, Day 3)
+          내부적으로 1부터 3까지 (Day 1, Day 2, Day 3)
           루프를 돌도록 구현되어야 합니다.
         */}
         <DateSelectSheet

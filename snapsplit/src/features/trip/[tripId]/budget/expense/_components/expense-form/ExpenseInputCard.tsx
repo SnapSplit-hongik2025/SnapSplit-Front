@@ -8,7 +8,7 @@ import ReceiptRegisterButton from '@/features/trip/[tripId]/budget/expense/_comp
 
 type Props = {
   amount: number | null;
-  setAmount: (amount: number | null) => void;
+  setAmount: (amount: number) => void;
   exchangeRates: Record<string, number>;
   setExchangeRate: (exchangeRate: number) => void;
   currency: string;
