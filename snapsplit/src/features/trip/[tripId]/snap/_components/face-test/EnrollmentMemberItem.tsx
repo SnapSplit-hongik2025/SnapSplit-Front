@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { MemberData } from '../FaceTestPage';
+import { MemberData } from './FaceEnrollmentSection';
 import { FaceEnrollButton } from './FaceEnrollButton';
 
 export const EnrollmentMemberItem = ({ member }: { member: MemberData }) => {
