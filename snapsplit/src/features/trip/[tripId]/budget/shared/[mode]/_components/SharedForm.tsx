@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import CurrencyList from '@/features/trip/[tripId]/budget/shared/[mode]/_components/CurrencyList';
 import BudgetInput from './BudgetInput';
@@ -18,8 +18,10 @@ import {
   updateDefaultCurrency,
 } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { UpdateSharedBudgetRequestDto } from '../../../types/budget-dto-type';
-
-const result = '$9805596000000';
+import Loading from '@/shared/components/loading/Loading';
+import { useQuery } from '@tanstack/react-query';
+import { GetTripBudgetDto } from '../../../types/budget-dto-type';
+import { getTripBudgetData } from '../../../api/budget-api';
 
 const SharedForm = () => {
   const router = useRouter();
@@ -33,6 +35,17 @@ const SharedForm = () => {
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // budgetData
+  const {
+    data: budgetData,
+    isLoading: isBudgetLoading,
+    error: budgetError,
+  } = useQuery<GetTripBudgetDto, Error>({
+    queryKey: ['tripBudget', tripId],
+    queryFn: () => getTripBudgetData(Number(tripId)),
+    staleTime: 1000 * 60 * 2, // 2분
+  });
 
   // 모달
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
@@ -74,6 +87,28 @@ const SharedForm = () => {
     fetchSharedData();
   }, [tripId]);
 
+  // 예상 총액 계산
+  const predictedTotal = useMemo(() => {
+    if (!budgetData || !amount || !currency || !exchangeRate) return null;
+
+    const currentTotal = budgetData.totalExpense; // 현재 total
+    const currentCurrency = budgetData.sharedFund.defaultCurrency; // 기준 통화
+    const isSameCurrency = currency === currentCurrency;
+
+    const addedAmount = Number(amount) || 0;
+
+    // currency가 다르면 환율로 변환
+    const adjustedAmount = isSameCurrency
+      ? addedAmount
+      : addedAmount * (exchangeRate[currency] / exchangeRate[currentCurrency]);
+
+    if (mode === 'add') {
+      return currentTotal + adjustedAmount;
+    } else {
+      return currentTotal - adjustedAmount;
+    }
+  }, [amount, currency, exchangeRate, budgetData, mode]);
+
   const handleSubmit = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -91,7 +126,7 @@ const SharedForm = () => {
       } else {
         await removeSharedBudget(Number(tripId), payload);
       }
-    
+
       setIsSubmitting(false);
       alert('공동 경비 정보를 저장했습니다.');
       router.back();
@@ -114,12 +149,28 @@ const SharedForm = () => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (isLoading || isBudgetLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {error ?? ''}</p>
+      </div>
+    );
+  }
+
+  if (budgetError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {budgetError?.message ?? ''}</p>
+      </div>
+    );
   }
 
   // TODO: BottomNavBar fixed 제거 시 pb-15 제거
@@ -187,7 +238,7 @@ const SharedForm = () => {
       </div>
 
       {/* Toast */}
-      {isFormDataReady && <StatusMessage result={result} />}
+      {isFormDataReady && <StatusMessage result={predictedTotal} currency={currency} />}
     </div>
   );
 };

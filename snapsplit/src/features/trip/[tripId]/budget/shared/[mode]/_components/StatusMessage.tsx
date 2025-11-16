@@ -1,13 +1,17 @@
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 import Image from 'next/image';
+import { getSymbol } from '@/shared/utils/currency';
 
 type StatusMessageProps = {
-  result: string;
+  result: number | null;
+  currency: string;
 };
 
-const StatusMessage = ({ result }: StatusMessageProps) => {
-  const fullMessage = `공동 경비 잔액이 ${result} 로 늘어나요!`;
+const StatusMessage = ({ result, currency }: StatusMessageProps) => {
+  const fullMessage = `공동 경비 잔액이 ${getSymbol(currency)}${result} 로 늘어나요!`;
   const isOneLine = fullMessage.length <= 32; // 🔁 기준은 글자 수 또는 실제 측정값
+
+  if (result == null) return null;
 
   return (
     <FloatingModal>
@@ -15,7 +19,7 @@ const StatusMessage = ({ result }: StatusMessageProps) => {
         <div className="bg-grey-850 rounded-xl px-4 py-2.5 text-body-1 text-grey-450 text-center max-w-[320px]">
           <div className={`${isOneLine ? 'flex' : 'flex flex-col'}`}>
             <div>공동 경비 잔액이</div>
-            <div className="text-primary break-all">&nbsp;{result}&nbsp;</div>
+            <div className="text-primary break-all">&nbsp;{getSymbol(currency)}{result}&nbsp;</div>
             <div>로 늘어나요!</div>
           </div>
         </div>

@@ -26,8 +26,8 @@ export default function CategorySection({ selectedCategory, onSelectCategory }: 
           현금
         </button>
         <button
-          onClick={() => toggleCategory('CARD')}
-          className={`rounded-xl w-full h-12 px-5 ${selectedCategory === 'CARD' ? 'bg-primary text-white' : 'bg-white text-black border border-grey-350'}`}
+          onClick={() => toggleCategory('CREDIT_CARD')}
+          className={`rounded-xl w-full h-12 px-5 ${selectedCategory === 'CREDIT_CARD' ? 'bg-primary text-white' : 'bg-white text-black border border-grey-350'}`}
         >
           카드
         </button>
