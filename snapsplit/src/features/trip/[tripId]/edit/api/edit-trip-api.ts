@@ -89,7 +89,7 @@ export const editTripInfo = async (tripId: string, tripName: string | null, trip
         formData.append('tripName', tripName);
     }
     if (tripImage) {
-        formData.append('imageFile', tripImage);
+        formData.append('tripImageFile', tripImage);
         console.log('이미지 있음');
     }
   
