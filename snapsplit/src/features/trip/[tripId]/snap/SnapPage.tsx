@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import TabSelector from '@/features/trip/[tripId]/snap/_components/TabSelector';
 import UploadButton from '@/features/trip/[tripId]/snap/_components/UploadButton';
 import TripHeader from '../../../../shared/components/TripHeader';
@@ -16,13 +15,13 @@ import { getTripBudgetData } from '../budget/api/budget-api';
 import { useSnapStore } from './store/snapStore';
 import Loading from '@/shared/components/loading/Loading';
 import { useQuery } from '@tanstack/react-query';
+import { FaceEnrollmentSection } from './_components/face-test/FaceEnrollmentSection';
 
 type SnapPageProps = {
   tripId: string;
 };
 
 export default function SnapPage({ tripId }: SnapPageProps) {
-  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('전체');
@@ -38,7 +37,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     staleTime: 1000 * 60 * 2,
   });
 
-  const [folders, setFolders] = useState<Folder[]>([]);
+  const [folders] = useState<Folder[]>([]);
 
   // photos
   const { setAllPhotos } = useSnapStore();
@@ -53,7 +52,12 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   // 중복 요청 방지 flag
   const isFetchingRef = useRef(false);
 
-  const { data: readiness, isLoading: readinessLoading, isError: isReadinessError, error: readinessError } = useQuery({
+  const {
+    data: readiness,
+    isLoading: readinessLoading,
+    isError: isReadinessError,
+    error: readinessError,
+  } = useQuery({
     queryKey: ['readiness', tripId],
     queryFn: () => getReadiness(Number(tripId)),
     staleTime: 1000 * 60 * 2,
@@ -64,7 +68,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
    * ====================================== */
   const fetchPhotos = useCallback(
     async (pageToLoad: number) => {
-      if (isFetchingRef.current) return;
+      if (!readiness) return;
+      else if (!readiness.allMembersRegistered) return; // 얼굴 등록이 완료되지 않은 경우
+      else if (isFetchingRef.current) return; // 중복 요청 방지
       isFetchingRef.current = true;
       setLoading(true);
 
@@ -74,7 +80,6 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
         setPhotos((prev) => {
           const newPhotos = pageToLoad === 0 ? res.photos : [...prev, ...res.photos];
-          // setAllPhotos(newPhotos); // 🚨 <--- 여기서 삭제!
           return newPhotos;
         });
 
@@ -87,45 +92,8 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         setLoading(false);
       }
     },
-    [tripId, selectedSort] // 🚨 <--- 의존성 배열에서 'setAllPhotos' 삭제!
+    [tripId, selectedSort, readiness]
   );
-
-  useEffect(() => {
-    if (!readiness) return;
-
-    let mounted = true;
-
-    const loadInitial = async () => {
-      // 렌더링 이후로 실행을 microtask로 밀어낸다
-      await Promise.resolve();
-
-      if (!mounted) return;
-
-      try {
-        if (!mounted) return;
-
-        // allMembersRegistered가 false이면 face-test 페이지로 리다이렉트
-        if (!readiness?.allMembersRegistered) {
-          router.push(`/trip/${tripId}/snap/face-test`);
-          return;
-        }
-
-        const memberFolders = readiness.members
-          .filter((m) => m.hasFaceData)
-          .map((m) => ({ id: m.userId, name: m.name }));
-
-        setFolders(memberFolders);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    loadInitial();
-
-    return () => {
-      mounted = false;
-    };
-  }, [tripId, readiness]);
 
   /** ======================================
    * 🔄 정렬 변경 시 → 전체 리셋 + 첫 페이지 로딩
@@ -188,7 +156,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         <Loading />
       </div>
     );
-  };
+  }
 
   if (isReadinessError) {
     return (
@@ -206,13 +174,13 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     );
   }
 
-  if (!tripData || !readiness){
+  if (!tripData || !readiness) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loading />
       </div>
     );
-  };
+  }
 
   return (
     <div className="flex flex-col h-screen bg-light_grey">
@@ -234,7 +202,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
       <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {activeTab === '전체' ? (
+      {!readiness.allMembersRegistered ? (
+        <FaceEnrollmentSection members={readiness.members} />
+      ) : activeTab === '전체' ? (
         <BaseTabView
           setIsScrolled={setIsScrolled}
           setScrollToTop={setScrollToTop}
