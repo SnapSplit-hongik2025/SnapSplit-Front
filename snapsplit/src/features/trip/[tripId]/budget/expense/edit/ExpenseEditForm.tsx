@@ -16,6 +16,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 
 import { getExpensePageData } from '../api/expense-api';
 import { editExpense } from './api/expense-edit-api';
+import { getTripBudgetData } from '../../api/budget-api';
 
 import Loading from '@/shared/components/loading/Loading';
 
@@ -44,6 +45,11 @@ export default function ExpenseEditForm() {
     queryClient.getQueryData(['expenseDetail', tripId, expenseId]) || null;
 
   const date = expenseDetail?.date ?? null;
+
+  const { data: tripBudgetData } = useQuery({
+    queryKey: ['tripBudget', Number(tripId)],
+    queryFn: () => getTripBudgetData(Number(tripId)),
+  });
 
   /* ───────────────────────────
    * 2) pageData 불러오기
@@ -146,7 +152,6 @@ export default function ExpenseEditForm() {
     onSuccess: () => {
       alert('지출이 성공적으로 수정되었습니다.');
 
-      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
       queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
@@ -220,7 +225,7 @@ export default function ExpenseEditForm() {
   /* ───────────────────────────
    * UI 로딩 처리
    * ─────────────────────────── */
-  if (!expenseDetail || !form || isPageLoading || !pageData) {
+  if (!expenseDetail || !form || isPageLoading || !pageData || !tripBudgetData) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loading />
@@ -250,8 +255,8 @@ export default function ExpenseEditForm() {
         <TripDateSection
           date={form.expense.date}
           setDate={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, date: v } }))}
-          startDate={pageData.settledDates[0]}
-          endDate={pageData.settledDates.at(-1) ?? ''}
+          startDate={tripBudgetData?.startDate}
+          endDate={tripBudgetData?.endDate}
         />
 
         <PaymentMethodSection
