@@ -41,6 +41,7 @@ export type UserIconListProps = {
 export type DailyExpenseListProps = {
   dailyExpenses: DailyExpenseDto[];
   tripStartDate: string;
+  tripEndDate: string;
   tripId: string;
 };
 

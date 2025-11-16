@@ -2,19 +2,14 @@ import Image from 'next/image';
 
 type Props = {
   onClose: () => void;
-  date: string;
+  selectedDayIndex: number;
   handleSelectDate: (dayIndex: number) => void;
   daysCount: number;
 };
 
-export default function DateSelectSheet({ onClose, date, handleSelectDate, daysCount }: Props) {
-  const days = Array.from({ length: daysCount }, (_, index) => index + 1);
-
-  const calculateDate = (dayIndex: number): string => {
-    const start = new Date(date);
-    const next = new Date(start.setDate(start.getDate() + dayIndex - 1));
-    return next.toISOString().split('T')[0]; // 'YYYY-MM-DD'
-  };
+export default function DateSelectSheet({ onClose, selectedDayIndex, handleSelectDate, daysCount }: Props) {
+  // "Day 0"을 포함하도록 수정
+  const days = Array.from({ length: daysCount + 1 }, (_, index) => index);
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -25,9 +20,9 @@ export default function DateSelectSheet({ onClose, date, handleSelectDate, daysC
             handleSelectDate(option);
             onClose();
           }}
-          className={`flex items-center gap-1 w-full py-3 text-body-3 ${date === calculateDate(option) ? 'text-primary' : 'text-grey-1000'}`}
+          className={`flex items-center gap-1 w-full py-3 text-body-3 ${selectedDayIndex === option ? 'text-primary' : 'text-grey-1000'}`}
         >
-          {date === calculateDate(option) ? (
+          {selectedDayIndex === option ? (
             <Image src="/svg/check-green.svg" alt="selected" width={24} height={24} />
           ) : (
             <Image src="/svg/check_grey.svg" alt="unselected" width={24} height={24} />

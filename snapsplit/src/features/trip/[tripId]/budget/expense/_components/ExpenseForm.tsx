@@ -19,7 +19,7 @@ import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import type { CreateExpenseRequest, ExpensePageDataResponse } from '../api/expense-dto-type';
 import Loading from '@/shared/components/loading/Loading';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query'; // ✅ useMutation 임포트
 
 export type MemberState = {
   isPayer: boolean;
@@ -34,17 +34,19 @@ export default function ExpenseForm() {
   const tripId = params.tripId as string;
   const searchParams = useSearchParams();
   const date = searchParams.get('date') as string;
+  const tripStartDate = searchParams.get('tripStartDate') as string;
+  const tripEndDate = searchParams.get('tripEndDate') as string;
+  const allDatesAvailable = tripStartDate && tripEndDate && date;
 
   const queryClient = useQueryClient();
 
-  // ✅ ReceiptForm에서 넘어온 상태 감지
   const from = searchParams.get('from');
   const isFromReceipt = from === 'receipt';
   const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
+  console.log(pageData);
 
-  // ✅ form 초기값
   const [form, setForm] = useState<CreateExpenseRequest>({
     expense: {
       date,
@@ -60,7 +62,6 @@ export default function ExpenseForm() {
     splitters: [],
   });
 
-  // ✅ 멤버별 상태
   const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
 
   const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
@@ -77,7 +78,6 @@ export default function ExpenseForm() {
     }));
   };
 
-  // ✅ expense 필드 변경
   const handleExpenseChange = <K extends keyof CreateExpenseRequest['expense']>(
     key: K,
     value: CreateExpenseRequest['expense'][K] | null
@@ -88,7 +88,6 @@ export default function ExpenseForm() {
     }));
   };
 
-  // ✅ init (pageData fetch + Receipt 데이터 반영)
   useEffect(() => {
     if (!tripId || !date) return;
 
@@ -97,7 +96,6 @@ export default function ExpenseForm() {
         const expensePageData = await getExpensePageData(Number(tripId), date);
         setPageData(expensePageData);
 
-        // ✅ 멤버 상태 초기화
         setMembersState(
           expensePageData.members.reduce(
             (acc, member) => {
@@ -108,7 +106,6 @@ export default function ExpenseForm() {
           )
         );
 
-        // ✅ 기본 폼 상태 초기화
         setForm((prev) => ({
           ...prev,
           expense: {
@@ -118,7 +115,6 @@ export default function ExpenseForm() {
           },
         }));
 
-        // ✅ Receipt에서 넘어온 경우 OCR 결과를 form에 반영
         if (isFromReceipt && ocrResult) {
           setForm({
             expense: {
@@ -143,11 +139,50 @@ export default function ExpenseForm() {
     fetchExpensePageData();
   }, [tripId, date, isFromReceipt, ocrResult]);
 
-  // ✅ 제출 핸들러
-  const handleSubmit = async () => {
+  // 1. 영수증 없는 일반 지출 등록 Mutation
+  const { mutate: createExpenseMutate, isPending: isCreating } = useMutation({
+    mutationFn: (refinedForm: CreateExpenseRequest) => createExpense(Number(tripId), refinedForm),
+
+    onSuccess: async () => {
+      alert('지출이 성공적으로 등록되었습니다.');
+      clearReceiptData();
+
+      await queryClient.invalidateQueries({
+        queryKey: ['tripBudget', tripId],
+      });
+
+      router.push(`/trip/${tripId}/budget`);
+    },
+    onError: (error) => {
+      console.error('지출 등록 실패:', error);
+      alert('지출 등록 중 오류가 발생했습니다.');
+    },
+  });
+
+  // 2. 영수증 포함 지출 등록 Mutation
+  // refinedForm의 타입을 DTO에 맞게 정의하면 더 좋습니다. (현재 any)
+  const { mutate: createExpenseWithReceiptMutate, isPending: isCreatingWithReceipt } = useMutation({
+    mutationFn: (refinedForm: any) => createExpenseWithReceipt(Number(tripId), refinedForm),
+
+    onSuccess: async () => {
+      alert('지출이 성공적으로 등록되었습니다.');
+      clearReceiptData();
+      await queryClient.invalidateQueries({
+        queryKey: ['tripBudget', tripId],
+      });
+
+      router.push(`/trip/${tripId}/budget`);
+    },
+    onError: (error) => {
+      console.error('지출 등록 실패:', error);
+      alert('지출 등록 중 오류가 발생했습니다.');
+    },
+  });
+
+  const handleSubmit = () => {
     if (!tripId) return;
 
-    const refinedForm = {
+    const refinedForm: CreateExpenseRequest = {
       ...form,
       payers: Object.entries(membersState)
         .filter(([_, m]) => m.isPayer)
@@ -162,29 +197,14 @@ export default function ExpenseForm() {
       },
     };
 
-    try {
-      await createExpense(Number(tripId), refinedForm);
-      alert('지출이 성공적으로 등록되었습니다.');
-      clearReceiptData(); // ✅ Receipt 상태 초기화 (이름 맞게 수정됨)
-      queryClient.invalidateQueries({
-        queryKey: ['tripBudget', tripId],
-      });
-      queryClient.refetchQueries({
-        queryKey: ['tripBudget', tripId],
-      });
-      router.push(`/trip/${tripId}/budget`);
-    } catch (error) {
-      console.error('지출 등록 실패:', error);
-      alert('지출 등록 중 오류가 발생했습니다.');
-    }
+    createExpenseMutate(refinedForm);
   };
 
-  const handleSubmitWithReceipt = async () => {
-    if (!tripId) return;
-    if (!receiptUrl) return;
-    if (!items) return;
+  const handleSubmitWithReceipt = () => {
+    if (!tripId || !receiptUrl || !items) return;
 
     const refinedForm = {
+      // (타입은 실제 DTO에 맞게 설정 권장)
       ...form,
       payers: Object.entries(membersState)
         .filter(([_, m]) => m.isPayer)
@@ -201,30 +221,33 @@ export default function ExpenseForm() {
       items: items.map((item) => {
         const rawAmount = item.amount;
         const parsedAmount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount;
-
-        return {
-          name: item.name,
-          amount: parsedAmount,
-        };
+        return { name: item.name, amount: parsedAmount };
       }),
     };
 
-    try {
-      await createExpenseWithReceipt(Number(tripId), refinedForm);
-      alert('지출이 성공적으로 등록되었습니다.');
-      clearReceiptData(); // ✅ Receipt 상태 초기화 (이름 맞게 수정됨)
-      queryClient.invalidateQueries({
-        queryKey: ['tripBudget', tripId],
-      });
-      queryClient.refetchQueries({
-        queryKey: ['tripBudget', tripId],
-      });
-      router.push(`/trip/${tripId}/budget`);
-    } catch (error) {
-      console.error('지출 등록 실패:', error);
-      alert('지출 등록 중 오류가 발생했습니다.');
-    }
+    createExpenseWithReceiptMutate(refinedForm);
   };
+
+  if (!allDatesAvailable) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">
+          잘못된 접근입니다.
+          <br />
+          날짜 정보가 URL에 포함되어 있어야 합니다.
+        </p>
+      </div>
+    );
+  }
+
+  // ✅ 2. URL 파라미터가 있다면, pageData 로딩을 확인합니다.
+  if (!pageData) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   if (!pageData) {
     return (
@@ -233,6 +256,8 @@ export default function ExpenseForm() {
       </div>
     );
   }
+
+  const isSubmitting = isCreating || isCreatingWithReceipt;
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
@@ -250,12 +275,16 @@ export default function ExpenseForm() {
 
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         {/* 기본 폼 */}
-        <TripDateSection
-          date={form.expense.date}
-          setDate={(date) => handleExpenseChange('date', date)}
-          startDate={pageData.settledDates[0]}
-          endDate={pageData.settledDates[pageData.settledDates.length - 1]}
-        />
+
+        {allDatesAvailable && (
+          <TripDateSection
+            date={form.expense.date}
+            setDate={(date) => handleExpenseChange('date', date)}
+            startDate={tripStartDate}
+            endDate={tripEndDate}
+          />
+        )}
+
         <PaymentMethodSection
           paymentMethod={form.expense.paymentMethod}
           setPaymentMethod={(m) => handleExpenseChange('paymentMethod', m)}
@@ -269,8 +298,7 @@ export default function ExpenseForm() {
           setExpenseMemo={(memo) => handleExpenseChange('expenseMemo', memo)}
         />
         <CategorySection category={form.expense.category} setCategory={(c) => handleExpenseChange('category', c)} />
-
-        {/* ✅ ReceiptForm에서 넘어온 경우 영수증 상세 표시 */}
+        {/* 영수증에서 온 경우 영수증 상세 항목 */}
         {isFromReceipt && <ReceiptDetailSection items={ocrResult?.items || []} />}
 
         {/* 결제자/분할자 */}
@@ -290,9 +318,13 @@ export default function ExpenseForm() {
         />
       </div>
 
-      {/* 제출 버튼 */}
+      {/* ✅ 6. 제출 버튼 (로딩 상태 반영) */}
       <div className="flex items-center justify-center w-full py-5">
-        <Button label="추가하기" onClick={isFromReceipt ? handleSubmitWithReceipt : handleSubmit} enabled={true} />
+        <Button
+          label={isSubmitting ? '저장 중...' : '추가하기'}
+          onClick={isFromReceipt ? handleSubmitWithReceipt : handleSubmit}
+          enabled={!isSubmitting} // 로딩 중 비활성화
+        />
       </div>
     </div>
   );
