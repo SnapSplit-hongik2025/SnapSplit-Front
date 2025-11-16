@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useRouter } from 'next/navigation';
 
 export type FaceEnrollButtonProps = {
   hasFaceData?: boolean;
@@ -6,6 +7,12 @@ export type FaceEnrollButtonProps = {
 };
 
 export const FaceEnrollButton = ({ hasFaceData, isCurrentUser }: FaceEnrollButtonProps) => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push('/my/face');
+  };
+
   return (
     <button
       disabled={hasFaceData || !isCurrentUser}
@@ -14,9 +21,10 @@ export const FaceEnrollButton = ({ hasFaceData, isCurrentUser }: FaceEnrollButto
           'bg-white text-grey-450 border border-grey-250': hasFaceData,
           'bg-primary text-white': !hasFaceData && isCurrentUser,
           'bg-grey-350 text-white': !hasFaceData && !isCurrentUser,
+          'cursor-pointer': !hasFaceData && isCurrentUser,
         })
-        // 버튼 클릭 시 얼굴 등록 페이지로 이동
       }
+      onClick={handleClick}
     >
       {hasFaceData ? '등록완료' : isCurrentUser ? '등록하기' : '미등록'}
     </button>
