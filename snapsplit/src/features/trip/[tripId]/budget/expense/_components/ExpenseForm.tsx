@@ -17,7 +17,11 @@ import { useEffect, useState } from 'react';
 import { createExpense, createExpenseWithReceipt, getExpensePageData } from '../api/expense-api';
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
-import type { CreateExpenseRequest, CreateExpenseRequestWithReceipt, ExpensePageDataResponse } from '../api/expense-dto-type';
+import type {
+  CreateExpenseRequest,
+  CreateExpenseRequestWithReceipt,
+  ExpensePageDataResponse,
+} from '../api/expense-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 import { useMutation, useQueryClient } from '@tanstack/react-query'; // ✅ useMutation 임포트
 
@@ -144,11 +148,10 @@ export default function ExpenseForm() {
     mutationFn: (refinedForm: CreateExpenseRequest) => createExpense(Number(tripId), refinedForm),
 
     onSuccess: async () => {
-      alert('지출이 성공적으로 등록되었습니다.');
       clearReceiptData();
 
       await queryClient.invalidateQueries({
-        queryKey: ['tripBudget', tripId],
+        queryKey: ['tripBudget', tripId], refetchType: 'active'
       });
 
       router.push(`/trip/${tripId}/budget`);
@@ -165,9 +168,8 @@ export default function ExpenseForm() {
     mutationFn: (refinedForm: CreateExpenseRequestWithReceipt) => createExpenseWithReceipt(Number(tripId), refinedForm),
 
     onSuccess: async () => {
-      alert('지출이 성공적으로 등록되었습니다.');
       clearReceiptData();
-      await queryClient.invalidateQueries({
+      await queryClient.refetchQueries({
         queryKey: ['tripBudget', tripId],
       });
 
