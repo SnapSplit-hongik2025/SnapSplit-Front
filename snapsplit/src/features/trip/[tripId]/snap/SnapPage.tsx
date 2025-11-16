@@ -30,7 +30,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
   const [selectedSort, setSelectedSort] = useState('최신순');
 
-  // trip info
+  // 헤더에 필요한 trip info
   const { data: tripData, isError: tripError } = useQuery({
     queryKey: ['tripBudget', tripId],
     queryFn: () => getTripBudgetData(Number(tripId)),
