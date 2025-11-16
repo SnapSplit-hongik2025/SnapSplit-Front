@@ -43,7 +43,7 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
     return <div>오류가 발생했습니다: {error.message}</div>;
   }
 
-  const handleNext = async () => {
+  const handleEdit = async () => {
     if (!tripName) {
       alert('여행 이름을 입력해주세요.');
       return;
@@ -65,7 +65,7 @@ const EditNamePage = ({ tripId }: EditNamePageProps) => {
     <InputTripNameSection
       tripName={tripName}
       tripImageUrl={tripImageUrl}
-      onClick={handleNext}
+      onClick={handleEdit}
       variant="edit"
       setTripName={setTripName}
       setTripImageUrl={setTripImageUrl}
