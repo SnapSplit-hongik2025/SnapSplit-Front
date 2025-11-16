@@ -68,8 +68,6 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
       const startDate = tripDay[startDayIndex].date;
       const endDate = tripDay[endDayIndex].date;
       const { settlementId } = await postSettlement(tripId, startDate, endDate);
-
-      alert('정산이 완료되었습니다!');
       setIsConfirmModalOpen(false);
 
       const startDayParam = encodeURIComponent(tripDay[startDayIndex].day); // 또는 index 사용: startDayIndex
