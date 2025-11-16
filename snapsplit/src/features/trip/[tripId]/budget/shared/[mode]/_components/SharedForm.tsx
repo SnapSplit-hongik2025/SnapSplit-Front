@@ -89,7 +89,7 @@ const SharedForm = () => {
 
   // 예상 총액 계산
   const predictedTotal = useMemo(() => {
-    if (!budgetData) return null;
+    if (!budgetData || !amount || !currency || !exchangeRate) return null;
 
     const currentTotal = budgetData.totalExpense; // 현재 total
     const currentCurrency = budgetData.sharedFund.defaultCurrency; // 기준 통화

@@ -11,7 +11,7 @@ const StatusMessage = ({ result, currency }: StatusMessageProps) => {
   const fullMessage = `공동 경비 잔액이 ${getSymbol(currency)}${result} 로 늘어나요!`;
   const isOneLine = fullMessage.length <= 32; // 🔁 기준은 글자 수 또는 실제 측정값
 
-  if (!result) return null;
+  if (result == null) return null;
 
   return (
     <FloatingModal>
