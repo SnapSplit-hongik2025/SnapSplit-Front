@@ -12,7 +12,7 @@ const LandingSection = () => {
   const REST_API_KEY = process.env.NEXT_PUBLIC_REST_API_KEY;
   const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI;
 
-  const kakaoLogin = () => {
+  const handleKakaoLogin = () => {
     // 환경 변수가 제대로 설정되어 있는지 확인
     if (!REST_API_KEY || !REDIRECT_URI) {
       console.error("환경 변수에 문제가 있습니다.", "REST_API_KEY : ", REST_API_KEY ? "제공됨" : "제공되지 않음", "REDIRECT_URI : ", REDIRECT_URI ? "제공됨" : "제공되지 않음");
@@ -57,17 +57,17 @@ const LandingSection = () => {
             시작하기
           </motion.button>
         ) : (
-          <motion.div
+          <motion.button
             key="kakao"
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.4, ease: 'easeInOut' }}
             className="w-full bg-yellow-300 flex justify-center p-3 rounded-2xl text-black cursor-pointer"
-            onClick={kakaoLogin}
+            onClick={handleKakaoLogin}
           >
             카카오 로그인
-          </motion.div>
+          </motion.button>
         )}
       </AnimatePresence>
     </main>
