@@ -11,17 +11,18 @@ import PaySection from '../_components/expense-form/PaySection';
 import SplitSection from '../_components/expense-form/SplitSection';
 import Button from '@/shared/components/Button';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 
 import { getExpensePageData } from '../api/expense-api';
+import { editExpense } from './api/expense-edit-api';
+
 import Loading from '@/shared/components/loading/Loading';
 
 import { useEffect, useState } from 'react';
-import type { CreateExpenseRequest } from '../api/expense-dto-type';
-import { MemberState } from '../_components/ExpenseForm';
-import { editExpense } from './api/expense-edit-api';
+import type { CreateExpenseRequest, CreateExpenseRequestWithReceipt } from '../api/expense-dto-type';
 import type { ExpenseDetail, ResponseItem } from './types';
+import type { MemberState } from '../_components/ExpenseForm';
 
 export default function ExpenseEditForm() {
   /* ───────────────────────────
@@ -30,14 +31,17 @@ export default function ExpenseEditForm() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
+
   const tripId = params.tripId as string;
   const expenseId = searchParams.get('expenseId') as string;
+
   const queryClient = useQueryClient();
 
   /* ───────────────────────────
-   * 1) expenseDetail 가져오기
+   * 1) expenseDetail 가져오기 (캐시에서)
    * ─────────────────────────── */
-  const expenseDetail: ExpenseDetail | null = queryClient.getQueryData(['expenseDetail', tripId, expenseId]) || null;
+  const expenseDetail: ExpenseDetail | null =
+    queryClient.getQueryData(['expenseDetail', tripId, expenseId]) || null;
 
   const date = expenseDetail?.date ?? null;
 
@@ -51,7 +55,7 @@ export default function ExpenseEditForm() {
   });
 
   /* ───────────────────────────
-   *  로컬 State들 (항상 선언)
+   *  로컬 State들
    * ─────────────────────────── */
   const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
@@ -66,8 +70,8 @@ export default function ExpenseEditForm() {
   useEffect(() => {
     if (!expenseDetail || !pageData) return;
 
+    // 1) memberState 구성
     const initialState: Record<number, MemberState> = {};
-
     pageData.members.forEach((m) => {
       const payer = expenseDetail.payers.find((p) => p.memberId === m.memberId);
       const splitter = expenseDetail.splitters.find((s) => s.memberId === m.memberId);
@@ -82,7 +86,7 @@ export default function ExpenseEditForm() {
 
     setMembersState(initialState);
 
-    // form 구성도 pageData 의존으로 옮기기
+    // 2) 기본 form 구성
     setForm({
       expense: {
         date: expenseDetail.date,
@@ -104,6 +108,7 @@ export default function ExpenseEditForm() {
       })),
     });
 
+    // 3) 영수증 모드
     if (expenseDetail.receiptUrl) {
       setReceiptUrl(expenseDetail.receiptUrl);
       setItems(expenseDetail.receiptItems || null);
@@ -132,46 +137,48 @@ export default function ExpenseEditForm() {
   }, [pageData]);
 
   /* ───────────────────────────
-   *  UI 분기 (Hook은 이미 위에서 모두 실행됨)
+   * Mutation 적용
    * ─────────────────────────── */
+  const { mutate: editExpenseMutate, isPending: isEditing } = useMutation({
+    mutationFn: (payload: CreateExpenseRequest) =>
+      editExpense(Number(tripId), Number(expenseId), payload),
 
-  if (!expenseDetail || !form || isPageLoading || !pageData) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center">
-        <Loading />
-      </div>
-    );
-  }
+    onSuccess: () => {
+      alert('지출이 성공적으로 수정되었습니다.');
+
+      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
+      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+
+      router.push(`/trip/${tripId}/budget`);
+    },
+
+    onError: () => {
+      alert('지출 수정 중 오류가 발생했습니다.');
+    },
+  });
+
+  const { mutate: editExpenseWithReceiptMutate, isPending: isEditingWithReceipt } = useMutation({
+    mutationFn: (payload: CreateExpenseRequestWithReceipt) =>
+      editExpense(Number(tripId), Number(expenseId), payload),
+
+    onSuccess: () => {
+      alert('지출이 성공적으로 수정되었습니다.');
+
+      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
+      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+
+      router.push(`/trip/${tripId}/budget`);
+    },
+
+    onError: () => {
+      alert('지출 수정 중 오류가 발생했습니다.');
+    },
+  });
 
   /* ───────────────────────────
-   *  핸들러들
+   * Payload Builder
    * ─────────────────────────── */
-
-  const handleExpenseChange = <K extends keyof CreateExpenseRequest['expense']>(
-    key: K,
-    value: CreateExpenseRequest['expense'][K] | null
-  ) => {
-    setForm((prev) => ({
-      ...prev!,
-      expense: { ...prev!.expense, [key]: value },
-    }));
-  };
-
-  const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
-    setMembersState((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [key]: !prev[id][key] },
-    }));
-  };
-
-  const updateAmount = (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => {
-    setMembersState((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [key]: value },
-    }));
-  };
-
-  const buildPayload = () => ({
+  const buildPayload = (): CreateExpenseRequest => ({
     ...form!,
     payers: Object.entries(membersState)
       .filter(([, m]) => m.isPayer)
@@ -186,23 +193,17 @@ export default function ExpenseEditForm() {
     },
   });
 
-  const handleSubmit = async () => {
-    if (!tripId) return;
-    try {
-      await editExpense(Number(tripId), Number(expenseId), buildPayload());
-      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
-      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
-      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
-      alert('지출이 성공적으로 수정되었습니다.');
-      router.push(`/trip/${tripId}/budget`);
-    } catch (error) {
-      console.error(error);
-      alert('지출 수정 중 오류가 발생했습니다.');
-    }
+  /* ───────────────────────────
+   * Submit Handlers
+   * ─────────────────────────── */
+  const handleSubmit = () => {
+    if (!form) return;
+    const payload = buildPayload();
+    editExpenseMutate(payload);
   };
 
-  const handleSubmitWithReceipt = async () => {
-    if (!tripId || !receiptUrl || !items) return;
+  const handleSubmitWithReceipt = () => {
+    if (!form || !receiptUrl || !items) return;
 
     const payload = {
       ...buildPayload(),
@@ -213,32 +214,34 @@ export default function ExpenseEditForm() {
       })),
     };
 
-    try {
-      await editExpense(Number(tripId), Number(expenseId), payload);
-      queryClient.invalidateQueries({ queryKey: ['expenseDetail', tripId, expenseId] });
-      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
-      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
-      alert('지출이 성공적으로 수정되었습니다.');
-      router.push(`/trip/${tripId}/budget`);
-    } catch (error) {
-      console.error(error);
-      alert('지출 수정 중 오류가 발생했습니다.');
-    }
+    editExpenseWithReceiptMutate(payload);
   };
+
+  /* ───────────────────────────
+   * UI 로딩 처리
+   * ─────────────────────────── */
+  if (!expenseDetail || !form || isPageLoading || !pageData) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  const isSubmitting = isEditing || isEditingWithReceipt;
 
   /* ───────────────────────────
    *  렌더링
    * ─────────────────────────── */
-
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
       <ExpenseInputCard
         amount={form.expense.amount}
-        setAmount={(v) => handleExpenseChange('amount', v)}
+        setAmount={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, amount: v } }))}
         currency={form.expense.currency}
-        setCurrency={(v) => handleExpenseChange('currency', v)}
+        setCurrency={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, currency: v } }))}
         exchangeRates={pageData.exchangeRates}
-        setExchangeRate={(v) => handleExpenseChange('exchangeRate', v)}
+        setExchangeRate={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, exchangeRate: v } }))}
         availCurrencies={['KRW', 'USD']}
         mode="expense"
       />
@@ -246,27 +249,30 @@ export default function ExpenseEditForm() {
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         <TripDateSection
           date={form.expense.date}
-          setDate={(v) => handleExpenseChange('date', v)}
+          setDate={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, date: v } }))}
           startDate={pageData.settledDates[0]}
           endDate={pageData.settledDates.at(-1) ?? ''}
         />
 
         <PaymentMethodSection
           paymentMethod={form.expense.paymentMethod}
-          setPaymentMethod={(v) => handleExpenseChange('paymentMethod', v)}
+          setPaymentMethod={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, paymentMethod: v } }))}
         />
 
         <NameSection
           expenseName={form.expense.expenseName}
-          setExpenseName={(v) => handleExpenseChange('expenseName', v)}
+          setExpenseName={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, expenseName: v } }))}
         />
 
         <MemoSection
           expenseMemo={form.expense.expenseMemo}
-          setExpenseMemo={(v) => handleExpenseChange('expenseMemo', v)}
+          setExpenseMemo={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, expenseMemo: v } }))}
         />
 
-        <CategorySection category={form.expense.category} setCategory={(v) => handleExpenseChange('category', v)} />
+        <CategorySection
+          category={form.expense.category}
+          setCategory={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, category: v } }))}
+        />
 
         {isReceiptMode && (
           <ReceiptDetailSection
@@ -284,21 +290,45 @@ export default function ExpenseEditForm() {
           currency={form.expense.currency}
           members={pageData.members}
           membersState={membersState}
-          handleCheck={toggle}
-          updateAmount={updateAmount}
+          handleCheck={(id, key) =>
+            setMembersState((prev) => ({
+              ...prev,
+              [id]: { ...prev[id], [key]: !prev[id][key] },
+            }))
+          }
+          updateAmount={(id, key, value) =>
+            setMembersState((prev) => ({
+              ...prev,
+              [id]: { ...prev[id], [key]: value },
+            }))
+          }
         />
 
         <SplitSection
           currency={form.expense.currency}
           members={pageData.members}
           membersState={membersState}
-          handleCheck={toggle}
-          updateAmount={updateAmount}
+          handleCheck={(id, key) =>
+            setMembersState((prev) => ({
+              ...prev,
+              [id]: { ...prev[id], [key]: !prev[id][key] },
+            }))
+          }
+          updateAmount={(id, key, value) =>
+            setMembersState((prev) => ({
+              ...prev,
+              [id]: { ...prev[id], [key]: value },
+            }))
+          }
         />
       </div>
 
       <div className="flex items-center justify-center w-full py-5">
-        <Button label="수정하기" enabled={true} onClick={isReceiptMode ? handleSubmitWithReceipt : handleSubmit} />
+        <Button
+          label={isSubmitting ? '저장 중...' : '수정하기'}
+          enabled={!isSubmitting}
+          onClick={isReceiptMode ? handleSubmitWithReceipt : handleSubmit}
+        />
       </div>
     </div>
   );

@@ -240,15 +240,6 @@ export default function ExpenseForm() {
     );
   }
 
-  // ✅ 2. URL 파라미터가 있다면, pageData 로딩을 확인합니다.
-  if (!pageData) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center">
-        <Loading />
-      </div>
-    );
-  }
-
   if (!pageData) {
     return (
       <div className="h-screen w-full flex items-center justify-center">

@@ -8,9 +8,9 @@ type Props = {
 };
 
 export default function DateSelectSheet({ onClose, selectedDayIndex, handleSelectDate, daysCount }: Props) {
-  // "Day 0"을 포함하도록 수정
-  const days = Array.from({ length: daysCount + 1 }, (_, index) => index);
+  const days = Array.from({ length: daysCount }, (_, index) => index + 1);
 
+  // option 은 tripStartDate 기준 1-base index
   return (
     <div className="flex flex-col items-center w-full">
       {days.map((option) => (
