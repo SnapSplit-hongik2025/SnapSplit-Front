@@ -5,6 +5,7 @@ export type BudgetPageProps = {
 };
 
 export type TripInfoProps = {
+  memberProfileImages: string[];
   tripName: string;
   countries: string[];
   startDate: string;
@@ -35,7 +36,7 @@ export type User = {
 
 // 이미지만 받는 걸로 수정 필요 - 2
 export type UserIconListProps = {
-  users: User[];
+  memberProfileImages: string[];
 };
 
 export type DailyExpenseListProps = {

@@ -54,6 +54,7 @@ const BudgetPage = ({ tripId }: BudgetPageProps) => {
       <div className="bg-white">
         <TripHeader tripId={tripId} />
         <TripInfo
+          memberProfileImages={budgetData.memberProfileImages}
           tripName={budgetData.tripName}
           countries={budgetData.countries}
           startDate={budgetData.startDate}
