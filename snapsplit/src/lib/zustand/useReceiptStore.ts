@@ -7,7 +7,7 @@ const isClient = typeof window !== 'undefined'
 export type ReceiptItem = {
   id: number
   name: string
-  amount: number
+  amount: number | string
 }
 
 // OCR 결과 타입

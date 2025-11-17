@@ -23,7 +23,7 @@ const SnapFolderPage = () => {
     locations: [],
   });
   const [sortOpen, setSortOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState('최신순');
+  const [selectedSort, setSelectedSort] = useState<'date_desc' | 'date_asc'>('date_desc');
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
   const [images, setImages] = useState<PhotoResponse[]>([]);
@@ -48,8 +48,7 @@ const SnapFolderPage = () => {
     setLoading(true);
 
     try {
-      const sortParam = selectedSort === '최신순' ? 'date_desc' : 'date_asc';
-      const response = await getPhotosByFolder(Number(tripId), userId, pageToLoad, sortParam);
+      const response = await getPhotosByFolder(Number(tripId), userId, pageToLoad, selectedSort);
       
       setImages(prev => pageToLoad === 0 ? response.photos : [...prev, ...response.photos]);
       setPage(pageToLoad);
@@ -124,7 +123,7 @@ const SnapFolderPage = () => {
           onFilterOpen={() => setFilterOpen(true)}
           filters={filters}
           setFilters={setFilters}
-          onSortChange={(sort: string) => {
+          onSortChange={(sort: 'date_desc' | 'date_asc') => {
             setSelectedSort(sort);
             setImages([]);
             setPage(0);

@@ -74,7 +74,7 @@ export default function CreateTripPage() {
       const TripId = res[0].tripId;
       router.push(`${routerPath.trip.href(TripId)}/budget`);
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       alert(err.message || '여행 생성에 실패했습니다.');
       console.error(err);
     },
