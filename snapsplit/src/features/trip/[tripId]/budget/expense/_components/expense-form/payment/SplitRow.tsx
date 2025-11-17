@@ -19,6 +19,8 @@ type Props = {
 export default function SplitRow({ splitter, currency, membersState, handleCheck, updateAmount }: Props) {
   const isChecked = membersState[splitter.memberId]?.isSplitter;
   const splitAmount = membersState[splitter.memberId]?.splitAmount || null;
+  console.log('[SplitRow] splitAmount: ', typeof membersState[splitter.memberId].splitAmount);
+  console.log('[SplitRow] splitAmount: ', splitAmount, splitter.memberId);
 
   const handleAmountChange = useCallback(
     (value: string) => {
