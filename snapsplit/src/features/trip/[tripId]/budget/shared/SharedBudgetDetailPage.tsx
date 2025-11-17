@@ -47,9 +47,12 @@ const SharedBudgetDetailPage = () => {
       queryClient.setQueryData(['sharedBudget', tripId], context?.previousData);
       alert('통화 변경에 실패했습니다.');
     },
-    onSettled: () => {
+    onSettled: async () => {
       // 성공이든 실패든 항상 최신 데이터로 다시 가져오기
-      queryClient.invalidateQueries({ queryKey: ['sharedBudget', tripId] });
+      await queryClient.refetchQueries({ queryKey: ['sharedBudget', tripId] });
+    },
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
     }
   });
 

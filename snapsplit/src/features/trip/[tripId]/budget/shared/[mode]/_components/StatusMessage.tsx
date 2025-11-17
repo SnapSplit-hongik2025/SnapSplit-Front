@@ -16,7 +16,7 @@ const StatusMessage = ({ result, currency, mode }: StatusMessageProps) => {
 
   return (
     <FloatingModal>
-      <div className="flex flex-col items-center w-full px-5 mb-34 mt-auto">
+      <div className="flex flex-col items-center w-full px-5 mb-19 mt-auto">
         <div className="bg-grey-850 rounded-xl px-4 py-2.5 text-body-1 text-grey-450 text-center max-w-[320px]">
           <div className={`${isOneLine ? 'flex' : 'flex flex-col'}`}>
             <div>공동 경비 잔액이</div>

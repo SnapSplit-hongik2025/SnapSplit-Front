@@ -123,7 +123,7 @@ const SharedForm = () => {
     },
     onSuccess: () => {
       // 성공 시, Budget 관련 쿼리 리패치
-      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
       queryClient.invalidateQueries({ queryKey: ['tripInfo', tripId] });
       queryClient.invalidateQueries({ queryKey: ['homeData'] });
 
