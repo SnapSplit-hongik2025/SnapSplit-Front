@@ -15,6 +15,7 @@ import Button from '@/shared/components/Button';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { createExpense, createExpenseWithReceipt, getExpensePageData } from '../api/expense-api';
+import { getTripBudgetData } from '../../api/budget-api';
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import type {
@@ -22,8 +23,9 @@ import type {
   CreateExpenseRequestWithReceipt,
   ExpensePageDataResponse,
 } from '../api/expense-dto-type';
+import { GetTripBudgetDto } from '../../types/budget-dto-type';
 import Loading from '@/shared/components/loading/Loading';
-import { useMutation, useQueryClient } from '@tanstack/react-query'; // ✅ useMutation 임포트
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 
 export type MemberState = {
   isPayer: boolean;
@@ -49,7 +51,11 @@ export default function ExpenseForm() {
   const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
-  console.log(pageData);
+
+  const { data: budgetData } = useQuery<GetTripBudgetDto>({
+    queryKey: ['tripBudget', tripId],
+    queryFn: () => getTripBudgetData(Number(tripId)),
+  });
 
   const [form, setForm] = useState<CreateExpenseRequest>({
     expense: {
@@ -150,9 +156,7 @@ export default function ExpenseForm() {
     onSuccess: async () => {
       clearReceiptData();
 
-      await queryClient.invalidateQueries({
-        queryKey: ['tripBudget', tripId], refetchType: 'active'
-      });
+      await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -169,9 +173,7 @@ export default function ExpenseForm() {
 
     onSuccess: async () => {
       clearReceiptData();
-      await queryClient.refetchQueries({
-        queryKey: ['tripBudget', tripId],
-      });
+      await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -183,6 +185,12 @@ export default function ExpenseForm() {
 
   const handleSubmit = () => {
     if (!tripId) return;
+
+    // 공동 경비 예산 체크
+    if (budgetData?.sharedFund && form.expense.amount > budgetData.sharedFund.balance) {
+      alert(`지출 금액(${form.expense.amount.toLocaleString()}원)이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()}원)을 초과합니다.`);
+      return;
+    }
 
     const refinedForm: CreateExpenseRequest = {
       ...form,
@@ -205,6 +213,12 @@ export default function ExpenseForm() {
   const handleSubmitWithReceipt = () => {
     if (!tripId || !receiptUrl || !items) return;
 
+    // 공동 경비 예산 체크
+    if (budgetData?.sharedFund && form.expense.amount > budgetData.sharedFund.balance) {
+      alert(`지출 금액(${form.expense.amount.toLocaleString()}원)이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()}원)을 초과합니다.`);
+      return;
+    }
+
     const refinedForm = {
       // (타입은 실제 DTO에 맞게 설정 권장)
       ...form,
@@ -219,12 +233,8 @@ export default function ExpenseForm() {
         category: form.expense.category.toLowerCase(),
         paymentMethod: form.expense.paymentMethod.toUpperCase(),
       },
-      receiptUrl: receiptUrl,
-      items: items.map((item) => {
-        const rawAmount = item.amount;
-        const parsedAmount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount;
-        return { name: item.name, amount: parsedAmount };
-      }),
+      receiptUrl,
+      items,
     };
 
     createExpenseWithReceiptMutate(refinedForm);
