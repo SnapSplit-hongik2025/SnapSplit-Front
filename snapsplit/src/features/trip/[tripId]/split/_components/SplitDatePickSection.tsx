@@ -12,9 +12,17 @@ import { convertSelectableDateToDay } from '@/shared/utils/DatetoDay/convertSele
 import { useMemo, useState } from 'react';
 import { postSettlement } from '../api/split-api';
 import { useRouter } from 'next/navigation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+// 뮤테이션 페이로드 타입
+interface SettlementPayload {
+  startDate: string;
+  endDate: string;
+}
 
 export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripStartDate }: SplitDatePickSectionProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
@@ -57,25 +65,36 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
     errorMessage = '선택된 기간에 등록된 지출 내역이 없어요!';
   }
 
-  // 정산하기 API 호출
-  const handleSettlement = async () => {
+  // 정산하기 API 뮤테이션
+  const { mutate: createSettlement, isPending: isCreatingSettlement } = useMutation({
+    mutationFn: (payload: SettlementPayload) => postSettlement(tripId, payload.startDate, payload.endDate),
+    onSuccess: (data) => {
+      const { settlementId } = data;
+      setIsConfirmModalOpen(false);
+      const startDayParam = encodeURIComponent(tripDay[startDayIndex!].day);
+      const endDayParam = encodeURIComponent(tripDay[endDayIndex!].day);
+      router.push(`/trip/${tripId}/split/${settlementId}?startDay=${startDayParam}&endDay=${endDayParam}`);
+      queryClient.invalidateQueries({ queryKey: ['splitData', tripId] });
+    },
+    onError: (e) => {
+      console.error(e);
+      alert('정산하기에 실패했습니다. 다시 시도해주세요.');
+      setIsConfirmModalOpen(false);
+    },
+  });
+
+  // 뮤테이션 호출 핸들러
+  const handleSettlement = () => {
     if (startDayIndex === null || endDayIndex === null || startDayIndex > endDayIndex) {
       alert('날짜 범위가 잘못 선택됐어요.');
       return;
     }
+    if (isCreatingSettlement) return; // 중복 실행 방지
 
-    try {
-      const startDate = tripDay[startDayIndex].date;
-      const endDate = tripDay[endDayIndex].date;
-      const { settlementId } = await postSettlement(tripId, startDate, endDate);
-      setIsConfirmModalOpen(false);
+    const startDate = tripDay[startDayIndex].date;
+    const endDate = tripDay[endDayIndex].date;
 
-      const startDayParam = encodeURIComponent(tripDay[startDayIndex].day); // 또는 index 사용: startDayIndex
-      const endDayParam = encodeURIComponent(tripDay[endDayIndex].day);
-      router.push(`/trip/${tripId}/split/${settlementId}?startDay=${startDayParam}&endDay=${endDayParam}`);
-    } catch (e) {
-      console.error(e);
-    }
+    createSettlement({ startDate, endDate });
   };
 
   return (
@@ -139,7 +158,7 @@ export default function SplitDatePickSection({ tripId, dailyExpenseStatus, tripS
 
       <Button
         label="정산하기"
-        enabled={hasExpenseInRange && isValidDateRange}
+        enabled={hasExpenseInRange && isValidDateRange && !isCreatingSettlement}
         onClick={() => setIsConfirmModalOpen(true)}
         className="mt-4"
       />
