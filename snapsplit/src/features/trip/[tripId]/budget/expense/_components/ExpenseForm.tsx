@@ -186,10 +186,28 @@ export default function ExpenseForm() {
   const handleSubmit = () => {
     if (!tripId) return;
 
-    // 공동 경비 예산 체크
-    if (budgetData?.sharedFund && form.expense.amount > budgetData.sharedFund.balance) {
-      alert(`지출 금액(${form.expense.amount.toLocaleString()}원)이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()}원)을 초과합니다.`);
-      return;
+    // 공동 경비 예산 체크 (환전 적용)
+    if (budgetData?.sharedFund && pageData?.exchangeRates) {
+      const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
+      const expenseCurrency = form.expense.currency;
+      
+      let expenseAmountInSharedFundCurrency = form.expense.amount;
+      
+      // 통화가 다를 경우 환전 적용
+      if (sharedFundCurrency !== expenseCurrency) {
+        const exchangeRate = pageData.exchangeRates[expenseCurrency];
+        if (exchangeRate) {
+          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
+        } else {
+          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
+          return;
+        }
+      }
+      
+      if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
+        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        return;
+      }
     }
 
     const refinedForm: CreateExpenseRequest = {
@@ -213,10 +231,28 @@ export default function ExpenseForm() {
   const handleSubmitWithReceipt = () => {
     if (!tripId || !receiptUrl || !items) return;
 
-    // 공동 경비 예산 체크
-    if (budgetData?.sharedFund && form.expense.amount > budgetData.sharedFund.balance) {
-      alert(`지출 금액(${form.expense.amount.toLocaleString()}원)이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()}원)을 초과합니다.`);
-      return;
+    // 공동 경비 예산 체크 (환전 적용)
+    if (budgetData?.sharedFund && pageData?.exchangeRates) {
+      const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
+      const expenseCurrency = form.expense.currency;
+      
+      let expenseAmountInSharedFundCurrency = form.expense.amount;
+      
+      // 통화가 다를 경우 환전 적용
+      if (sharedFundCurrency !== expenseCurrency) {
+        const exchangeRate = pageData.exchangeRates[expenseCurrency];
+        if (exchangeRate) {
+          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
+        } else {
+          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
+          return;
+        }
+      }
+      
+      if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
+        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        return;
+      }
     }
 
     const refinedForm = {
