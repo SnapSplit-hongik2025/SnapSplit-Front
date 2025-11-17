@@ -166,7 +166,7 @@ export default function CreateTripPage() {
 
   if (isCreatingTrip) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-light_grey">
+      <div className="h-screen w-full flex items-center justify-center">
         <Loading />
       </div>
     );
