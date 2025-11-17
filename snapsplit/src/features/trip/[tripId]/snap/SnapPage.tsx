@@ -33,6 +33,8 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
   const queryClient = useQueryClient();
 
+  const [uploading, setUploading] = useState(false);
+
   /** ======================================
    * 🔥 trip 기본 정보
    * ====================================== */
@@ -92,7 +94,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
    * 📸 업로드 → 자동 invalidate
    * ====================================== */
   const imageSubmit = async (file: File) => {
+    setUploading(true);
     await uploadImage(Number(tripId), file);
+    setUploading(false);
 
     // 최신 정렬 상태 기준으로 photos 쿼리 invalidate
     queryClient.invalidateQueries({
@@ -106,7 +110,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   /** ======================================
    * 로딩 처리
    * ====================================== */
-  if (tripLoading || readinessLoading) {
+  if (tripLoading || readinessLoading || uploading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loading />
