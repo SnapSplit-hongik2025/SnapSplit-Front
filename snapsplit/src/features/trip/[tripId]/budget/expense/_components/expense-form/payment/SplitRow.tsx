@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import AmountInput from './AmountInput';
 import type { MemberState } from '../../ExpenseForm';
 
@@ -19,13 +19,25 @@ type Props = {
 export default function SplitRow({ splitter, currency, membersState, handleCheck, updateAmount }: Props) {
   const isChecked = membersState[splitter.memberId]?.isSplitter;
   const splitAmount = membersState[splitter.memberId]?.splitAmount || null;
-  console.log('[SplitRow] splitAmount: ', typeof membersState[splitter.memberId].splitAmount);
-  console.log('[SplitRow] splitAmount: ', splitAmount, splitter.memberId);
+  
+  // 로컬 상태로 입력값을 문자열로 관리
+  const [inputValue, setInputValue] = useState(splitAmount?.toString() || '');
+
+  // 부모로부터 splitAmount가 변경되면 로컬 상태 업데이트
+  useEffect(() => {
+    // 입력 중이 아닐 때만(마지막 문자가 .이 아닐 때) 부모 값으로 업데이트
+    if (splitAmount?.toString() !== inputValue && !inputValue.endsWith('.')) {
+      setInputValue(splitAmount?.toString() || '');
+    }
+  }, [splitAmount, inputValue]);
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      const amount = Number(value) || null;
-      updateAmount(splitter.memberId, 'splitAmount', amount);
+      setInputValue(value);
+      // 숫자로 변환 가능한 경우에만 부모 컴포넌트에 전달
+      if (value === '' || !isNaN(Number(value))) {
+        updateAmount(splitter.memberId, 'splitAmount', value === '' ? null : Number(value));
+      }
     },
     [splitter.memberId, updateAmount]
   );
@@ -50,7 +62,7 @@ export default function SplitRow({ splitter, currency, membersState, handleCheck
             />
           </button>
         </div>
-        <AmountInput value={splitAmount?.toString() || ''} updateValue={handleAmountChange} currency={currency} />
+        <AmountInput value={inputValue} updateValue={handleAmountChange} currency={currency} />
       </div>
     </div>
   );
