@@ -6,9 +6,10 @@ import { useParams, useRouter } from 'next/navigation';
 
 type FolderTabViewProps = {
   folders?: Folder[];
+  selectedSort: 'date_desc' | 'date_asc';
 }
 
-export default function FolderTabView({ folders }: FolderTabViewProps) {
+export default function FolderTabView({ folders, selectedSort }: FolderTabViewProps) {
   const router = useRouter();
   const params = useParams();
 
@@ -18,20 +19,18 @@ export default function FolderTabView({ folders }: FolderTabViewProps) {
     <div className="px-5 pt-6 pb-24">
       <div className="grid grid-cols-2 gap-x-2 gap-y-5">
         {folders?.map((folder) => {
-          const profileImageUrl = folder.profileImageUrl || '';
           return (
             <div 
               key={folder.id} 
               onClick={() => {
                 const params = new URLSearchParams({
                   name: folder.name,
-                  ...(profileImageUrl && { profileImageUrl })
                 });
                 router.push(`/trip/${tripId}/snap/${folder.id}?${params.toString()}`);
               }}
             >
               {/* 썸네일 - 폴더 내 사진 4개를 그리드로 표시 */}
-              <FolderThumbnailPreview memberId={folder.id.toString()} />
+              <FolderThumbnailPreview memberId={folder.id.toString()} sortKey={selectedSort}/>
               {/* 폴더 이름 */}
               <div className="flex justify-center items-center pt-2 h-8 text-body-1">{folder.name}의 사진</div>
             </div>

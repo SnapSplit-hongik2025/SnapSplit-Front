@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import TabSelector from '@/features/trip/[tripId]/snap/_components/TabSelector';
 import UploadButton from '@/features/trip/[tripId]/snap/_components/UploadButton';
 import TripHeader from '../../../../shared/components/TripHeader';
@@ -10,11 +12,10 @@ import FolderTabView from '@/features/trip/[tripId]/snap/_components/tabView/Fol
 import { ActiveTab } from '@/features/trip/[tripId]/snap/type';
 import FloatingModal from '@/shared/components/modal/FloatingModal';
 import { uploadImage, getPhotos, getReadiness } from '@/features/trip/[tripId]/snap/api/snap-api';
-import { GetPhotosDto, Folder } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
+import { Folder } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 import { getTripBudgetData } from '../budget/api/budget-api';
-import { useSnapStore } from './store/snapStore';
 import Loading from '@/shared/components/loading/Loading';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { FaceEnrollmentSection } from './_components/face-test/FaceEnrollmentSection';
 
 type SnapPageProps = {
@@ -28,146 +29,84 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollToTop, setScrollToTop] = useState<(() => void) | null>(null);
 
-  const [selectedSort, setSelectedSort] = useState('최신순');
+  const [selectedSort, setSelectedSort] = useState<'date_desc' | 'date_asc'>('date_desc');
 
-  // 헤더에 필요한 trip info
-  const { data: tripData, isError: tripError } = useQuery({
+  const queryClient = useQueryClient();
+
+  /** ======================================
+   * 🔥 trip 기본 정보
+   * ====================================== */
+  const { data: tripData, isLoading: tripLoading } = useQuery({
     queryKey: ['tripBudget', tripId],
     queryFn: () => getTripBudgetData(Number(tripId)),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 60 * 5,
   });
 
-  const [folders] = useState<Folder[]>([]);
-
-  // photos
-  const { setAllPhotos } = useSnapStore();
-  const [photos, setPhotos] = useState<GetPhotosDto['photos']>([]);
-  const [photosError, setPhotosError] = useState<Error | null>(null);
-
-  // pagination
-  const [page, setPage] = useState(0);
-  const [hasNext, setHasNext] = useState(true);
-  const [loading, setLoading] = useState(false);
-
-  // 중복 요청 방지 flag
-  const isFetchingRef = useRef(false);
-
+  /** ======================================
+   * 🔥 readiness (얼굴 등록 여부)
+   * ====================================== */
   const {
     data: readiness,
     isLoading: readinessLoading,
-    isError: isReadinessError,
-    error: readinessError,
+    isError: readinessError,
   } = useQuery({
     queryKey: ['readiness', tripId],
     queryFn: () => getReadiness(Number(tripId)),
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 60 * 5,
   });
 
   /** ======================================
-   * 🔥 사진 목록 불러오기 (안전한 비동기 실행)
+   * 🔥 Folder 목록 (readiness 기반)
    * ====================================== */
-  const fetchPhotos = useCallback(
-    async (pageToLoad: number) => {
-      if (!readiness) return;
-      else if (!readiness.allMembersRegistered)
-        return; // 얼굴 등록이 완료되지 않은 경우
-      else if (isFetchingRef.current) return; // 중복 요청 방지
-      isFetchingRef.current = true;
-      setLoading(true);
-
-      try {
-        const sort = selectedSort === '최신순' ? 'date_desc' : 'date_asc';
-        const res = await getPhotos(Number(tripId), pageToLoad, sort);
-
-        setPhotos((prev) => {
-          const newPhotos = pageToLoad === 0 ? res.photos : [...prev, ...res.photos];
-          return newPhotos;
-        });
-
-        setPage(pageToLoad);
-        setHasNext(!res.last);
-      } catch (err) {
-        setPhotosError(err as Error);
-      } finally {
-        isFetchingRef.current = false;
-        setLoading(false);
-      }
-    },
-    [tripId, selectedSort, readiness]
-  );
+  const folders: Folder[] =
+    readiness?.members.map((m) => ({
+      name: m.name,
+      id: m.userId,
+    })) ?? [];
 
   /** ======================================
-   * 🔄 정렬 변경 시 → 전체 리셋 + 첫 페이지 로딩
+   * 🔥 photos: Infinite Query 기반
    * ====================================== */
-  useEffect(() => {
-    let mounted = true;
+  const sortKey = selectedSort;
 
-    const reload = async () => {
-      await Promise.resolve();
+  const {
+    data: photoData,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch: refetchPhotos,
+    status: photoStatus,
+  } = useInfiniteQuery({
+    queryKey: ['photos', tripId, sortKey],
+    queryFn: ({ pageParam = 0 }) =>
+      getPhotos(Number(tripId), pageParam, sortKey),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.last ? undefined : allPages.length,
+    staleTime: 1000 * 30,
+    enabled: !!readiness?.allMembersRegistered, // 얼굴 등록되면 사진 불러오기
+  });
 
-      if (!mounted) return;
-
-      setPhotos([]);
-      setPage(0);
-      await fetchPhotos(0);
-    };
-
-    // 'data'가 로드된 이후에만 사진 로딩 실행
-    if (tripData) reload();
-
-    return () => {
-      mounted = false;
-    };
-  }, [selectedSort, tripData, fetchPhotos]);
+  const photos = photoData?.pages.flatMap((p) => p?.photos ?? []) ?? [];
 
   /** ======================================
-   * ✨ (새로 추가) 로컬 state -> 전역 store 동기화
+   * 📸 업로드 → 자동 invalidate
    * ====================================== */
-  useEffect(() => {
-    // 'photos' state가 변경될 때마다 Zustand 스토어를 업데이트
-    setAllPhotos(photos);
-  }, [photos, setAllPhotos]);
-
-  /** ===========================
-   * 📥 추가 페이지 요청
-   * =========================== */
-  const handleLoadMore = () => {
-    if (!loading && hasNext && !isFetchingRef.current) {
-      fetchPhotos(page + 1);
-    }
-  };
-
-  /** ===========================
-   * 📸 이미지 업로드 → 전체 리프레시
-   * =========================== */
   const imageSubmit = async (file: File) => {
-    try {
-      await uploadImage(Number(tripId), file);
-      setPhotos([]);
-      setPage(0);
-      await fetchPhotos(0);
-    } catch (e) {
-      console.error(e);
-    }
+    await uploadImage(Number(tripId), file);
+
+    // 최신 정렬 상태 기준으로 photos 쿼리 invalidate
+    queryClient.invalidateQueries({
+      queryKey: ['photos', tripId, sortKey],
+    });
+
+    // 상단으로 스크롤
+    scrollToTop?.();
   };
 
-  if (tripError || photosError) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center">
-        <Loading />
-      </div>
-    );
-  }
-
-  if (isReadinessError) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center">
-        <p className="text-center">데이터 로드 중 오류가 발생했습니다. {readinessError?.message ?? ''}</p>
-      </div>
-    );
-  }
-
-  if (readinessLoading) {
+  /** ======================================
+   * 로딩 처리
+   * ====================================== */
+  if (tripLoading || readinessLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loading />
@@ -178,15 +117,27 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   if (!tripData || !readiness) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
-        <Loading />
+        <p className="text-center">데이터 로드 실패</p>
       </div>
     );
   }
 
+  if (readinessError) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <p className="text-center">얼굴 등록 정보를 불러오지 못했습니다.</p>
+      </div>
+    );
+  }
+
+  /** ======================================
+   * 렌더링
+   * ====================================== */
   return (
     <div className="flex flex-col h-screen bg-light_grey">
       <div className="bg-white">
         <TripHeader tripId={tripId} />
+
         {isScrolled ? (
           <div className="px-5">
             <span className="text-label-1">{tripData.tripName}</span>
@@ -211,14 +162,14 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           setIsScrolled={setIsScrolled}
           setScrollToTop={setScrollToTop}
           photos={photos}
-          onLoadMore={handleLoadMore}
-          isLoading={loading}
+          onLoadMore={fetchNextPage}
+          isLoading={isFetchingNextPage}
           selectedSort={selectedSort}
           setSelectedSort={setSelectedSort}
-          onRefresh={() => fetchPhotos(0)}
+          onRefresh={() => refetchPhotos()}
         />
       ) : (
-        <FolderTabView folders={folders} />
+        <FolderTabView folders={folders} selectedSort={selectedSort}/>
       )}
 
       <FloatingModal>
