@@ -1,4 +1,4 @@
-import { parseISO, format } from 'date-fns';
+import { parseISO, format, differenceInCalendarDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { DetailExpensesProps } from '../types/settlement-member-type';
 import { expenseItemDto } from '../types/settlement-member-dto-type';
@@ -27,22 +27,35 @@ const ExpenseItem = ({ expense }: ExpenseItemProps) => {
   );
 };
 
-export default function DetailExpenses({ settlementDetailsByMember }: DetailExpensesProps) {
+export default function DetailExpenses({ settlementDetailsByMember, tripStartDate }: DetailExpensesProps) {
+  const startDt = parseISO(tripStartDate);
+
   return (
     <div className="space-y-[16px] px-5 w-full">
-      {settlementDetailsByMember.map((dayDetail, dayIdx) => {
+      {settlementDetailsByMember.map((dayDetail) => {
         const dt = parseISO(dayDetail.date);
         const monthDay = format(dt, 'M.d', { locale: ko });
         const weekday = format(dt, 'EE', { locale: ko });
 
+        // 날짜 차이 계산
+        const diffDays = differenceInCalendarDays(dt, startDt);
+        const isPrep = diffDays < 0;
+        const dayIndex = diffDays + 1;
+
         return (
           <div key={dayDetail.date} className="pt-5">
             <div className="flex gap-2 text-body-1 pb-4">
-              <h3>Day {dayIdx + 1}</h3>
-              <div className="w-[1px] h-[15px] bg-grey-350" />
-              <span className="text-grey-550">
-                {monthDay}/{weekday}
-              </span>
+              {isPrep ? (
+                <h3 className="text-body-1 text-grey-850">여행 준비</h3>
+              ) : (
+                <>
+                  <h3>Day {dayIndex}</h3>
+                  <div className="w-[1px] h-[15px] bg-grey-350" />
+                  <span className="text-grey-550">
+                    {monthDay}/{weekday}
+                  </span>
+                </>
+              )}
             </div>
 
             <div className="space-y-8">
