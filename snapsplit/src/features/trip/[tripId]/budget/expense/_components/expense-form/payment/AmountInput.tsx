@@ -13,9 +13,13 @@ const AmountInput = ({ value, updateValue, currency }: Props) => {
     const inputValue = e.target.value;
     console.log('[AmountInput] inputValue:', inputValue, typeof inputValue);
 
-    // 정규식을 사용하여 입력값이 숫자로만 구성되었는지 확인합니다.
-    // (빈 문자열도 허용하기 위해 `*` 사용)
-    const numericRegex = /^[0-9]*$/;
+    // 입력 중에는 소수점으로 끝나는 숫자도 허용 (예: '123.')
+    // 1. 빈 문자열 허용
+    // 2. 0으로 시작하는 경우 소수점이나 숫자 허용 (예: 0, 0.5, 0.123)
+    // 3. 0이 아닌 숫자로 시작하는 경우, 숫자와 소수점 허용 (예: 123, 123.45, 123.)
+    // 4. 소수점만 입력된 경우 (예: '.')
+    const numericRegex = /^\d*\.?\d*$/;
+    console.log('[AmountInput] numericRegex:', numericRegex.test(inputValue));
 
     if (numericRegex.test(inputValue)) {
       // 유효한 숫자 문자열(또는 빈 문자열)일 경우에만 상태를 업데이트합니다.

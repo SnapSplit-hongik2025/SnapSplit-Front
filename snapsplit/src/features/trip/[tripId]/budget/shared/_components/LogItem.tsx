@@ -21,7 +21,7 @@ const LogItem = ({
   amount, 
   currency, 
   krwEquivalent,
-  defaultCurrency = 'KRW',
+  defaultCurrency,
   exchangeRates
 }: LogItemProps) => {
   // 기본 통화가 없거나 현재 통화와 같은 경우 변환 없이 표시

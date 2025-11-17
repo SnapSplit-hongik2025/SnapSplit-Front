@@ -17,9 +17,9 @@ function SnapFolderHeader({ onClose, setIsSelectionMode, isSelectionMode, setSel
         height={24}
         onClick={onClose}
       />
-      <div onClick={() => {setIsSelectionMode?.(!isSelectionMode); setSelectedImageIds?.([])}} className="text-body-3 text-grey-1000">
+      <button onClick={() => {setIsSelectionMode?.(!isSelectionMode); setSelectedImageIds?.([])}} className="text-body-3 text-grey-1000 cursor-pointer">
         {isSelectionMode ? '취소' : '사진 선택'}
-      </div>
+      </button>
     </div>
   );
 }

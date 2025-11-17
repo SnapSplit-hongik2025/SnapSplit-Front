@@ -86,6 +86,14 @@ export default function PhotoGrid({
     }
   };
 
+  if (images.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center text-label-1 text-grey-450 pb-10">사진을 업로드하고 필터를 통해 <br /> 원하는 사진만 모아봐요!</div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-3 gap-2 pb-15">
       {images.map((image) => {

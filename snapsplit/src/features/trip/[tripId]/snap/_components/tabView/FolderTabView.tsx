@@ -15,6 +15,14 @@ export default function FolderTabView({ folders, selectedSort }: FolderTabViewPr
 
   const tripId = params.tripId;
 
+  if (folders?.length === 0 || !folders) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center text-label-1 text-grey-450 pb-10">사진을 업로드하면 <br /> 인물별 사진을 폴더로 모아줘요!</div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-5 pt-6 pb-24">
       <div className="grid grid-cols-2 gap-x-2 gap-y-5">

@@ -33,11 +33,11 @@ const SharedBudgetDetailPage = () => {
       // 낙관적 업데이트를 위해 현재 쿼리 데이터 저장
       await queryClient.cancelQueries({ queryKey: ['sharedBudget', tripId] });
       const previousData = queryClient.getQueryData(['sharedBudget', tripId]);
-      
+
       // 새 데이터로 낙관적 업데이트
       queryClient.setQueryData(['sharedBudget', tripId], (old: GetSharedBudgetDto) => ({
         ...old,
-        defaultCurrency: newCurrency
+        defaultCurrency: newCurrency,
       }));
 
       return { previousData };
@@ -47,15 +47,19 @@ const SharedBudgetDetailPage = () => {
       queryClient.setQueryData(['sharedBudget', tripId], context?.previousData);
       alert('통화 변경에 실패했습니다.');
     },
-    onSettled: () => {
+    onSettled: async () => {
       // 성공이든 실패든 항상 최신 데이터로 다시 가져오기
-      queryClient.invalidateQueries({ queryKey: ['sharedBudget', tripId] });
-    }
+      await queryClient.refetchQueries({ queryKey: ['sharedBudget', tripId] });
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['tripBudget', String(tripId)] });
+    },
   });
 
-  const beforeTripData = sharedBudgetData?.sharedBudgetDetails?.filter(
-    (item) => new Date(item.date) < new Date(sharedBudgetData.tripStartDate)
-  ) || [];
+  const beforeTripData =
+    sharedBudgetData?.sharedBudgetDetails?.filter(
+      (item) => new Date(item.date) < new Date(sharedBudgetData.tripStartDate)
+    ) || [];
 
   const handleCurrencyChange = async (currency: string) => {
     try {
@@ -78,7 +82,11 @@ const SharedBudgetDetailPage = () => {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex items-center justify-between w-full px-5 py-3">
-        <button onClick={() => router.back()}>
+        <button
+          onClick={() => {
+            router.back();
+          }}
+        >
           <Image src="/svg/arrow-left-grey-1000.svg" alt="뒤로" width={24} height={24} />
         </button>
         <div className="text-label-1">공동경비 세부내역</div>
