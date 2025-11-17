@@ -157,6 +157,7 @@ export default function ExpenseForm() {
       clearReceiptData();
 
       await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      await queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -174,6 +175,7 @@ export default function ExpenseForm() {
     onSuccess: async () => {
       clearReceiptData();
       await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      await queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },

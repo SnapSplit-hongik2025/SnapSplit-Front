@@ -148,9 +148,8 @@ export default function ExpenseEditForm() {
     mutationFn: (payload: CreateExpenseRequest) => editExpense(Number(tripId), Number(expenseId), payload),
 
     onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ['tripBudget', tripId],
-      });
+      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -165,6 +164,7 @@ export default function ExpenseEditForm() {
 
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
