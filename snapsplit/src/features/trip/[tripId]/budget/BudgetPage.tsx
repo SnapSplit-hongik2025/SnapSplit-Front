@@ -22,7 +22,8 @@ const BudgetPage = ({ tripId }: BudgetPageProps) => {
   } = useQuery<GetTripBudgetDto, Error>({
     queryKey: ['tripBudget', tripId],
     queryFn: () => getTripBudgetData(Number(tripId)),
-    staleTime: 1000 * 60 * 2, //
+    staleTime: 1000 * 60 * 2,
+    refetchOnMount: true,
   });
 
   if (isLoading) {

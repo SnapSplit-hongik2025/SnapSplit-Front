@@ -96,6 +96,8 @@ const SharedForm = () => {
     const currentCurrency = budgetData.sharedFund.defaultCurrency; // 기준 통화
     const isSameCurrency = currency === currentCurrency;
 
+    console.log('isSameCurrency', isSameCurrency);
+
     const addedAmount = Number(amount) || 0;
 
     // currency가 다르면 환율로 변환
