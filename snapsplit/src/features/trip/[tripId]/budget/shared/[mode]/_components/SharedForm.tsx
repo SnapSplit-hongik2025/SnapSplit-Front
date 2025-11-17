@@ -90,7 +90,7 @@ const SharedForm = () => {
   const predictedTotal = useMemo(() => {
     if (!budgetData || !amount || !currency || !exchangeRate) return null;
 
-    const currentTotal = budgetData.totalExpense; // 현재 total
+    const currentTotal = budgetData.sharedFund.balance; // 현재 total
     const currentCurrency = budgetData.sharedFund.defaultCurrency; // 기준 통화
     const isSameCurrency = currency === currentCurrency;
 
