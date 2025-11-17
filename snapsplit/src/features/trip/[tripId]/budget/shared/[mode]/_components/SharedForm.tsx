@@ -183,7 +183,7 @@ const SharedForm = () => {
 
   // TODO: BottomNavBar fixed 제거 시 pb-15 제거
   return (
-    <div className="w-full h-full pb-15 flex flex-col items-center bg-white">
+    <div className="w-full h-full flex flex-col items-center bg-white">
       <div className="flex w-full h-12 items-center justify-between px-5 py-3">
         <button onClick={() => router.back()}>
           <Image alt="back" src="/svg/arrow-left-grey-850.svg" width={24} height={24} />
