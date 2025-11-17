@@ -24,6 +24,7 @@ export default function FolderThumbnailPreview({
     isLoading,
     hasNextPage,
     fetchNextPage,
+    isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['photos', tripId, sortKey],
     queryFn: async ({ pageParam = 0 }) => {
@@ -51,11 +52,11 @@ export default function FolderThumbnailPreview({
 
   // 모든 페이지를 가져왔는지 확인하고, 아직 더 있으면 다음 페이지 가져오기
   useEffect(() => {
-    if (!isLoading && hasNextPage && memberPhotos.length < 4) {
+    if (!isLoading && hasNextPage && memberPhotos.length < 4 && !isFetchingNextPage) {
       console.log('⬇️ [FolderThumbnailPreview] 추가 사진이 필요하여 다음 페이지 로드');
       fetchNextPage();
     }
-  }, [isLoading, hasNextPage, memberPhotos.length, fetchNextPage]);
+  }, [isLoading, hasNextPage, memberPhotos.length, fetchNextPage, isFetchingNextPage]);
 
   // 로딩 상태 처리
   if (isLoading || !photoData) {
