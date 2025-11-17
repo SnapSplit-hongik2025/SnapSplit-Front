@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";

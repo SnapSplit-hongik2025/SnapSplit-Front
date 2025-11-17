@@ -19,7 +19,7 @@ export default function ReceiptDetailSection({ items }: Props) {
       {isOpen && (
         <div className="flex flex-col items-center gap-3 w-full">
           {items.map((item, index) => {
-            if (item.name === '' || item.amount === '') return null;
+            if (item.name === '' || item.amount === 0) return null;
             return (
               <div key={index} className="flex items-center w-full gap-3">
                 <div className="w-3/5 px-4 flex items-center justify-start h-12 rounded-xl border-[1px] border-grey-250">
