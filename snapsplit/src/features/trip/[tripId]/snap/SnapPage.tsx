@@ -155,7 +155,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
 
       <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {readiness.allMembersRegistered ? (
+      {!readiness.allMembersRegistered ? (
         <FaceEnrollmentSection members={readiness.members} />
       ) : activeTab === '전체' ? (
         <BaseTabView
