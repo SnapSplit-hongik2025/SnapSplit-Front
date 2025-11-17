@@ -14,4 +14,5 @@ export interface TotalAmountInfoProps {
 
 export interface DetailExpensesProps {
   settlementDetailsByMember: settlementDetailsByMemberDto[];
+  tripStartDate: string;
 }
