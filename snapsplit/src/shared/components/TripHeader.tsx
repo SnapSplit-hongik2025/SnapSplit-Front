@@ -100,17 +100,16 @@ const TripHeader = ({ tripId }: TripHeaderProps) => {
     queryFn: ({ signal }) => getTripCodeData(tripId, signal), // 3. signal 전달
     // 4. 모달이 열렸을 때만 쿼리를 실행하도록 설정
     enabled: isAddMemberModalOpen && !!tripId,
-    // 5. 캐싱 관련 옵션 추가 (성능 최적화)
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 30 * 60 * 1000, // 30분
   });
 
   // 여행 삭제
   const { mutate: deleteTripMutation, isPending: isDeleting } = useMutation({
-    mutationFn: () => deleteTrip(tripId), // 삭제를 실행할 함수
+    mutationFn: () => deleteTrip(tripId),
     onSuccess: () => {
-      alert('여행이 삭제되었습니다.');
-      queryClient.invalidateQueries({ queryKey: ['trips'] });
+      queryClient.invalidateQueries({ queryKey: ['homeData'] });
+      queryClient.invalidateQueries({ queryKey: ['pastTrips'] });
       router.push('/home');
     },
     onError: (error) => {
