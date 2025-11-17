@@ -148,9 +148,8 @@ export default function ExpenseEditForm() {
     mutationFn: (payload: CreateExpenseRequest) => editExpense(Number(tripId), Number(expenseId), payload),
 
     onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: ['tripBudget', tripId],
-      });
+      queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -165,6 +164,7 @@ export default function ExpenseEditForm() {
 
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -197,12 +197,61 @@ export default function ExpenseEditForm() {
    * ─────────────────────────── */
   const handleSubmit = () => {
     if (!form) return;
+
+    // 공동 경비 예산 체크 (환전 적용)
+    if (tripBudgetData?.sharedFund && pageData?.exchangeRates) {
+      const sharedFundCurrency = tripBudgetData.sharedFund.defaultCurrency;
+      const expenseCurrency = form.expense.currency;
+      
+      let expenseAmountInSharedFundCurrency = form.expense.amount;
+      
+      // 통화가 다를 경우 환전 적용
+      if (sharedFundCurrency !== expenseCurrency) {
+        const exchangeRate = pageData.exchangeRates[expenseCurrency];
+        if (exchangeRate) {
+          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
+        } else {
+          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
+          return;
+        }
+      }
+      
+      if (expenseAmountInSharedFundCurrency > tripBudgetData.sharedFund.balance) {
+        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${tripBudgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        return;
+      }
+    }
+
     const payload = buildPayload();
     editExpenseMutate(payload);
   };
 
   const handleSubmitWithReceipt = () => {
     if (!form || !receiptUrl || !items) return;
+
+    // 공동 경비 예산 체크 (환전 적용)
+    if (tripBudgetData?.sharedFund && pageData?.exchangeRates) {
+      const sharedFundCurrency = tripBudgetData.sharedFund.defaultCurrency;
+      const expenseCurrency = form.expense.currency;
+      
+      let expenseAmountInSharedFundCurrency = form.expense.amount;
+      
+      // 통화가 다를 경우 환전 적용
+      if (sharedFundCurrency !== expenseCurrency) {
+        const exchangeRate = pageData.exchangeRates[expenseCurrency];
+        if (exchangeRate) {
+          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
+        } else {
+          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
+          return;
+        }
+      }
+      
+      if (expenseAmountInSharedFundCurrency > tripBudgetData.sharedFund.balance) {
+        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${tripBudgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        return;
+      }
+    }
 
     const payload = {
       ...buildPayload(),
@@ -241,7 +290,7 @@ export default function ExpenseEditForm() {
         setCurrency={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, currency: v } }))}
         exchangeRates={pageData.exchangeRates}
         setExchangeRate={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, exchangeRate: v } }))}
-        availCurrencies={['KRW', 'USD']}
+        availCurrencies={pageData.availCurrencies}
         mode="expense"
       />
 

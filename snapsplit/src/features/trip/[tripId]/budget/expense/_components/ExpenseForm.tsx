@@ -15,6 +15,7 @@ import Button from '@/shared/components/Button';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { createExpense, createExpenseWithReceipt, getExpensePageData } from '../api/expense-api';
+import { getTripBudgetData } from '../../api/budget-api';
 import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import ReceiptDetailSection from './expense-form/ReceiptDetailSection';
 import type {
@@ -22,8 +23,9 @@ import type {
   CreateExpenseRequestWithReceipt,
   ExpensePageDataResponse,
 } from '../api/expense-dto-type';
+import { GetTripBudgetDto } from '../../types/budget-dto-type';
 import Loading from '@/shared/components/loading/Loading';
-import { useMutation, useQueryClient } from '@tanstack/react-query'; // ✅ useMutation 임포트
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 
 export type MemberState = {
   isPayer: boolean;
@@ -38,9 +40,6 @@ export default function ExpenseForm() {
   const tripId = params.tripId as string;
   const searchParams = useSearchParams();
   const date = searchParams.get('date') as string;
-  const tripStartDate = searchParams.get('tripStartDate') as string;
-  const tripEndDate = searchParams.get('tripEndDate') as string;
-  const allDatesAvailable = tripStartDate && tripEndDate && date;
 
   const queryClient = useQueryClient();
 
@@ -49,7 +48,11 @@ export default function ExpenseForm() {
   const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
-  console.log(pageData);
+
+  const { data: budgetData } = useQuery<GetTripBudgetDto>({
+    queryKey: ['tripBudget', tripId],
+    queryFn: () => getTripBudgetData(Number(tripId)),
+  });
 
   const [form, setForm] = useState<CreateExpenseRequest>({
     expense: {
@@ -150,9 +153,8 @@ export default function ExpenseForm() {
     onSuccess: async () => {
       clearReceiptData();
 
-      await queryClient.invalidateQueries({
-        queryKey: ['tripBudget', tripId], refetchType: 'active'
-      });
+      await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      await queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -169,9 +171,8 @@ export default function ExpenseForm() {
 
     onSuccess: async () => {
       clearReceiptData();
-      await queryClient.refetchQueries({
-        queryKey: ['tripBudget', tripId],
-      });
+      await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
+      await queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
 
       router.push(`/trip/${tripId}/budget`);
     },
@@ -183,6 +184,30 @@ export default function ExpenseForm() {
 
   const handleSubmit = () => {
     if (!tripId) return;
+
+    // 공동 경비 예산 체크 (환전 적용)
+    if (budgetData?.sharedFund && pageData?.exchangeRates) {
+      const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
+      const expenseCurrency = form.expense.currency;
+      
+      let expenseAmountInSharedFundCurrency = form.expense.amount;
+      
+      // 통화가 다를 경우 환전 적용
+      if (sharedFundCurrency !== expenseCurrency) {
+        const exchangeRate = pageData.exchangeRates[expenseCurrency];
+        if (exchangeRate) {
+          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
+        } else {
+          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
+          return;
+        }
+      }
+      
+      if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
+        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        return;
+      }
+    }
 
     const refinedForm: CreateExpenseRequest = {
       ...form,
@@ -205,6 +230,30 @@ export default function ExpenseForm() {
   const handleSubmitWithReceipt = () => {
     if (!tripId || !receiptUrl || !items) return;
 
+    // 공동 경비 예산 체크 (환전 적용)
+    if (budgetData?.sharedFund && pageData?.exchangeRates) {
+      const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
+      const expenseCurrency = form.expense.currency;
+      
+      let expenseAmountInSharedFundCurrency = form.expense.amount;
+      
+      // 통화가 다를 경우 환전 적용
+      if (sharedFundCurrency !== expenseCurrency) {
+        const exchangeRate = pageData.exchangeRates[expenseCurrency];
+        if (exchangeRate) {
+          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
+        } else {
+          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
+          return;
+        }
+      }
+      
+      if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
+        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        return;
+      }
+    }
+
     const refinedForm = {
       // (타입은 실제 DTO에 맞게 설정 권장)
       ...form,
@@ -219,30 +268,14 @@ export default function ExpenseForm() {
         category: form.expense.category.toLowerCase(),
         paymentMethod: form.expense.paymentMethod.toUpperCase(),
       },
-      receiptUrl: receiptUrl,
-      items: items.map((item) => {
-        const rawAmount = item.amount;
-        const parsedAmount = typeof rawAmount === 'string' ? Number(rawAmount) : rawAmount;
-        return { name: item.name, amount: parsedAmount };
-      }),
+      receiptUrl,
+      items,
     };
 
     createExpenseWithReceiptMutate(refinedForm);
   };
 
-  if (!allDatesAvailable) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center">
-        <p className="text-center">
-          잘못된 접근입니다.
-          <br />
-          날짜 정보가 URL에 포함되어 있어야 합니다.
-        </p>
-      </div>
-    );
-  }
-
-  if (!pageData) {
+  if (!pageData || !budgetData) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loading />
@@ -269,12 +302,12 @@ export default function ExpenseForm() {
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         {/* 기본 폼 */}
 
-        {allDatesAvailable && (
+        {budgetData.startDate && budgetData.endDate && date && (
           <TripDateSection
             date={form.expense.date}
             setDate={(date) => handleExpenseChange('date', date)}
-            startDate={tripStartDate}
-            endDate={tripEndDate}
+            startDate={budgetData.startDate}
+            endDate={budgetData.endDate}
           />
         )}
 
