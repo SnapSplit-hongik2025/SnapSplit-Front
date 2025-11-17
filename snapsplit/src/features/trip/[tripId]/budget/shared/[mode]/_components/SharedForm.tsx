@@ -90,6 +90,8 @@ const SharedForm = () => {
   const predictedTotal = useMemo(() => {
     if (!budgetData || !amount || !currency || !exchangeRate) return null;
 
+    let res = 0;
+
     const currentTotal = budgetData.sharedFund.balance; // 현재 total
     const currentCurrency = budgetData.sharedFund.defaultCurrency; // 기준 통화
     const isSameCurrency = currency === currentCurrency;
@@ -102,10 +104,12 @@ const SharedForm = () => {
       : addedAmount * (exchangeRate[currency] / exchangeRate[currentCurrency]);
 
     if (mode === 'add') {
-      return currentTotal + adjustedAmount;
+      res = currentTotal + adjustedAmount;
     } else {
-      return currentTotal - adjustedAmount;
+      res = currentTotal - adjustedAmount;
     }
+
+    return Number(res.toFixed(2));
   }, [amount, currency, exchangeRate, budgetData, mode]);
 
   // 경비 추가/빼기 뮤테이션
