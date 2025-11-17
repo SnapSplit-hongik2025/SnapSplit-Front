@@ -1,41 +1,70 @@
 import Image from "next/image";
-import { useQueryClient, InfiniteData } from "@tanstack/react-query";
-import { PhotoResponse } from "../../types/snap-dto-types";
-import { useSearchParams } from "next/navigation";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { getPhotos } from "../../api/snap-api";
+import { useEffect } from "react";
 
 interface FolderThumbnailPreviewProps {
   memberId: string;
   sortKey: string; // SnapPage에서 사용하는 `sortKey` 그대로 전달
 }
 
-interface PhotosPage {
-  photos: PhotoResponse[];
-  last: boolean;
-}
-
 export default function FolderThumbnailPreview({
   memberId,
   sortKey,
 }: FolderThumbnailPreviewProps) {
-  const params = useSearchParams();
-  const tripId = params.get("tripId");
-  const queryClient = useQueryClient();
+  const params = useParams();
+  const tripId = params.tripId as string;
 
-  // react-query Infinite Query 캐시 읽기
-  const photoData = queryClient.getQueryData<
-    InfiniteData<PhotosPage>
-  >(["photos", tripId, sortKey]);
+  // useInfiniteQuery로 모든 페이지의 사진 가져오기
+  const {
+    data: photoData,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['photos', tripId, sortKey],
+    queryFn: async ({ pageParam = 0 }) => {
+      console.log('🌐 [FolderThumbnailPreview] 페이지 요청 - page:', pageParam);
+      const response = await getPhotos(Number(tripId), pageParam, sortKey);
+      return response;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.last) return undefined;
+      return allPages.length;
+    },
+    initialPageParam: 0,
+    enabled: !!tripId && !!sortKey,
+  });
 
-  // 전체 photos (pages -> flatten)
-  const photos =
-    photoData?.pages.flatMap((page) => page.photos) ?? [];
+  // 모든 페이지의 사진을 하나의 배열로 병합
+  const allPhotos = photoData?.pages.flatMap(page => page.photos) ?? [];
 
   // 해당 멤버의 사진만 필터링
-  const memberPhotos = photos
-    .filter((photo) =>
-      photo.taggedUsers?.some((u) => String(u.userId) === memberId)
+  const memberPhotos = allPhotos
+    .filter(photo => 
+      photo.taggedUsers?.some(u => String(u.userId) === memberId)
     )
-    .slice(0, 4);
+    .slice(0, 4); // 최대 4개만 표시
+
+  // 모든 페이지를 가져왔는지 확인하고, 아직 더 있으면 다음 페이지 가져오기
+  useEffect(() => {
+    if (!isLoading && hasNextPage && memberPhotos.length < 4) {
+      console.log('⬇️ [FolderThumbnailPreview] 추가 사진이 필요하여 다음 페이지 로드');
+      fetchNextPage();
+    }
+  }, [isLoading, hasNextPage, memberPhotos.length, fetchNextPage]);
+
+  // 로딩 상태 처리
+  if (isLoading || !photoData) {
+    return (
+      <div className="grid grid-cols-2 gap-2 bg-white rounded-lg p-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-gray-100 rounded-md aspect-square animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   const emptySlots = Math.max(0, 4 - memberPhotos.length);
 
@@ -54,7 +83,6 @@ export default function FolderThumbnailPreview({
           />
         </div>
       ))}
-
       {Array.from({ length: emptySlots }).map((_, idx) => (
         <div
           key={`empty-${memberId}-${idx}`}
