@@ -69,7 +69,6 @@ export default function CreateTripPage() {
       // 성공 시, 관련 쿼리 무효화 (리패치)
       queryClient.invalidateQueries({ queryKey: ['homeData'] });
       queryClient.invalidateQueries({ queryKey: ['pastTrips'] });
-      queryClient.invalidateQueries({ queryKey: ['trips'] });
 
       // 생성된 여행 홈으로 이동
       const TripId = res[0].tripId;
