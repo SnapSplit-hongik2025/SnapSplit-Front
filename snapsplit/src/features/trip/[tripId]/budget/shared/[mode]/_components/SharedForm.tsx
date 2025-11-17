@@ -246,7 +246,7 @@ const SharedForm = () => {
       </div>
 
       {/* Toast */}
-      {isFormDataReady && <StatusMessage result={predictedTotal} currency={currency} />}
+      {isFormDataReady && <StatusMessage result={predictedTotal} currency={currency} mode={mode} />}
     </div>
   );
 };
