@@ -4,13 +4,12 @@ import devider from '@public/svg/devider.svg';
 import Image from 'next/image';
 import { TripInfoProps } from '../types/budget-type';
 import UserIconList from './UserIconList/UserIconList';
-import user_mock from '@public/mocks/trip-budget-mock.json';
 import { useISOtoFormattedDate } from '@/shared/utils/useISOtoFormattedDate';
 
-const TripInfo = ({ tripName, countries, startDate, endDate }: TripInfoProps) => {
+const TripInfo = ({ memberProfileImages, tripName, countries, startDate, endDate }: TripInfoProps) => {
   return (
     <div className="flex flex-col p-5 pt-0 gap-1 pb-4">
-      <UserIconList users={user_mock.users} />
+      <UserIconList memberProfileImages={memberProfileImages} />
       <div className="flex flex-row space-x-3 items-center">
         <p className="text-grey-850 text-head-0">{tripName}</p>
       </div>
