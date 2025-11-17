@@ -40,9 +40,6 @@ export default function ExpenseForm() {
   const tripId = params.tripId as string;
   const searchParams = useSearchParams();
   const date = searchParams.get('date') as string;
-  const tripStartDate = searchParams.get('tripStartDate') as string;
-  const tripEndDate = searchParams.get('tripEndDate') as string;
-  const allDatesAvailable = tripStartDate && tripEndDate && date;
 
   const queryClient = useQueryClient();
 
@@ -278,19 +275,7 @@ export default function ExpenseForm() {
     createExpenseWithReceiptMutate(refinedForm);
   };
 
-  if (!allDatesAvailable) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center">
-        <p className="text-center">
-          잘못된 접근입니다.
-          <br />
-          날짜 정보가 URL에 포함되어 있어야 합니다.
-        </p>
-      </div>
-    );
-  }
-
-  if (!pageData) {
+  if (!pageData || !budgetData) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loading />
@@ -317,12 +302,12 @@ export default function ExpenseForm() {
       <div className="flex flex-col items-center gap-7 w-full pt-6">
         {/* 기본 폼 */}
 
-        {allDatesAvailable && (
+        {budgetData.startDate && budgetData.endDate && date && (
           <TripDateSection
             date={form.expense.date}
             setDate={(date) => handleExpenseChange('date', date)}
-            startDate={tripStartDate}
-            endDate={tripEndDate}
+            startDate={budgetData.startDate}
+            endDate={budgetData.endDate}
           />
         )}
 
