@@ -69,7 +69,8 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   const fetchPhotos = useCallback(
     async (pageToLoad: number) => {
       if (!readiness) return;
-      else if (!readiness.allMembersRegistered) return; // 얼굴 등록이 완료되지 않은 경우
+      else if (!readiness.allMembersRegistered)
+        return; // 얼굴 등록이 완료되지 않은 경우
       else if (isFetchingRef.current) return; // 중복 요청 방지
       isFetchingRef.current = true;
       setLoading(true);
@@ -196,6 +197,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
             countries={tripData.countries}
             startDate={tripData.startDate ?? ''}
             endDate={tripData.endDate ?? ''}
+            memberProfileImages={tripData.memberProfileImages}
           />
         )}
       </div>
