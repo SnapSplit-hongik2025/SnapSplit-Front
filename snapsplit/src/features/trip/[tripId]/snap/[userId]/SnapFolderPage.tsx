@@ -170,7 +170,18 @@ const SnapFolderPage = () => {
         )}
       </div>
       {isSelectionMode && (
-        <SelectModeActionBar selectedCount={selectedImageIds.length} />
+        <SelectModeActionBar 
+          selectedCount={selectedImageIds.length} 
+          tripId={Number(tripId)} 
+          photoIds={selectedImageIds.map((id) => Number(id))}
+          onDelete={() => {
+            // 선택 모드 종료
+            setIsSelectionMode(false);
+            setSelectedImageIds([]);
+            // 첫 페이지부터 다시 불러오기
+            fetchPhotos(0);
+          }}
+        />
       )}
     </div>
   );
