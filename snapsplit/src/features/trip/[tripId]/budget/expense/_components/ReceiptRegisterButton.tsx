@@ -36,7 +36,7 @@ export default function ReceiptRegisterButton() {
         (item, index): ReceiptItem => ({
           id: index + 1,
           name: item.name,
-          amount: String(item.amount),
+          amount: item.amount,
         })
       ),
     };
@@ -57,7 +57,7 @@ export default function ReceiptRegisterButton() {
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);
     } catch (err) {
       console.error(err);
-      alert('영수증 인식에 실패했어. 다시 시도해줘!');
+      alert('영수증 인식에 실패했습니다. 다시 시도해주세요!');
     } finally {
       setLoading(false);
       if (inputRef.current) inputRef.current.value = '';
