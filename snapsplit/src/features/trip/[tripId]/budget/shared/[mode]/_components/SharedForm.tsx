@@ -15,7 +15,6 @@ import {
   getSharedData,
   addSharedBudget,
   removeSharedBudget,
-  updateDefaultCurrency,
 } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { UpdateSharedBudgetRequestDto } from '../../../types/budget-dto-type';
 import Loading from '@/shared/components/loading/Loading';
@@ -31,7 +30,7 @@ const SharedForm = () => {
   const isAdd = mode === 'add';
 
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<string>('KRW');
+  const [currency, setCurrency] = useState<string>('');
   const [exchangeRate, setExchangeRate] = useState<Record<string, number>>({});
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -111,6 +110,8 @@ const SharedForm = () => {
       res = currentTotal - adjustedAmount;
     }
 
+    res /= exchangeRate[currency];
+
     return Number(res.toFixed(2));
   }, [amount, currency, exchangeRate, budgetData, mode]);
 
@@ -151,16 +152,6 @@ const SharedForm = () => {
     };
 
     mutate(payload);
-  };
-
-  const handleCurrencyChange = async (cur: string) => {
-    try {
-      const newCur = await updateDefaultCurrency(Number(tripId), cur);
-      setCurrency(newCur.after);
-    } catch (error) {
-      console.error(error);
-      alert('기본 통화를 변경하는데 실패했습니다.');
-    }
   };
 
   if (isLoading || isBudgetLoading) {
@@ -211,7 +202,7 @@ const SharedForm = () => {
         {isCurrencyOpen && (
           <CurrencyList
             onClose={() => setIsCurrencyOpen(false)}
-            handleCurrencyChange={handleCurrencyChange}
+            handleCurrencyChange={setCurrency}
             selectedCurrency={currency}
             availableCurrencies={availableCurrencies}
           />
