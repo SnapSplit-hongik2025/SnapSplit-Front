@@ -19,12 +19,13 @@ import {
 } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { UpdateSharedBudgetRequestDto } from '../../../types/budget-dto-type';
 import Loading from '@/shared/components/loading/Loading';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { GetTripBudgetDto } from '../../../types/budget-dto-type';
 import { getTripBudgetData } from '../../../api/budget-api';
 
 const SharedForm = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { tripId } = useParams() as { tripId: string };
   const { mode } = useParams() as { mode: 'add' | 'remove' };
   const isAdd = mode === 'add';
@@ -56,8 +57,6 @@ const SharedForm = () => {
   const [error, setError] = useState<string | null>(null);
 
   // submit
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const isFormDataReady = Boolean(amount && currency && selectedDate && selectedCategory);
 
   useEffect(() => {
@@ -109,34 +108,43 @@ const SharedForm = () => {
     }
   }, [amount, currency, exchangeRate, budgetData, mode]);
 
-  const handleSubmit = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      const payload: UpdateSharedBudgetRequestDto = {
-        amount: Number(amount),
-        exchangeRate: Number(exchangeRate[currency]),
-        currency: currency,
-        paymentMethod: selectedCategory || '',
-        createdAt: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
-      };
-
+  // 경비 추가/빼기 뮤테이션
+  const { mutate, isPending: isSubmitting } = useMutation({
+    mutationFn: (payload: UpdateSharedBudgetRequestDto) => {
       if (mode === 'add') {
-        await addSharedBudget(Number(tripId), payload);
+        return addSharedBudget(Number(tripId), payload);
       } else {
-        await removeSharedBudget(Number(tripId), payload);
+        return removeSharedBudget(Number(tripId), payload);
       }
+    },
+    onSuccess: () => {
+      // 성공 시, Budget 관련 쿼리 리패치
+      queryClient.invalidateQueries({ queryKey: ['tripBudget', tripId] });
+      queryClient.invalidateQueries({ queryKey: ['tripInfo', tripId] });
+      queryClient.invalidateQueries({ queryKey: ['homeData'] });
 
-      setIsSubmitting(false);
       alert('공동 경비 정보를 저장했습니다.');
       router.back();
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error(error);
       alert('공동 경비 정보를 저장하는데 실패했습니다.');
       router.refresh();
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!isFormDataReady || isSubmitting) return;
+
+    const payload: UpdateSharedBudgetRequestDto = {
+      amount: Number(amount),
+      exchangeRate: Number(exchangeRate[currency]),
+      currency: currency,
+      paymentMethod: selectedCategory || '',
+      createdAt: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
+    };
+
+    mutate(payload);
   };
 
   const handleCurrencyChange = async (cur: string) => {
