@@ -269,7 +269,7 @@ export default function ExpenseForm() {
         paymentMethod: form.expense.paymentMethod.toUpperCase(),
       },
       receiptUrl,
-      items,
+      items: items.map((item) => ({ name: item.name, amount: Number(item.amount) })),
     };
 
     createExpenseWithReceiptMutate(refinedForm);
