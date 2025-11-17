@@ -49,5 +49,4 @@ export interface GetReadinessDto {
 export interface Folder {
   name: string;
   id: number;
-  profileImageUrl?: string;
 }

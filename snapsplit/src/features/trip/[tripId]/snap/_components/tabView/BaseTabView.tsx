@@ -15,8 +15,8 @@ type BaseTabViewProps = {
   photos?: PhotoResponse[]; // null 제거!
   onLoadMore?: () => void; // 무한 스크롤 트리거
   isLoading?: boolean; // 로딩 중인지
-  selectedSort?: string;
-  setSelectedSort?: (sort: string) => void;
+  selectedSort: 'date_desc' | 'date_asc';
+  setSelectedSort?: (sort: 'date_desc' | 'date_asc') => void;
   onRefresh?: () => void;
 };
 
@@ -144,7 +144,7 @@ export default function BaseTabView({
       {/* 정렬 BottomSheet */}
       <BottomSheet isOpen={sortOpen} onClose={() => setSortOpen(false)}>
         <SortBottomSheet
-          selectedSort={selectedSort ?? ''}
+          selectedSort={selectedSort}
           onSelectSort={(opt) => setSelectedSort?.(opt)}
           onClose={() => setSortOpen(false)}
         />
