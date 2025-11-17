@@ -8,6 +8,7 @@ import { useReceiptStore } from '@/lib/zustand/useReceiptStore';
 import { ReceiptItem } from '@/lib/zustand/useReceiptStore';
 import { OcrResponse } from '@/features/trip/[tripId]/budget/expense/receipt/api/receipt-api';
 import { OcrResult } from '@/lib/zustand/useReceiptStore';
+import Loading from '@/shared/components/loading/Loading';
 
 export default function ReceiptRegisterButton() {
   const router = useRouter();
@@ -63,6 +64,14 @@ export default function ReceiptRegisterButton() {
       if (inputRef.current) inputRef.current.value = '';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="absolute top-0 left-0 h-screen w-full flex items-center justify-center bg-black/50">
+        <Loading />
+      </div>
+    )
+  }
 
   return (
     <>
