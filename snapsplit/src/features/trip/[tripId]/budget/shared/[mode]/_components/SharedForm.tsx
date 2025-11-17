@@ -90,7 +90,7 @@ const SharedForm = () => {
   const predictedTotal = useMemo(() => {
     if (!budgetData || !amount || !currency || !exchangeRate) return null;
 
-    const currentTotal = budgetData.totalExpense; // 현재 total
+    const currentTotal = budgetData.sharedFund.balance; // 현재 total
     const currentCurrency = budgetData.sharedFund.defaultCurrency; // 기준 통화
     const isSameCurrency = currency === currentCurrency;
 
@@ -183,7 +183,7 @@ const SharedForm = () => {
 
   // TODO: BottomNavBar fixed 제거 시 pb-15 제거
   return (
-    <div className="w-full h-full pb-15 flex flex-col items-center bg-white">
+    <div className="w-full h-full flex flex-col items-center bg-white">
       <div className="flex w-full h-12 items-center justify-between px-5 py-3">
         <button onClick={() => router.back()}>
           <Image alt="back" src="/svg/arrow-left-grey-850.svg" width={24} height={24} />
@@ -246,7 +246,7 @@ const SharedForm = () => {
       </div>
 
       {/* Toast */}
-      {isFormDataReady && <StatusMessage result={predictedTotal} currency={currency} />}
+      {isFormDataReady && <StatusMessage result={predictedTotal} currency={currency} mode={mode} />}
     </div>
   );
 };

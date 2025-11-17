@@ -5,10 +5,11 @@ import { getSymbol } from '@/shared/utils/currency';
 type StatusMessageProps = {
   result: number | null;
   currency: string;
+  mode: 'add' | 'remove';
 };
 
-const StatusMessage = ({ result, currency }: StatusMessageProps) => {
-  const fullMessage = `공동 경비 잔액이 ${getSymbol(currency)}${result} 로 늘어나요!`;
+const StatusMessage = ({ result, currency, mode }: StatusMessageProps) => {
+  const fullMessage = `공동 경비 잔액이 ${getSymbol(currency)}${result} 로 ${mode === 'add' ? '늘어나요!' : '줄어들어요!'}`;
   const isOneLine = fullMessage.length <= 32; // 🔁 기준은 글자 수 또는 실제 측정값
 
   if (result == null) return null;
@@ -20,7 +21,7 @@ const StatusMessage = ({ result, currency }: StatusMessageProps) => {
           <div className={`${isOneLine ? 'flex' : 'flex flex-col'}`}>
             <div>공동 경비 잔액이</div>
             <div className="text-primary break-all">&nbsp;{getSymbol(currency)}{result}&nbsp;</div>
-            <div>로 늘어나요!</div>
+            <div>{mode === 'add' ? '로 늘어나요!' : '로 줄어들어요!'}</div>
           </div>
         </div>
         <Image src="/svg/bubble-tail.svg" alt="bubble-tail" width={18} height={15} className="-mt-1" />
