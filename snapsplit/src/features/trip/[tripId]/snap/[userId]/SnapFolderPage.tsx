@@ -13,6 +13,10 @@ import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import SelectModeActionBar from './_components/SelectModeActionBar';
 import { PhotoResponse } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
 import { getPhotosByFolder } from '@/features/trip/[tripId]/snap/api/snap-api';
+import { getDayCount } from '@/shared/utils/parseDate';
+import { getTripBudgetData } from '@/features/trip/[tripId]/budget/api/budget-api';
+import { useQuery } from '@tanstack/react-query';
+import Loading from '@/shared/components/loading/Loading';
 
 const SnapFolderPage = () => {
   const router = useRouter();
@@ -39,6 +43,13 @@ const SnapFolderPage = () => {
   // URL에서 폴더 정보 가져오기
   const folderName = searchParams.get('name') || '사용자';
   const profileImageUrl = searchParams.get('profileImageUrl') || undefined;
+
+  // trip 기본 정보
+  const { data: tripData, isLoading: tripLoading } = useQuery({
+    queryKey: ['tripBudget', tripId],
+    queryFn: () => getTripBudgetData(Number(tripId)),
+    staleTime: 1000 * 60 * 5,
+  });
 
   // Fetch photos for the current folder
   const fetchPhotos = useCallback(async (pageToLoad: number) => {
@@ -101,6 +112,16 @@ const SnapFolderPage = () => {
     fetchPhotos(0);
   }, [fetchPhotos]);
 
+  if (!tripData || tripLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  const dayCount = getDayCount(tripData.startDate ?? '', tripData.endDate ?? '');
+
   return (
     <div className="flex flex-col w-full h-full bg-light_grey">
       <div className="flex flex-col bg-white">
@@ -155,6 +176,7 @@ const SnapFolderPage = () => {
               setFilters={setFilters}
               onClose={() => setFilterOpen(false)}
               tab="folder"
+              dayCount={dayCount}
             />
           </BottomSheet>
         )}
