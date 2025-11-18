@@ -136,6 +136,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   }
 
   const dayCount = getDayCount(tripData.startDate ?? '', tripData.endDate ?? '');
+  const members = readiness.members.map((m) => m.name);
 
   /** ======================================
    * 렌더링
@@ -175,6 +176,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           setSelectedSort={setSelectedSort}
           onRefresh={() => refetchPhotos()}
           dayCount={dayCount}
+          members={members}
         />
       ) : (
         <FolderTabView folders={folders} selectedSort={selectedSort}/>

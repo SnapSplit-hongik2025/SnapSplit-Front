@@ -9,14 +9,15 @@ interface FilterBottomSheetProps {
   onClose: () => void;
   tab: string;
   dayCount: number;
+  members?: string[];
 }
 
-export default function FilterBottomSheet({ filters, setFilters, onClose, tab, dayCount }: FilterBottomSheetProps) {
+export default function FilterBottomSheet({ filters, setFilters, onClose, tab, dayCount, members }: FilterBottomSheetProps) {
   return (
     <div className="flex flex-col gap-4 w-full">
       <DaySection filters={filters} setFilters={setFilters} dayCount={dayCount} />
 
-      {tab === 'base' && <PeopleSection filters={filters} setFilters={setFilters} />}
+      {tab === 'base' && <PeopleSection filters={filters} setFilters={setFilters} members={members ?? []} />}
 
       <ButtonSection onClose={onClose} setFilters={setFilters}/>
     </div>

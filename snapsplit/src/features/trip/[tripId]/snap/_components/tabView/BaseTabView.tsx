@@ -19,6 +19,7 @@ type BaseTabViewProps = {
   setSelectedSort?: (sort: 'date_desc' | 'date_asc') => void;
   onRefresh?: () => void;
   dayCount: number;
+  members?: string[];
 };
 
 export default function BaseTabView({
@@ -31,6 +32,7 @@ export default function BaseTabView({
   setSelectedSort,
   onRefresh,
   dayCount,
+  members,
 }: BaseTabViewProps) {
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -160,6 +162,7 @@ export default function BaseTabView({
           onClose={() => setFilterOpen(false)}
           tab="base"
           dayCount={dayCount}
+          members={members}
         />
       </BottomSheet>
     </div>
