@@ -56,9 +56,14 @@ const SharedBudgetDetailPage = () => {
     },
   });
 
-  const beforeTripData =
+  const beforeTripLog =
     sharedBudgetData?.sharedBudgetDetails?.filter(
       (item) => new Date(item.date) < new Date(sharedBudgetData.tripStartDate)
+    ) || [];
+  
+  const whileTripLog =
+    sharedBudgetData?.sharedBudgetDetails?.filter(
+      (item) => new Date(item.date) >= new Date(sharedBudgetData.tripStartDate)
     ) || [];
 
   const handleCurrencyChange = async (currency: string) => {
@@ -110,8 +115,8 @@ const SharedBudgetDetailPage = () => {
 
       <LogSection
         defaultCurrency={sharedBudgetData.defaultCurrency}
-        sharedBudgetLog={sharedBudgetData.sharedBudgetDetails}
-        beforeTripData={beforeTripData || []}
+        whileTripLog={whileTripLog || []}
+        beforeTripLog={beforeTripLog || []}
       />
 
       <BudgetOverview totalSharedBudget={sharedBudgetData.totalSharedBudget} />
