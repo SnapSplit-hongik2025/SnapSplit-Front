@@ -190,9 +190,9 @@ export default function ExpenseForm() {
     if (budgetData?.sharedFund && pageData?.exchangeRates) {
       const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
       const expenseCurrency = form.expense.currency;
-      
+
       let expenseAmountInSharedFundCurrency = form.expense.amount;
-      
+
       // 통화가 다를 경우 환전 적용
       if (sharedFundCurrency !== expenseCurrency) {
         const exchangeRate = pageData.exchangeRates[expenseCurrency];
@@ -203,9 +203,11 @@ export default function ExpenseForm() {
           return;
         }
       }
-      
+
       if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
-        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        alert(
+          `지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`
+        );
         return;
       }
     }
@@ -213,40 +215,50 @@ export default function ExpenseForm() {
     // payers/splitters 검증
     const selectedPayers = Object.entries(membersState).filter(([_, m]) => m.isPayer);
     const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
-    
+
     // 결제자 최소 1명 검증
     if (selectedPayers.length === 0) {
       alert('결제자를 최소 1명 이상 선택해주세요.');
       return;
     }
-    
+
     // 결제 금액 계산
     const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
-    
+
     // 결제 금액 총합 검증
     if (totalPayerAmount !== form.expense.amount) {
-      alert(`결제 금액 총합(${totalPayerAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 지출 금액(${form.expense.amount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`);
+      alert(
+        `결제 금액 총합(${totalPayerAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 지출 금액(${form.expense.amount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
+      );
       return;
     }
-    
-    // 공동 경비 결제 금액 계산 (멤버 ID 4번이 공동 경비)
-    const sharedFundPayment = selectedPayers
-      .filter(([id, _]) => Number(id) === 4)
-      .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
-    
+
+    // 공동 경비 멤버 ID 찾기
+    const sharedFundMember = pageData?.members.find((member) => member.memberType === 'SHARED_FUND');
+    const sharedFundMemberId = sharedFundMember?.memberId;
+
+    // 공동 경비 결제 금액 계산 (memberType이 SHARED_FUND인 멤버가 결제자로 선택된 경우)
+    const sharedFundPayment = sharedFundMemberId
+      ? selectedPayers
+          .filter(([id, _]) => Number(id) === sharedFundMemberId)
+          .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0)
+      : 0;
+
     // 정산 필요 금액 계산
     const requiredSplitAmount = form.expense.amount - sharedFundPayment;
-    
+
     // 정산자 검증 (정산 필요 금액이 1원 이상일 경우)
     if (requiredSplitAmount > 0 && selectedSplitters.length === 0) {
       alert('정산자를 최소 1명 이상 선택해주세요.');
       return;
     }
-    
+
     // 정산 금액 총합 검증
     const totalSplitAmount = selectedSplitters.reduce((sum, [_, m]) => sum + (m.splitAmount || 0), 0);
     if (totalSplitAmount !== requiredSplitAmount) {
-      alert(`정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`);
+      alert(
+        `정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
+      );
       return;
     }
 
@@ -275,9 +287,9 @@ export default function ExpenseForm() {
     if (budgetData?.sharedFund && pageData?.exchangeRates) {
       const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
       const expenseCurrency = form.expense.currency;
-      
+
       let expenseAmountInSharedFundCurrency = form.expense.amount;
-      
+
       // 통화가 다를 경우 환전 적용
       if (sharedFundCurrency !== expenseCurrency) {
         const exchangeRate = pageData.exchangeRates[expenseCurrency];
@@ -288,9 +300,11 @@ export default function ExpenseForm() {
           return;
         }
       }
-      
+
       if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
-        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        alert(
+          `지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`
+        );
         return;
       }
     }
@@ -298,40 +312,44 @@ export default function ExpenseForm() {
     // payers/splitters 검증
     const selectedPayers = Object.entries(membersState).filter(([_, m]) => m.isPayer);
     const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
-    
+
     // 결제자 최소 1명 검증
     if (selectedPayers.length === 0) {
       alert('결제자를 최소 1명 이상 선택해주세요.');
       return;
     }
-    
+
     // 결제 금액 계산
     const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
-    
+
     // 결제 금액 총합 검증
     if (totalPayerAmount !== form.expense.amount) {
-      alert(`결제 금액 총합(${totalPayerAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 지출 금액(${form.expense.amount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`);
+      alert(
+        `결제 금액 총합(${totalPayerAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 지출 금액(${form.expense.amount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
+      );
       return;
     }
-    
+
     // 공동 경비 결제 금액 계산 (멤버 ID 4번이 공동 경비)
     const sharedFundPayment = selectedPayers
       .filter(([id, _]) => Number(id) === 4)
       .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
-    
+
     // 정산 필요 금액 계산
     const requiredSplitAmount = form.expense.amount - sharedFundPayment;
-    
+
     // 정산자 검증 (정산 필요 금액이 1원 이상일 경우)
     if (requiredSplitAmount > 0 && selectedSplitters.length === 0) {
       alert('정산자를 최소 1명 이상 선택해주세요.');
       return;
     }
-    
+
     // 정산 금액 총합 검증
     const totalSplitAmount = selectedSplitters.reduce((sum, [_, m]) => sum + (m.splitAmount || 0), 0);
     if (totalSplitAmount !== requiredSplitAmount) {
-      alert(`정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`);
+      alert(
+        `정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
+      );
       return;
     }
 
@@ -368,12 +386,12 @@ export default function ExpenseForm() {
 
   // 폼 완전성 체크 - 필수 필드들이 모두 채워졌는지 확인
   const isFormComplete = Boolean(
-    form.expense.date && 
-    form.expense.amount > 0 && 
-    form.expense.currency && 
-    form.expense.exchangeRate > 0 && 
-    form.expense.category && 
-    form.expense.paymentMethod
+    form.expense.date &&
+      form.expense.amount > 0 &&
+      form.expense.currency &&
+      form.expense.exchangeRate > 0 &&
+      form.expense.category &&
+      form.expense.paymentMethod
   );
 
   return (

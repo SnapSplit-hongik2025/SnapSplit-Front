@@ -17,6 +17,7 @@ import { getTripBudgetData } from '../budget/api/budget-api';
 import Loading from '@/shared/components/loading/Loading';
 import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { FaceEnrollmentSection } from './_components/face-test/FaceEnrollmentSection';
+import { getDayCount } from '@/shared/utils/parseDate';
 
 type SnapPageProps = {
   tripId: string;
@@ -134,6 +135,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     );
   }
 
+  const dayCount = getDayCount(tripData.startDate ?? '', tripData.endDate ?? '');
+  const members = readiness.members.map((m) => m.name);
+
   /** ======================================
    * 렌더링
    * ====================================== */
@@ -171,6 +175,8 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           selectedSort={selectedSort}
           setSelectedSort={setSelectedSort}
           onRefresh={() => refetchPhotos()}
+          dayCount={dayCount}
+          members={members}
         />
       ) : (
         <FolderTabView folders={folders} selectedSort={selectedSort}/>

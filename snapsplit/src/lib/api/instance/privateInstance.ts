@@ -34,7 +34,7 @@ privateInstance.interceptors.response.use(
     if (originalRequest.url?.includes('/auth/token/refresh')) {
       useAuthStore.getState().clearUser();
       if (typeof window !== 'undefined') {
-            window.location.href = '/auth';
+            window.location.href = '/landing';
         }
       return Promise.reject(error);
     }
@@ -72,7 +72,7 @@ privateInstance.interceptors.response.use(
       } catch (error) {
         useAuthStore.getState().clearUser();
         if (typeof window !== 'undefined') {
-            window.location.href = '/auth';
+            window.location.href = '/landing';
         }
         return Promise.reject(error);
       } finally {
