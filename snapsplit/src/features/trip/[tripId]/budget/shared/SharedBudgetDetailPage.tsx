@@ -117,6 +117,7 @@ const SharedBudgetDetailPage = () => {
         defaultCurrency={sharedBudgetData.defaultCurrency}
         whileTripLog={whileTripLog || []}
         beforeTripLog={beforeTripLog || []}
+        tripStartDate={sharedBudgetData.tripStartDate}
       />
 
       <BudgetOverview totalSharedBudget={sharedBudgetData.totalSharedBudget} />
