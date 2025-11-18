@@ -9,11 +9,12 @@ import { toDayX, toMDotDDW } from '@/shared/utils/parseDate';
 
 type LogSectionProps = {
   defaultCurrency: string;
-  sharedBudgetLog: SharedBudgetDetail[];
-  beforeTripData: SharedBudgetDetail[];
+  whileTripLog: SharedBudgetDetail[];
+  beforeTripLog: SharedBudgetDetail[];
+  tripStartDate: string;
 };
 
-const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSectionProps) => {
+const LogSection = ({ defaultCurrency, whileTripLog, beforeTripLog, tripStartDate }: LogSectionProps) => {
   const { scrollRef, onMouseDown, onMouseMove, onMouseUp } = useDragScroll('y');
 
   return (
@@ -30,7 +31,7 @@ const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSec
         <div className="flex items-center justify-start">
           <p className="text-body-1 text-grey-1000">여행 준비</p>
         </div>
-        {beforeTripData.map((item) => (
+        {beforeTripLog.map((item) => (
           item.items.map((entry, entryIndex) => (
             <LogItem
               key={entryIndex}
@@ -46,10 +47,10 @@ const LogSection = ({ defaultCurrency, sharedBudgetLog, beforeTripData }: LogSec
       </div>
 
       {/* Day별 내역 */}
-      {sharedBudgetLog.length > 0 && sharedBudgetLog.map(({ date, items }, index) => (
+      {whileTripLog.length > 0 && whileTripLog.map(({ date, items }, index) => (
         <div key={index} className="w-full">
           <div className="flex items-center gap-2">
-            <div className="text-body-1 text-grey-1000">{toDayX(date, sharedBudgetLog[0].date)}</div>
+            <div className="text-body-1 text-grey-1000">{toDayX(date, tripStartDate)}</div>
             <div className="w-0 h-3.75 border-1 border-grey-350" />
             <div className="text-body-1 text-grey-550">{toMDotDDW(date)}</div>
           </div>
