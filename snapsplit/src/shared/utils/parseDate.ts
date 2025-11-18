@@ -65,3 +65,16 @@ export function toMDotDDW(dateStr: string, locale: string = 'ko-KR'): string {
 
   return `${month}.${day}/${w}`;
 }
+
+/*
+  yyyy-mm-dd 형식의 시작 날짜와 끝 날짜 사이의 일수를 계산
+*/
+export function getDayCount(startDate: string, endDate: string): number {
+  const start = parseYMD(startDate);
+  const end = parseYMD(endDate);
+
+  const MS_PER_DAY = 86_400_000;
+  const diffDays = Math.round((end.getTime() - start.getTime()) / MS_PER_DAY);
+
+  return diffDays;
+}

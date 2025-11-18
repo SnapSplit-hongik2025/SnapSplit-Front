@@ -18,6 +18,7 @@ type BaseTabViewProps = {
   selectedSort: 'date_desc' | 'date_asc';
   setSelectedSort?: (sort: 'date_desc' | 'date_asc') => void;
   onRefresh?: () => void;
+  dayCount: number;
 };
 
 export default function BaseTabView({
@@ -29,6 +30,7 @@ export default function BaseTabView({
   selectedSort,
   setSelectedSort,
   onRefresh,
+  dayCount,
 }: BaseTabViewProps) {
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -127,9 +129,9 @@ export default function BaseTabView({
       <div className={filters.days.length > 0 || filters.people.length > 0 ? 'min-h-27' : 'min-h-16'} />
 
       {/* 사진 그리드 */}
-      <PhotoGrid 
-        images={filteredImages ?? []} 
-        onRefresh={onRefresh} 
+      <PhotoGrid
+        images={filteredImages ?? []}
+        onRefresh={onRefresh}
         isSelectionMode={false}
         selectedImageIds={[]}
         onToggleSelect={() => {}}
@@ -152,7 +154,13 @@ export default function BaseTabView({
 
       {/* 필터 BottomSheet */}
       <BottomSheet isOpen={filterOpen} onClose={() => setFilterOpen(false)}>
-        <FilterBottomSheet filters={filters} setFilters={setFilters} onClose={() => setFilterOpen(false)} tab="base" />
+        <FilterBottomSheet
+          filters={filters}
+          setFilters={setFilters}
+          onClose={() => setFilterOpen(false)}
+          tab="base"
+          dayCount={dayCount}
+        />
       </BottomSheet>
     </div>
   );
