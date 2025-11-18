@@ -22,7 +22,6 @@ export default function JoinTripByCodeModal({ onClose }: JoinTripByCodeModalProp
       queryClient.invalidateQueries({ queryKey: ['homeData'] });
       queryClient.invalidateQueries({ queryKey: ['pastTrips'] });
       onClose();
-      alert('여행에 성공적으로 참여했습니다!');
     },
     onError: (error) => {
       console.error('여행 참여 실패:', error);
