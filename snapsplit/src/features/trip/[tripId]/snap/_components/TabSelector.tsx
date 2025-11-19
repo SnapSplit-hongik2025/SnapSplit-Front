@@ -16,7 +16,7 @@ export default function TabSelector({ activeTab, setActiveTab }: TabSelectorProp
         <button
           key={tab}
           onClick={() => setActiveTab(tab as ActiveTab)}
-          className={`w-full h-full flex items-center justify-center text-body-1 ${activeTab === tab ? 'border-b-2 border-primary text-primary' : 'text-grey-1000'}`}
+          className={`w-full cursor-pointer h-full flex items-center justify-center text-body-1 ${activeTab === tab ? 'border-b-2 border-primary text-primary' : 'text-grey-1000'}`}
         >
           {tab}
         </button>
