@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export function middleware(request: NextRequest) {
   // 인증이 필요한 경로 접근 시 토큰 검사
   const protectedPaths = ['/home', '/trip'];
+  // const protectedPaths = [ '/trip'];
   const { pathname } = request.nextUrl;
 
   // 보호 경로에 해당하면 accessToken 쿠키 검사

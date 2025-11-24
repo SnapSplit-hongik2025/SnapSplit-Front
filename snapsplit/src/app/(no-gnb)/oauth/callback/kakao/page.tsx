@@ -34,11 +34,11 @@ export default function KaKaoRedirect() {
         if (res.status === 200) {
           setUser(user);
           setToken(res.data.accessToken, res.data.refreshToken);
-          router.replace('/home');
+          // router.replace('/home');
         }
       } catch (error) {
-        console.error('카카오 로그인 실패 : ', error);
-        router.replace('/');
+        console.error('[ERROR] 카카오 로그인 실패 : ', error);
+        // router.replace('/');
       }
     };
     login();

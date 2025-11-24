@@ -7,6 +7,7 @@ import { ApiEnvelope, TokenPair } from './type';
 export const kakaoLogin = async (code: string): Promise<KakaoLoginResponse> => {
   try {
     const res = await publicInstance.post<KakaoLoginResponse>(`/auth/kakao/login?code=${code}`);
+    console.log('카카오 로그인 성공 : ', res);
     return res.data;
   } catch (error) {
     console.error('카카오 로그인 실패 : ', error);

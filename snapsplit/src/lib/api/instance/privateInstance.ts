@@ -72,7 +72,7 @@ privateInstance.interceptors.response.use(
       } catch (error) {
         useAuthStore.getState().clearUser();
         if (typeof window !== 'undefined') {
-            window.location.href = '/landing';
+            // window.location.href = '/landing';
         }
         return Promise.reject(error);
       } finally {
