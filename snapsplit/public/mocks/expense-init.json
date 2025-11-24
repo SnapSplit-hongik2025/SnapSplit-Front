@@ -1,0 +1,32 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "지출 추가용 초기 데이터를 불러왔습니다.",
+  "data": {
+    "defaultCurrency": "JPY",
+    "availCurrencies": ["JPY", "USD", "KRW"],
+    "exchangeRates": {
+      "JPY": 9.15,
+      "USD": 1367.98,
+      "KRW": 1
+    },
+    "defaultDate": "2025-05-20",
+    "members": [
+      {
+        "memberId": 18,
+        "name": "은정",
+        "memberType": "USER"
+      },
+      {
+        "memberId": 19,
+        "name": "민수",
+        "memberType": "USER"
+      },
+      {
+        "memberId": 20,
+        "name": "공동경비",
+        "memberType": "SHARED_FUND"
+      }
+    ]
+  }
+}

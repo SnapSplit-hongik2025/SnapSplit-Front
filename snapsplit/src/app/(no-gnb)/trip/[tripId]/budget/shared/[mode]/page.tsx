@@ -1,0 +1,1 @@
+export { default } from '@/features/trip/[tripId]/budget/shared/[mode]/SharedPage';

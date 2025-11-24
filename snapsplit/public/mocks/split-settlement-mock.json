@@ -1,0 +1,52 @@
+{
+  "status": 200,
+  "success": true,
+  "message": null,
+  "data": {
+    "id": 1,
+    "members": [
+      { "memberId": 1, "name": "문재영" },
+      { "memberId": 2, "name": "박지수" },
+      { "memberId": 3, "name": "권은정" }
+    ],
+    "settlementDetails": [
+      {
+        "sender": { "memberId": 1, "name": "문재영" },
+        "receiver": { "memberId": 2, "name": "박지수" },
+        "amount": 13200
+      },
+      {
+        "sender": { "memberId": 1, "name": "문재영" },
+        "receiver": { "memberId": 3, "name": "권은정" },
+        "amount": 4500
+      },
+      {
+        "sender": { "memberId": 2, "name": "박지수" },
+        "receiver": { "memberId": 1, "name": "문재영" },
+        "amount": 9800
+      },
+      {
+        "sender": { "memberId": 2, "name": "박지수" },
+        "receiver": { "memberId": 3, "name": "권은정" },
+        "amount": 6700
+      },
+      {
+        "sender": { "memberId": 3, "name": "권은정" },
+        "receiver": { "memberId": 1, "name": "문재영" },
+        "amount": 12300
+      },
+      {
+        "sender": { "memberId": 3, "name": "권은정" },
+        "receiver": { "memberId": 2, "name": "박지수" },
+        "amount": 1500
+      }
+    ],
+    "personalExpenses": [
+      { "memberId": 1, "name": "문재영", "amount": 98500, "memberType": "user" },
+      { "memberId": 2, "name": "박지수", "amount": 17000, "memberType": "user" },
+      { "memberId": 3, "name": "권은정", "amount": 32800, "memberType": "user" },
+      { "memberId": 4, "name": "공동경비", "amount": 971580, "memberType": "shared_fund" }
+    ],
+    "totalAmount": 1119800
+  }
+}

@@ -1,0 +1,78 @@
+{
+    "status": 200,
+    "success": true,
+    "message": "여행 상세 조회 성공",
+    "data": {
+      "trip": {
+        "tripId": 1,
+        "tripName": "부산 여행",
+        "memberCount": 3,
+        "startDate": "2025-06-01",
+        "endDate": "2025-06-04",
+        "tripImage": "https://mblogthumb-phinf.pstatic.net/MjAxOTAxMDNfMTk1/MDAxNTQ2NTE2NDc2NDYx.JQ5bOPmD-RRaGkfXKXSz6whBbTBbiJzo66CDqF9Ffd4g.xImS-ptvAbD_jjVCA9UxPXRUZrLshI_LHAEjyA9DNGsg.JPEG.vetailor/SE-8359aa8b-b7e5-4d30-9000-8b6cd14e0bcf.jpg?type=w800",
+        "tripTotalExpense": 450000,
+        "countries": [
+          {
+            "countryId": 1,
+            "countryName": "대한민국"
+          }
+        ]
+      },
+      "totalShared": [
+        {
+          "totalSharedCurrency": "KRW",
+          "totalSharedAmount": 300000
+        },
+        {
+          "totalSharedCurrency": "USD",
+          "totalSharedAmount": 120.5
+        }
+      ],
+      "expenses": [
+        {
+          "expenseId": 1,
+          "expenseDate": "2025-06-01",
+          "expenseAmount": 150000,
+          "expenseCurrency": "KRW",
+          "expenseUsers": [
+            {
+              "userId": 11,
+              "userName": "문재영"
+            },
+            {
+              "userId": 12,
+              "userName": "권은정"
+            }
+          ],
+          "expenseCategory": "식비"
+        },
+        {
+          "expenseId": 2,
+          "expenseDate": "2025-06-01",
+          "expenseAmount": 1000,
+          "expenseCurrency": "KRW",
+          "expenseUsers": [
+            {
+              "userId": 11,
+              "userName": "문재영"
+            }
+          ],
+          "expenseCategory": "식비"
+        },
+        {
+          "expenseId": 3,
+          "expenseDate": "2025-06-02",
+          "expenseAmount": 100,
+          "expenseCurrency": "USD",
+          "expenseUsers": [
+            {
+              "userId": 13,
+              "userName": "박지수"
+            }
+          ],
+          "expenseCategory": "숙박"
+        }
+      ]
+    }
+  }
+  

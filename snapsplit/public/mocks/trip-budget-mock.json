@@ -1,0 +1,8 @@
+{
+  "users": [
+    { "userId": 1, "userIconImg": "url1" },
+    { "userId": 2, "userIconImg": "url2" },
+    { "userId": 3, "userIconImg": "url3" },
+    { "userId": 4, "userIconImg": "url3" }
+  ]
+}

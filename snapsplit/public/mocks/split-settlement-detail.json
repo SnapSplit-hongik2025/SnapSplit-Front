@@ -1,0 +1,53 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "정산 영수증 개별 지출 상세 금액 조회 성공",
+    "sharedBudgetDetails": [
+      {
+        "date": "2025-04-09",
+        "items": [
+          {
+            "expenseName": "식비",
+            "expenseMemo": "지출 상세",
+            "amount": -40.7,
+            "amountKRW": 8756,
+            "expenseCurrency": "EUR"
+          },
+          {
+            "expenseName": "숙박",
+            "expenseMemo": "지출 상세",
+            "amount": -217.0,
+            "amountKRW": 8756,
+            "expenseCurrency": "EUR"
+          },
+          {
+            "expenseName": "관광",
+            "expenseMemo": "지출 상세",
+            "amount": -20.0,
+            "amountKRW": 8756,
+            "expenseCurrency": "EUR"
+          }
+        ]
+      },
+      {
+        "date": "2025-04-10",
+        "items": [
+          {
+            "expenseName": "식비",
+            "expenseMemo": "지출 상세",
+            "amount": -48.9,
+            "amountKRW": 8756,
+            "expenseCurrency": "EUR"
+          },
+          {
+            "expenseName": "공동경비 입금",
+            "expenseMemo": "지출 상세",
+            "amount": 100.0,
+            "amountKRW": 8756,
+            "expenseCurrency": "EUR"
+          }
+        ]
+      }
+    ],
+    "totalAmount": 321.7
+  }

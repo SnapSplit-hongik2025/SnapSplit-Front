@@ -1,0 +1,87 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "지난 여행 조회 성공",
+  "data": {
+    "trips": [
+      {
+        "tripId": 11,
+        "tripName": "재은",
+        "startDate": "2025-07-20",
+        "endDate": "2025-07-30",
+        "tripImage": "https://example.com/trip1111.jpg",
+        "countryNames": [
+          "프랑스",
+          "스페인",
+          "독일",
+          "네덜란드"
+        ]
+      },
+      {
+        "tripId": 14,
+        "tripName": "2025 유럽 여행",
+        "startDate": "2025-05-20",
+        "endDate": "2025-05-30",
+        "tripImage": "https://snapsplit-assets.s3.ap-northeast-2.amazonaws.com/trip-images/9c78e989-cbd8-43a4-9b6c-bfea093772d2-%E1%84%80%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%B7%E1%84%8B%E1%85%B4%20%E1%84%87%E1%85%A5%E1%86%B8%E1%84%8E%E1%85%B5%E1%86%A8.jpg",
+        "countryNames": [
+          "프랑스",
+          "이탈리아"
+        ]
+      },
+      {
+        "tripId": 19,
+        "tripName": "룰루랄라새여행",
+        "startDate": "2025-05-20",
+        "endDate": "2025-05-29",
+        "tripImage": "https://snapsplit-assets.s3.ap-northeast-2.amazonaws.com/trip-images/4c586ff8-a61e-44b8-85d6-337ded9bb304-IMG_1460.jpeg",
+        "countryNames": [
+          "프랑스",
+          "이탈리아"
+        ]
+      },
+      {
+        "tripId": 10,
+        "tripName": "은정이의 과거이집트여행",
+        "startDate": "2024-01-01",
+        "endDate": "2024-01-10",
+        "tripImage": "https://example.com/trip46.jpg",
+        "countryNames": [
+          "아랍에미리트",
+          "사우디아라비아"
+        ]
+      },
+      {
+        "tripId": 9,
+        "tripName": "은정이의 초과거여행",
+        "startDate": "2023-03-03",
+        "endDate": "2023-03-13",
+        "tripImage": "https://example.com/trip34.jpg",
+        "countryNames": [
+          "호주"
+        ]
+      },
+      {
+        "tripId": 8,
+        "tripName": "은정이의 초초과거여행",
+        "startDate": "2022-02-02",
+        "endDate": "2022-02-20",
+        "tripImage": "https://example.com/trip3033.jpg",
+        "countryNames": [
+          "일본"
+        ]
+      },
+      {
+        "tripId": 7,
+        "tripName": "은정이의 초초초과거여행",
+        "startDate": "2020-01-01",
+        "endDate": "2020-01-05",
+        "tripImage": "https://example.com/trip10.jpg",
+        "countryNames": [
+          "태국"
+        ]
+      }
+    ],
+    "totalTrips": 7,
+    "totalCountries": 10
+  }
+}

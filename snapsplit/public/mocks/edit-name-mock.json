@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "success": true,
+  "message": "여행 정보 조회 성공",
+  "data": {
+    "tripName": "룰루랄라 유럽여행",
+    "tripImage": "https://example.com/trip5.jpg"
+  }
+}
