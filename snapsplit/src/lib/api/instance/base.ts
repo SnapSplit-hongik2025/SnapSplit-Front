@@ -2,6 +2,8 @@
 
 import axios from 'axios';
 
+axios.defaults.withCredentials = true; // 전역 설정으로 쿠키 포함
+
 const createAxiosInstance = () => {
   return axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
