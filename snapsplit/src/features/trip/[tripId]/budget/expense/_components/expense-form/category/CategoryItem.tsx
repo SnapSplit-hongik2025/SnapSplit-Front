@@ -30,9 +30,8 @@ export default function CategoryItem({ id, name, category, setCategory, iconOn, 
         isSelected ? 'bg-primary text-white border-primary' : 'bg-white border-grey-250 text-grey-450'
       }`}
     >
-      <div className="w-8 h-8 relative mb-1">
-        {/* 선택 여부에 따라 이미지 src 변경 */}
-        <Image src={isSelected ? iconOn : iconOff} alt={name} width={32} height={32} />
+      <div className="w-8 h-8 relative mt-1 items-center flex justify-center">
+        <Image src={isSelected ? iconOn : iconOff} alt={name} width={28} height={28} />
       </div>
       <div className="text-caption-1">{name}</div>
     </button>

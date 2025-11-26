@@ -49,16 +49,25 @@ export default function ReceiptRegisterButton() {
     setLoading(true);
 
     try {
-      const ocrResult = await getParsedReceipt(file);
+      const ocrResult = await getParsedReceipt(Number(tripId), file);
       const refined = mapOcrResponseToResult(ocrResult);
 
       setOcrResult(refined);
       setReceiptUrl(ocrResult.receiptUrl);
 
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('영수증 인식에 실패했습니다. 다시 시도해주세요!');
+
+      // [수정] 에러 상태 코드에 따라 알림 분기 처리
+      // axios 에러 객체 구조에 따라 status 위치가 다를 수 있어 안전하게 확인
+      const status = err.response?.status || err.status;
+
+      if (status === 400) {
+        alert('유효하지 않은 이미지 파일입니다. 다른 파일로 시도해주세요.');
+      } else {
+        alert('영수증 인식에 실패했습니다. 다시 시도해주세요!');
+      }
     } finally {
       setLoading(false);
       if (inputRef.current) inputRef.current.value = '';
@@ -67,7 +76,7 @@ export default function ReceiptRegisterButton() {
 
   if (loading) {
     return (
-      <div className="fixed top-0 left-0 h-screen w-full flex items-center justify-center bg-black/50">
+      <div className="fixed top-0 left-0 h-screen w-full flex items-center justify-center bg-black/50 z-50">
         <Loading />
       </div>
     );
@@ -75,14 +84,7 @@ export default function ReceiptRegisterButton() {
 
   return (
     <>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-        onChange={onFileChange}
-      />
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
       <button
         className="flex items-center justify-center gap-1 w-full h-11 bg-primary rounded-xl cursor-pointer disabled:opacity-60"
         onClick={openCamera}

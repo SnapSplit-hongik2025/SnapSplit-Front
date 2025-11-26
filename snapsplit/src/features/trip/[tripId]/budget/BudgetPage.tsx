@@ -15,11 +15,14 @@ import { useQuery } from '@tanstack/react-query';
 import Loading from '@/shared/components/loading/Loading';
 
 const BudgetPage = ({ tripId }: BudgetPageProps) => {
-  // 스크롤 위치 저장 (0 ~ N)
   const [scrollY, setScrollY] = useState(0);
 
-  // 축소될 영역(TripInfo + BudgetBar)의 전체 높이를 저장
-  const [headerHeight, setHeaderHeight] = useState(0);
+  // 헤더 전체의 높이를 측정하기 위한 ref와 state
+  const [totalHeaderHeight, setTotalHeaderHeight] = useState(0);
+  const headerContainerRef = useRef<HTMLDivElement>(null);
+
+  // 축소될 영역의 높이 (투명도 조절용)
+  const [collapsibleHeight, setCollapsibleHeight] = useState(0);
   const collapsibleRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -34,33 +37,35 @@ const BudgetPage = ({ tripId }: BudgetPageProps) => {
     refetchOnMount: true,
   });
 
-  // 데이터 로드 후, 축소될 영역의 실제 높이를 측정하여 저장
   useEffect(() => {
-    if (budgetData && collapsibleRef.current) {
-      setHeaderHeight(collapsibleRef.current.offsetHeight);
+    if (budgetData) {
+      // 전체 헤더 높이 측정
+      if (headerContainerRef.current) {
+        setTotalHeaderHeight(headerContainerRef.current.offsetHeight);
+      }
+      // 축소될 영역 높이 측정
+      if (collapsibleRef.current) {
+        setCollapsibleHeight(collapsibleRef.current.offsetHeight);
+      }
     }
   }, [budgetData]);
 
-  // 스크롤 핸들러: 현재 스크롤 위치를 state에 업데이트
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const scrollTop = e.currentTarget.scrollTop;
-    // requestAnimationFrame을 사용하면 더 부드러울 수 있지만,
-    // 리액트 상태 업데이트로도 충분히 부드러운 효과를 낼 수 있습니다.
-    setScrollY(scrollTop);
+    // requestAnimationFrame을 사용하여 상태 업데이트 최적화 (떨림 방지 도움)
+    window.requestAnimationFrame(() => {
+      setScrollY(scrollTop);
+    });
   };
 
-  // --------------------------------------------------------------------------
-  // [핵심 로직] 스크롤 위치에 따른 스타일 계산
-  // --------------------------------------------------------------------------
-  // 1. 높이: 원래 높이에서 스크롤된 만큼 뺌 (최소 0) -> 스크롤 내리면 축소, 올리면 확장
-  const currentHeight = Math.max(0, headerHeight - scrollY);
+  // [핵심 로직]
+  // 1. translateY: 스크롤한 만큼 헤더를 위로 올림 (단, 축소될 영역의 높이까지만 올림)
+  //    -> TripHeader(상단바)와 TripDateBar(하단바)는 남기고 가운데만 접히는 듯한 효과
+  const maxTranslate = collapsibleHeight;
+  const translateY = Math.max(-scrollY, -maxTranslate);
 
-  // 2. 투명도: 높이가 줄어들수록 흐려짐 (0 ~ 1)
-  const opacity = headerHeight ? Math.max(0, 1 - scrollY / (headerHeight * 0.8)) : 1;
-
-  // 3. 변형: 살짝 위로 올라가는 효과 (Parallax 느낌)
-  // 스크롤 속도보다 천천히 올라가게 하여 깊이감을 줌
-  const translateY = Math.min(0, -scrollY / 3);
+  // 2. Opacity: 스크롤 됨에 따라 내용물 흐리게 처리
+  const opacity = collapsibleHeight ? Math.max(0, 1 - scrollY / (collapsibleHeight * 0.8)) : 1;
 
   if (isLoading) {
     return (
@@ -87,50 +92,55 @@ const BudgetPage = ({ tripId }: BudgetPageProps) => {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col relative overflow-hidden">
       <div
-        className={`bg-white z-10 relative transition-shadow duration-200 shadow-[0_4px_6px_-4px_rgba(0,0,0,0.08)]
-        }`}
+        ref={headerContainerRef}
+        className="absolute top-0 left-0 right-0 z-10 bg-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.08)]"
+        style={{
+          transform: `translateY(${translateY}px)`,
+          willChange: 'transform', // GPU 가속 유도
+        }}
       >
         <TripHeader tripId={tripId} />
-
-        {/* 축소/확장 애니메이션 영역 */}
         <div
+          ref={collapsibleRef}
           style={{
-            height: headerHeight ? `${currentHeight}px` : 'auto',
             opacity: opacity,
-            transform: `translateY(${translateY}px)`,
-            overflow: 'hidden',
-            // [중요] transition 제거: 스크롤과 1:1로 반응하게 하여 '스스' 움직이는 느낌 구현
-            willChange: 'height, opacity, transform', // 성능 최적화 힌트
+            willChange: 'opacity',
           }}
         >
-          <div ref={collapsibleRef}>
-            <TripInfo
-              memberProfileImages={budgetData.memberProfileImages}
-              tripName={budgetData.tripName}
-              countries={budgetData.countries}
-              startDate={budgetData.startDate}
-              endDate={budgetData.endDate}
-            />
-            <SharedBudgetBar
-              tripId={budgetData.tripId}
-              sharedFund={budgetData.sharedFund}
-              topExpense={budgetData.topCategoryExpense}
-            />
-          </div>
+          <TripInfo
+            memberProfileImages={budgetData.memberProfileImages}
+            tripName={budgetData.tripName}
+            countries={budgetData.countries}
+            startDate={budgetData.startDate}
+            endDate={budgetData.endDate}
+          />
+          <SharedBudgetBar
+            tripId={budgetData.tripId}
+            sharedFund={budgetData.sharedFund}
+            topExpense={budgetData.topCategoryExpense}
+          />
         </div>
+
         <TripDateBar startDate={budgetData.startDate} endDate={budgetData.endDate} />
       </div>
-
-      {/* 스크롤 영역 */}
-      <div id="scroll-target-top" className="flex-1 overflow-y-auto bg-grey-100 scrollbar-hide" onScroll={handleScroll}>
-        <DailyExpenseList
-          dailyExpenses={budgetData.dailyExpenses}
-          tripStartDate={budgetData.startDate}
-          tripEndDate={budgetData.endDate}
-          tripId={tripId}
-        />
+      <div
+        id="scroll-target-top"
+        className="flex-1 overflow-y-auto bg-grey-100 scrollbar-hide"
+        onScroll={handleScroll}
+        style={{
+          paddingTop: totalHeaderHeight ? `${totalHeaderHeight}px` : '300px', // 초기값은 대략적으로 설정하거나 로딩 처리
+        }}
+      >
+        <div style={{ minHeight: `calc(100% + ${collapsibleHeight}px)` }}>
+          <DailyExpenseList
+            dailyExpenses={budgetData.dailyExpenses}
+            tripStartDate={budgetData.startDate}
+            tripEndDate={budgetData.endDate}
+            tripId={tripId}
+          />
+        </div>
       </div>
 
       <BottomSheetTrigger total={budgetData.totalExpense} tripId={tripId} />
