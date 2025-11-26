@@ -27,7 +27,10 @@ export default function RootLayout({
           content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"
         />
       </head>
-      <body className="h-[100dvh] min-w-[360px] max-w-[415px] lg:max-w-[360px] mx-auto bg-white text-grey-1000 scroll-smooth">
+      <body
+        suppressHydrationWarning={true}
+        className="h-[100dvh] min-w-[360px] max-w-[415px] lg:max-w-[360px] mx-auto bg-white text-grey-1000 scroll-smooth"
+      >
         <QueryProvider>
           <div id="modal-root" />
           {children}
