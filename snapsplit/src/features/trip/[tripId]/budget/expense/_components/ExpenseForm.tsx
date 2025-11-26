@@ -417,6 +417,7 @@ export default function ExpenseForm() {
             setDate={(date) => handleExpenseChange('date', date)}
             startDate={budgetData.startDate}
             endDate={budgetData.endDate}
+            settledDates={pageData.settledDates}
           />
         )}
 
