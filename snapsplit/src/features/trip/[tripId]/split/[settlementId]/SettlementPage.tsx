@@ -86,7 +86,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
         return;
       }
 
-      // [디버깅 2] API 키 확인 (보안상 앞자리만 노출하거나 확인용으로 전체 출력 후 삭제)
+      // [디버깅 2] API 키 확인
       const apiKey = process.env.NEXT_PUBLIC_KAKAO_JS_KEY;
       if (!apiKey) {
         alert('Error: 환경변수 NEXT_PUBLIC_KAKAO_JS_KEY가 비어있습니다.');
@@ -109,13 +109,9 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
         return;
       }
 
-      // [디버깅 4] 현재 도메인 확인 (가장 중요한 체크 포인트!)
-      // 카카오 개발자 센터 > 플랫폼 > Web > 사이트 도메인에 이 주소가 없으면 동작 안 함
+      // [디버깅 4] 현재 도메인 확인
       const currentUrl = window.location.href;
-      const currentOrigin = window.location.origin;
-
-      // 사용자에게 현재 상태를 알려줌 (테스트 후 주석 처리)
-      // alert(`공유 시도\nURL: ${currentOrigin}`);
+      // [수정] 사용하지 않는 currentOrigin 변수 삭제 (Lint Error 해결)
 
       const { settlementDetails } = data;
 
@@ -159,8 +155,8 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
           },
         ],
       });
-    } catch (err: any) {
-      // [디버깅 5] 런타임 에러 발생 시
+    } catch (err) {
+      // [수정] ': any' 제거 (Lint Error 해결)
       alert(`실행 중 에러 발생: ${JSON.stringify(err)}`);
       console.error(err);
     }
