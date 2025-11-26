@@ -7,8 +7,6 @@ import ExpenseInputCard from '@/features/trip/[tripId]/budget/expense/_component
 import ReceiptAnalysisSection from '@/features/trip/[tripId]/budget/expense/receipt/_components/receipt-form/ReceiptAnalysisSection';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import ReceiptThumbnail from './receipt-form/ReceiptThumbnail';
-import FullScreenModal from '@/shared/components/modal/FullScreenModal';
-import ZoomModal from './receipt-form/ZoomModal';
 import { useState, useEffect, useCallback } from 'react';
 import { ExpensePageDataResponse } from '@/features/trip/[tripId]/budget/expense/api/expense-dto-type';
 import { getExpensePageData } from '@/features/trip/[tripId]/budget/expense/api/expense-api';
@@ -23,7 +21,6 @@ export default function ReceiptForm() {
   const tripId = params.tripId as string;
   const searchParams = useSearchParams();
   const date = searchParams.get('date') as string;
-
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
 
   // ✅ Zustand에서 OCR 결과 / 통화정보 관리
@@ -83,6 +80,7 @@ export default function ReceiptForm() {
     const fetchExpensePageData = async () => {
       try {
         const expensePageData = await getExpensePageData(Number(tripId), date);
+        console.log('지출 초기화 데이터 : ', expensePageData);
         setPageData(expensePageData);
 
         // [수정] 초기 로드 시, OCR 아이템들의 합계를 계산하여 amount에 설정

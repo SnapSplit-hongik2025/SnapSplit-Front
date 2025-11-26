@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useRef, useState, useEffect } from 'react';
 import { updateMyData } from '@/features/my/api/my-api';
 import editIcon from '@public/svg/edit-green.svg';
+import cameraIcon from '@public/svg/camera-primary.svg';
 import { useQueryClient } from '@tanstack/react-query'; // [1] import 추가
 
 type ProfileSectionProps = {
@@ -111,9 +112,9 @@ export default function ProfileSection({ name, profileImage, userCode }: Profile
         {isEditing && (
           <button
             onClick={onPick}
-            className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-white flex items-center justify-center border border-grey-200"
+            className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-white flex items-center justify-center border border-grey-450"
           >
-            <Image src={editIcon} alt="edit profile image" width={18} height={18} />
+            <Image src={cameraIcon} alt="edit profile image" width={18} height={18} />
           </button>
         )}
         <input type="file" accept="image/*" ref={fileRef} onChange={onFileChange} className="hidden" />
