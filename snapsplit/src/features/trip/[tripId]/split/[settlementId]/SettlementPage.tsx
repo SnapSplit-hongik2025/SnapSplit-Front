@@ -84,7 +84,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
             objectType: 'feed',
             content: {
               title: 'SNAP SPLIT 정산 영수증 도착!',
-              description: `Day ${startDay} ~ Day ${endDay} 정산 내역입니다.`,
+              description: description,
               imageUrl: 'https://ibb.co/gMCG3LN7',
               link: { mobileWebUrl: currentUrl, webUrl: currentUrl },
             },
