@@ -18,10 +18,12 @@ export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
   }
 };
 
-export const uploadImage = async (tripId: number, file: File) => {
+export const uploadImage = async (tripId: number, files: File[]) => {
   const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/photos';
   const formData = new FormData();
-  formData.append('images', file);
+  files.forEach((file) => {
+    formData.append('images', file);
+  });
   try {
     const res = await privateInstance.post<ApiEnvelope<UploadImageDto>>(finalPath, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     return res.data.data;
