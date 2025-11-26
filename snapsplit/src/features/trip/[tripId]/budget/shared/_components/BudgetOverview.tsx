@@ -11,9 +11,11 @@ const BudgetOverview = ({ totalSharedBudget }: BudgetOverviewProps) => {
         console.log(item);
         return (
           <div className="flex items-center justify-between w-full py-1" key={index}>
-            <div className="text-body-1 text-grey-450">{getNation(item.currency)} - {item.currency}({getKorName(item.currency)})</div>
+            <div className="text-body-1 text-grey-450">
+              {getNation(item.currency)} - {item.currency}({getKorName(item.currency)})
+            </div>
             <div className="text-label-1 text-white">
-              {item.amount}
+              {item.amount.toLocaleString()}
               {getSymbol(item.currency)}
             </div>
           </div>

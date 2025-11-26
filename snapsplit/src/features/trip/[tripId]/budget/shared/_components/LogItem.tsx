@@ -1,5 +1,5 @@
-import { getSymbol } from "@/shared/utils/currency";
-import { useMemo } from "react";
+import { getSymbol } from '@/shared/utils/currency';
+import { useMemo } from 'react';
 
 type LogItemProps = {
   type: 'deposit' | 'expense';
@@ -14,22 +14,22 @@ type LogItemProps = {
   exchangeRates?: Record<string, number>;
 };
 
-const LogItem = ({ 
-  type, 
-  label, 
-  memo, 
-  amount, 
-  currency, 
+const LogItem = ({
+  type,
+  label,
+  memo,
+  amount,
+  currency,
   krwEquivalent,
   defaultCurrency,
-  exchangeRates
+  exchangeRates,
 }: LogItemProps) => {
   // 기본 통화가 없거나 현재 통화와 같은 경우 변환 없이 표시
   const displayAmount = useMemo(() => {
     if (!defaultCurrency || currency === defaultCurrency || !exchangeRates) {
       return amount;
     }
-    
+
     // 환율 정보가 없으면 원본 금액 반환
     if (!exchangeRates[currency] || !exchangeRates[defaultCurrency]) {
       return amount;
@@ -49,20 +49,21 @@ const LogItem = ({
         {memo && <div className="text-caption-1 text-grey-550">{memo}</div>}
       </div>
       <div className="flex flex-col">
-        <div className={`text-label-1 text-end ${
-          type === 'expense' ? 'text-grey-1000' : 
-          amount > 0 ? 'text-green' : 'text-[#FD7564]'
-        }`}>
+        <div
+          className={`text-label-1 text-end ${
+            type === 'expense' ? 'text-grey-1000' : amount > 0 ? 'text-green' : 'text-[#FD7564]'
+          }`}
+        >
           {amount > 0 ? '+' : ''}
           {displayAmount.toLocaleString(undefined, {
             minimumFractionDigits: 0,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
           })}
           {displaySymbol}
         </div>
         {currency !== defaultCurrency && (
           <div className="text-caption-1 text-end text-grey-550">
-            {krwEquivalent} {getSymbol('KRW')}
+            {krwEquivalent.toLocaleString()} {getSymbol('KRW')}
           </div>
         )}
       </div>

@@ -31,7 +31,7 @@ const LogSection = ({ defaultCurrency, whileTripLog, beforeTripLog, tripStartDat
         <div className="flex items-center justify-start">
           <p className="text-body-1 text-grey-1000">여행 준비</p>
         </div>
-        {beforeTripLog.map((item) => (
+        {beforeTripLog.map((item) =>
           item.items.map((entry, entryIndex) => (
             <LogItem
               key={entryIndex}
@@ -43,31 +43,32 @@ const LogSection = ({ defaultCurrency, whileTripLog, beforeTripLog, tripStartDat
               krwEquivalent={entry.amountKRW}
             />
           ))
-        ))}
+        )}
       </div>
 
       {/* Day별 내역 */}
-      {whileTripLog.length > 0 && whileTripLog.map(({ date, items }, index) => (
-        <div key={index} className="w-full">
-          <div className="flex items-center gap-2">
-            <div className="text-body-1 text-grey-1000">{toDayX(date, tripStartDate)}</div>
-            <div className="w-0 h-3.75 border-1 border-grey-350" />
-            <div className="text-body-1 text-grey-550">{toMDotDDW(date)}</div>
-          </div>
+      {whileTripLog.length > 0 &&
+        whileTripLog.map(({ date, items }, index) => (
+          <div key={index} className="w-full">
+            <div className="flex items-center gap-2">
+              <div className="text-body-1 text-grey-1000">{toDayX(date, tripStartDate)}</div>
+              <div className="w-0 h-3.75 border-1 border-grey-350" />
+              <div className="text-body-1 text-grey-550">{toMDotDDW(date)}</div>
+            </div>
 
-          {items.map((item, index) => (
-            <LogItem
-              key={index}
-              type={item.type}
-              label={item.title}
-              memo={item.memo}
-              amount={item.amount}
-              currency={defaultCurrency}
-              krwEquivalent={item.amountKRW}
-            />
-          ))}
-        </div>
-      ))}
+            {items.map((item, index) => (
+              <LogItem
+                key={index}
+                type={item.type}
+                label={item.title}
+                memo={item.memo}
+                amount={item.amount}
+                currency={defaultCurrency}
+                krwEquivalent={item.amountKRW}
+              />
+            ))}
+          </div>
+        ))}
     </div>
   );
 };
