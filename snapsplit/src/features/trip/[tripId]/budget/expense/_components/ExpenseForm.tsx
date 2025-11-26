@@ -11,7 +11,8 @@ import CategorySection from './expense-form/CategorySection';
 import PaySection from './expense-form/PaySection';
 import SplitSection from './expense-form/SplitSection';
 import Button from '@/shared/components/Button';
-
+import alert from '@public/svg/alert-circle-red.svg';
+import Image from 'next/image';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { createExpense, createExpenseWithReceipt, getExpensePageData } from '../api/expense-api';
@@ -183,6 +184,69 @@ export default function ExpenseForm() {
     },
   });
 
+  // --------------------------------------------------------------------------
+  // [추가] 실시간 금액 검증 및 에러 메시지 생성 로직
+  // --------------------------------------------------------------------------
+
+  // 1. 결제자(Payer) 검증 데이터
+  const selectedPayers = Object.entries(membersState).filter(([_, m]) => m.isPayer);
+  const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
+  const payerDiff = form.expense.amount - totalPayerAmount;
+
+  // 2. 공동 경비 멤버 ID 찾기 및 결제 금액 계산
+  const sharedFundMember = pageData?.members.find((member) => member.memberType === 'SHARED_FUND');
+  const sharedFundMemberId = sharedFundMember?.memberId;
+  const sharedFundPayment = sharedFundMemberId
+    ? selectedPayers
+        .filter(([id, _]) => Number(id) === sharedFundMemberId)
+        .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0)
+    : 0;
+
+  // 3. 정산자(Splitter) 검증 데이터
+  // 정산 필요 금액 = 전체 지출 금액 - 공동경비가 낸 금액
+  const requiredSplitAmount = form.expense.amount - sharedFundPayment;
+  const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
+  const totalSplitAmount = selectedSplitters.reduce((sum, [_, m]) => sum + (m.splitAmount || 0), 0);
+  const splitDiff = requiredSplitAmount - totalSplitAmount;
+
+  const getValidationError = () => {
+    // 0. 초기 상태(0원)일 때는 에러 표시 안 함
+    if (form.expense.amount === 0) return null;
+
+    // 1. 결제자 금액 불일치
+    if (payerDiff !== 0) {
+      const status = payerDiff > 0 ? '부족' : '초과';
+      return `결제 금액이 ${Math.abs(payerDiff).toLocaleString()}${getSymbol(form.expense.currency)} ${status}합니다`;
+    }
+
+    // 2. 정산자 금액 불일치 (정산 대상 금액이 있을 때만)
+    if (requiredSplitAmount > 0 && splitDiff !== 0) {
+      const status = splitDiff > 0 ? '부족' : '초과';
+      return `정산자 금액이 ${Math.abs(splitDiff).toLocaleString()}${getSymbol(form.expense.currency)} ${status}합니다`;
+    }
+
+    // 3. 최소 인원 선택 검증
+    if (selectedPayers.length === 0) return '결제자를 최소 1명 이상 선택해주세요.';
+    if (requiredSplitAmount > 0 && selectedSplitters.length === 0) return '정산자를 최소 1명 이상 선택해주세요.';
+
+    return null;
+  };
+
+  const validationErrorMessage = getValidationError();
+  const isSubmitting = isCreating || isCreatingWithReceipt;
+
+  // 폼 완전성 체크 - 필수 필드들이 모두 채워졌는지 확인
+  const isFormComplete = Boolean(
+    form.expense.date &&
+      form.expense.amount > 0 &&
+      form.expense.currency &&
+      form.expense.exchangeRate > 0 &&
+      form.expense.category &&
+      form.expense.paymentMethod
+  );
+
+  const isFormValid = isFormComplete && !validationErrorMessage;
+
   const handleSubmit = () => {
     if (!tripId) return;
 
@@ -213,17 +277,11 @@ export default function ExpenseForm() {
     }
 
     // payers/splitters 검증
-    const selectedPayers = Object.entries(membersState).filter(([_, m]) => m.isPayer);
-    const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
-
     // 결제자 최소 1명 검증
     if (selectedPayers.length === 0) {
       alert('결제자를 최소 1명 이상 선택해주세요.');
       return;
     }
-
-    // 결제 금액 계산
-    const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
 
     // 결제 금액 총합 검증
     if (totalPayerAmount !== form.expense.amount) {
@@ -234,18 +292,13 @@ export default function ExpenseForm() {
     }
 
     // 공동 경비 멤버 ID 찾기
-    const sharedFundMember = pageData?.members.find((member) => member.memberType === 'SHARED_FUND');
-    const sharedFundMemberId = sharedFundMember?.memberId;
+    // (위에서 계산된 변수 사용)
 
     // 공동 경비 결제 금액 계산 (memberType이 SHARED_FUND인 멤버가 결제자로 선택된 경우)
-    const sharedFundPayment = sharedFundMemberId
-      ? selectedPayers
-          .filter(([id, _]) => Number(id) === sharedFundMemberId)
-          .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0)
-      : 0;
+    // (위에서 계산된 변수 사용)
 
     // 정산 필요 금액 계산
-    const requiredSplitAmount = form.expense.amount - sharedFundPayment;
+    // (위에서 계산된 변수 사용)
 
     // 정산자 검증 (정산 필요 금액이 1원 이상일 경우)
     if (requiredSplitAmount > 0 && selectedSplitters.length === 0) {
@@ -254,7 +307,6 @@ export default function ExpenseForm() {
     }
 
     // 정산 금액 총합 검증
-    const totalSplitAmount = selectedSplitters.reduce((sum, [_, m]) => sum + (m.splitAmount || 0), 0);
     if (totalSplitAmount !== requiredSplitAmount) {
       alert(
         `정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
@@ -310,17 +362,11 @@ export default function ExpenseForm() {
     }
 
     // payers/splitters 검증
-    const selectedPayers = Object.entries(membersState).filter(([_, m]) => m.isPayer);
-    const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
-
     // 결제자 최소 1명 검증
     if (selectedPayers.length === 0) {
       alert('결제자를 최소 1명 이상 선택해주세요.');
       return;
     }
-
-    // 결제 금액 계산
-    const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
 
     // 결제 금액 총합 검증
     if (totalPayerAmount !== form.expense.amount) {
@@ -331,12 +377,10 @@ export default function ExpenseForm() {
     }
 
     // 공동 경비 결제 금액 계산 (멤버 ID 4번이 공동 경비)
-    const sharedFundPayment = selectedPayers
-      .filter(([id, _]) => Number(id) === 4)
-      .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
+    // (위에서 계산된 변수 사용)
 
     // 정산 필요 금액 계산
-    const requiredSplitAmount = form.expense.amount - sharedFundPayment;
+    // (위에서 계산된 변수 사용)
 
     // 정산자 검증 (정산 필요 금액이 1원 이상일 경우)
     if (requiredSplitAmount > 0 && selectedSplitters.length === 0) {
@@ -345,7 +389,6 @@ export default function ExpenseForm() {
     }
 
     // 정산 금액 총합 검증
-    const totalSplitAmount = selectedSplitters.reduce((sum, [_, m]) => sum + (m.splitAmount || 0), 0);
     if (totalSplitAmount !== requiredSplitAmount) {
       alert(
         `정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
@@ -381,18 +424,6 @@ export default function ExpenseForm() {
       </div>
     );
   }
-
-  const isSubmitting = isCreating || isCreatingWithReceipt;
-
-  // 폼 완전성 체크 - 필수 필드들이 모두 채워졌는지 확인
-  const isFormComplete = Boolean(
-    form.expense.date &&
-      form.expense.amount > 0 &&
-      form.expense.currency &&
-      form.expense.exchangeRate > 0 &&
-      form.expense.category &&
-      form.expense.paymentMethod
-  );
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
@@ -454,12 +485,20 @@ export default function ExpenseForm() {
         />
       </div>
 
-      {/* ✅ 6. 제출 버튼 (로딩 상태 반영) */}
-      <div className="flex items-center justify-center w-full py-5">
+      {/* ✅ 6. 제출 버튼 (로딩 상태 반영 및 에러 메시지 표시) */}
+      <div className="flex flex-col items-center justify-center w-full py-5 gap-3">
+        {/* 에러 메시지 렌더링 */}
+        {validationErrorMessage && (
+          <div className="flex flex-row gap-1 items-center justify-center w-full px-4 py-2 bg-red-50 border border-red-100 rounded-xl">
+            <Image src={alert} alt="error" width={24} height={24} />
+            <span className="text-body-3 text-status_error font-medium">{validationErrorMessage}</span>
+          </div>
+        )}
+
         <Button
           label={isSubmitting ? '저장 중...' : '추가하기'}
           onClick={isFromReceipt ? handleSubmitWithReceipt : handleSubmit}
-          enabled={!isSubmitting && isFormComplete} // 로딩 중 및 폼 미완성 시 비활성화
+          enabled={!isSubmitting && isFormValid} // 로딩 중 및 폼 미완성(금액 오류 포함) 시 비활성화
         />
       </div>
     </div>
