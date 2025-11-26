@@ -66,7 +66,7 @@ export default function ReceiptRegisterButton() {
       const status = errorObj.response?.status || errorObj.status;
 
       if (status === 400) {
-        alert('유효하지 않은 이미지 파일입니다. 다른 파일로 시도해주세요.');
+        alert('영수증의 통화 정보가 여행에 설정된 통화와 일치하지 않습니다.\n다른 영수증으로 시도해주세요!');
       } else {
         alert('영수증 인식에 실패했습니다. 다시 시도해주세요!');
       }
