@@ -72,10 +72,10 @@ export const getPhotos = async (tripId: number, page: number, sort: string) => {
   }
 }
 
-export const downloadImage = async (tripId: number, photoId: number) => {
+export const downloadImage = async (tripId: number, photoIds: number[]) => {
   const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/download';
   try {
-    const res = await privateInstance.post<Blob>(finalPath, { photoIds: [photoId] }, { responseType: 'blob' });
+    const res = await privateInstance.post<Blob>(finalPath, { photoIds: photoIds }, { responseType: 'blob' });
     return res.data;
   } catch (error) {
     console.error(`[API Error] Failed to get photos for tripId ${tripId}:`, error);

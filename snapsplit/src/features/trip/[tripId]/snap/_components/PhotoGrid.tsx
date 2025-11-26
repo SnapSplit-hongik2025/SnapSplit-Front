@@ -61,7 +61,10 @@ export default function PhotoGrid({
 
     try {
       // 📌 Blob 받기
-      const blob = await downloadImage(Number(tripId.tripId), selectedImageId);
+      const blob = await downloadImage(Number(tripId.tripId), [selectedImageId]);
+
+      console.log('blob type:', blob.type);
+      console.log('blob size:', blob.size);
 
       // 📌 Blob을 URL로 변환
       const url = window.URL.createObjectURL(blob);

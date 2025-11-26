@@ -12,7 +12,7 @@ import SortBottomSheet from '@/features/trip/[tripId]/snap/_components/SortBotto
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import SelectModeActionBar from './_components/SelectModeActionBar';
 import { PhotoResponse } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
-import { getPhotosByFolder } from '@/features/trip/[tripId]/snap/api/snap-api';
+import { getPhotosByFolder, downloadImage } from '@/features/trip/[tripId]/snap/api/snap-api';
 import { getDayCount } from '@/shared/utils/parseDate';
 import { getTripBudgetData } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { useQuery } from '@tanstack/react-query';
@@ -120,6 +120,27 @@ const SnapFolderPage = () => {
     );
   }
 
+  const handleDownloadSelected = async () => {
+    if (selectedImageIds.length === 0 || !tripId) return;
+    
+    try {
+      const blob = await downloadImage(Number(tripId), selectedImageIds.map(id => Number(id)));
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'selected_photos.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('다운로드에 실패했습니다.');
+    }
+  };
+
   const dayCount = getDayCount(tripData.startDate ?? '', tripData.endDate ?? '');
 
   return (
@@ -196,6 +217,7 @@ const SnapFolderPage = () => {
           selectedCount={selectedImageIds.length} 
           tripId={Number(tripId)} 
           photoIds={selectedImageIds.map((id) => Number(id))}
+          onDownload={handleDownloadSelected}
           onDelete={() => {
             // 선택 모드 종료
             setIsSelectionMode(false);
