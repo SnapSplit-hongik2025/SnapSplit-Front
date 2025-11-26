@@ -85,7 +85,8 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
             content: {
               title: 'SNAP SPLIT 정산 영수증 도착!',
               description: description,
-              imageUrl: 'https://ibb.co/gMCG3LN7',
+              imageUrl:
+                'https://file.notion.so/f/f/c12b61e8-004b-4c24-a22f-9a1e3ce70c4b/c9b7539c-3a9b-4fbf-b278-d6c2bd70031f/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2025-11-27_%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB_3.55.33.png?table=block&id=2b767ed1-3cf8-80e5-a584-db6c04edd368&spaceId=c12b61e8-004b-4c24-a22f-9a1e3ce70c4b&expirationTimestamp=1764288000000&signature=xPkV4s_HlEfFXnt0kWTofnM6TTOf3wYnGZIRxKqUxM0&downloadName=%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA+2025-11-27+%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB+3.55.33.png',
               link: { mobileWebUrl: currentUrl, webUrl: currentUrl },
             },
             buttons: [
