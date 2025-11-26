@@ -27,7 +27,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
     let message = ``;
     message += `Day ${startDay} ~ Day ${endDay} 까지의 정산 내역이에요!\n\n`;
 
-    message += `[보낼 돈]\n\n`;
+    message += `[정산 목록]\n\n`;
 
     if (settlementDetails.length === 0) {
       message += `- 정산할 내역이 없습니다.\n`;
@@ -44,100 +44,36 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
     return message;
   };
 
-  // 2. 카카오톡 공유 핸들러 (디버깅 강화 버전)
-  const handleKakaoShare = () => {
-    try {
-      // [디버깅 1] window.Kakao 객체 존재 확인
-      if (!window.Kakao) {
-        alert('Error: window.Kakao 객체를 찾을 수 없습니다. 스크립트 로딩 실패.');
-        return;
-      }
+  // 2. [통합] 범용 공유 핸들러 (Web Share API 우선, 복사 Fallback)
+  const handleUniversalShare = async () => {
+    if (!data) return;
 
-      // [디버깅 2] API 키 확인
-      const apiKey = process.env.NEXT_PUBLIC_KAKAO_JS_KEY;
-      if (!apiKey) {
-        alert('Error: 환경변수 NEXT_PUBLIC_KAKAO_JS_KEY가 비어있습니다.');
-        return;
-      }
+    const shareText = generateShareText();
+    const shareTitle = '[SNAP SPLIT 정산 영수증]';
+    const currentUrl = window.location.href;
 
-      // 초기화 시도
-      if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(apiKey);
-      }
-
-      // [디버깅 3] 초기화 후 상태 확인
-      if (!window.Kakao.isInitialized()) {
-        alert('Error: Kakao.init() 실패. 유효하지 않은 키이거나 이미 다른 키로 초기화되었습니다.');
-        return;
-      }
-
-      if (!data) {
-        alert('Error: 공유할 데이터(data)가 아직 로드되지 않았습니다.');
-        return;
-      }
-
-      // [디버깅 4] 현재 도메인 확인
-      const currentUrl = window.location.href;
-      // [수정] 사용하지 않는 currentOrigin 변수 삭제 (Lint Error 해결)
-
-      const { settlementDetails } = data;
-
-      let description = `Day ${startDay} ~ Day ${endDay} 정산 내역입니다.\n\n[송금 목록]\n`;
-
-      if (settlementDetails.length === 0) {
-        description += '정산할 내역이 없습니다.';
-      } else {
-        settlementDetails.slice(0, 5).forEach((detail) => {
-          const senderName = detail.sender.name || '알수없음';
-          const receiverName = detail.receiver.name || '알수없음';
-          const amount = detail.amount.toLocaleString();
-          description += `• ${senderName} → ${receiverName} : ${amount}원\n`;
+    // 1. Web Share API 시도 (모바일 Native Share Sheet)
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: `${shareTitle}\n\n${shareText}`, // 텍스트와 타이틀을 합쳐서 전송
+          url: currentUrl,
         });
-
-        if (settlementDetails.length > 5) {
-          description += `...외 ${settlementDetails.length - 5}건`;
-        }
+        return; // 성공 시 여기서 종료
+      } catch (error) {
+        // [수정] 실패(취소 포함) 시 콘솔에 로그만 남기고 바로 종료
+        console.log('Native Share Failed or Canceled:', error);
+        return; // 실패/취소 시에도 클립보드 복사 로직으로 넘어가지 않고 종료
       }
-
-      // 카카오톡 공유 실행
-      window.Kakao.Share.sendDefault({
-        objectType: 'feed',
-        content: {
-          title: '💸 SNAP SPLIT 정산 영수증 도착!',
-          description: description,
-          imageUrl:
-            'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=1200',
-          link: {
-            mobileWebUrl: currentUrl,
-            webUrl: currentUrl,
-          },
-        },
-        buttons: [
-          {
-            title: '정산 내역 자세히 보기',
-            link: {
-              mobileWebUrl: currentUrl,
-              webUrl: currentUrl,
-            },
-          },
-        ],
-      });
-    } catch (err) {
-      // [수정] ': any' 제거 (Lint Error 해결)
-      alert(`실행 중 에러 발생: ${JSON.stringify(err)}`);
-      console.error(err);
     }
-  };
 
-  // 3. 텍스트 복사 핸들러
-  const handleCopyText = async () => {
-    const text = generateShareText();
+    // 2. Fallback: 클립보드 복사 (Web Share API가 존재하지 않을 때만 실행됨)
     try {
-      await navigator.clipboard.writeText(text);
-      alert('정산 내역이 클립보드에 복사되었습니다!');
-    } catch (err) {
-      console.error('복사 실패:', err);
-      alert('복사에 실패했습니다.');
+      await navigator.clipboard.writeText(`${shareTitle}\n\n${shareText}`);
+      alert('정산 내역이 클립보드에 복사되었습니다. 카카오톡 등 앱에 붙여넣기 하세요!');
+    } catch {
+      alert('공유 기능을 지원하지 않는 환경입니다.');
     }
   };
 
@@ -165,16 +101,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
               startDay={startDay}
               settlementDetails={data.settlementDetails}
             />
-
-            <div className="flex gap-2 w-full mt-4">
-              <Button label="텍스트 복사" onClick={handleCopyText} bg="bg-grey-300 text-grey-800" className="flex-1" />
-              <Button
-                label="카카오톡 공유"
-                onClick={handleKakaoShare}
-                bg="bg-[#FEE500] text-[#191919]"
-                className="flex-1"
-              />
-            </div>
+            <Button label="공유하기" onClick={handleUniversalShare} className="w-full" />
           </>
         )}
       </section>
