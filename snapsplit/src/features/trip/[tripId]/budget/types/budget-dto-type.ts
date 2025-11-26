@@ -31,6 +31,7 @@ export interface TopCategoryExpenseDto {
 export interface DailyExpenseDto {
   date: string;
   expenses: ExpenseDto[];
+  canAddExpense: boolean;
 }
 
 // 지출 내역

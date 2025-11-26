@@ -80,11 +80,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     status: photoStatus,
   } = useInfiniteQuery({
     queryKey: ['photos', tripId, sortKey],
-    queryFn: ({ pageParam = 0 }) =>
-      getPhotos(Number(tripId), pageParam, sortKey),
+    queryFn: ({ pageParam = 0 }) => getPhotos(Number(tripId), pageParam, sortKey),
     initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage.last ? undefined : allPages.length,
+    getNextPageParam: (lastPage, allPages) => (lastPage.last ? undefined : allPages.length),
     staleTime: 1000 * 30,
     enabled: !!readiness?.allMembersRegistered, // 얼굴 등록되면 사진 불러오기
   });
@@ -94,9 +92,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
   /** ======================================
    * 📸 업로드 → 자동 invalidate
    * ====================================== */
-  const imageSubmit = async (file: File) => {
+  const imageSubmit = async (files: File[]) => {
     setUploading(true);
-    await uploadImage(Number(tripId), file);
+    await uploadImage(Number(tripId), files);
     setUploading(false);
 
     // 최신 정렬 상태 기준으로 photos 쿼리 invalidate
@@ -179,21 +177,33 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           members={members}
         />
       ) : (
-        <FolderTabView folders={folders} selectedSort={selectedSort}/>
+        <FolderTabView folders={folders} selectedSort={selectedSort} />
       )}
 
-      <FloatingModal>
-        <UploadButton isScrolled={isScrolled} inputRef={fileInputRef} scrollToTop={scrollToTop} />
-      </FloatingModal>
+      {!readiness.allMembersRegistered ? null : (
+        <FloatingModal>
+          <UploadButton isScrolled={isScrolled} inputRef={fileInputRef} scrollToTop={scrollToTop} />
+        </FloatingModal>
+      )}
 
       <input
         type="file"
         accept="image/*"
+        multiple
         ref={fileInputRef}
         style={{ display: 'none' }}
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) imageSubmit(file);
+          const files = e.target.files;
+          if (files && files.length > 0) {
+            imageSubmit(Array.from(files)).catch((error) => {
+              console.error('이미지 업로드 실패:', error);
+              alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+            });
+          }
+          // 업로드 후 input 초기화
+          if (e.target) {
+            e.target.value = '';
+          }
         }}
       />
     </div>

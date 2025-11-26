@@ -60,7 +60,7 @@ const SharedBudgetDetailPage = () => {
     sharedBudgetData?.sharedBudgetDetails?.filter(
       (item) => new Date(item.date) < new Date(sharedBudgetData.tripStartDate)
     ) || [];
-  
+
   const whileTripLog =
     sharedBudgetData?.sharedBudgetDetails?.filter(
       (item) => new Date(item.date) >= new Date(sharedBudgetData.tripStartDate)

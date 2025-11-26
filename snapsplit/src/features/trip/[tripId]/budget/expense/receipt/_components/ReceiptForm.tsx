@@ -25,7 +25,6 @@ export default function ReceiptForm() {
   const date = searchParams.get('date') as string;
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
-  const [zoomOpen, setZoomOpen] = useState(false);
 
   // ✅ Zustand에서 OCR 결과 / 통화정보 관리
   const { ocrResult, receiptUrl, currency, setOcrResult } = useReceiptStore();
@@ -34,7 +33,7 @@ export default function ReceiptForm() {
   const [form, setForm] = useState<CreateExpenseRequest>({
     expense: {
       date: date,
-      amount: ocrResult?.totalAmount ?? 0,
+      amount: 0, // 초기값은 0, useEffect에서 계산됨
       currency: currency,
       exchangeRate: 1,
       category: '',
@@ -69,6 +68,14 @@ export default function ReceiptForm() {
     [ocrResult, setOcrResult]
   );
 
+  // ✅ 금액 변경 (ReceiptAnalysisSection에서 호출됨)
+  const handleAmountChange = useCallback((amount: number) => {
+    setForm((prev) => ({
+      ...prev,
+      expense: { ...prev.expense, amount: amount },
+    }));
+  }, []);
+
   // init
   useEffect(() => {
     if (!tripId || !date) return;
@@ -77,16 +84,21 @@ export default function ReceiptForm() {
       try {
         const expensePageData = await getExpensePageData(Number(tripId), date);
         setPageData(expensePageData);
+
+        // [수정] 초기 로드 시, OCR 아이템들의 합계를 계산하여 amount에 설정
+        const initialItems = ocrResult?.items ?? [];
+        const calculatedTotal = initialItems.reduce((acc, item) => acc + Number(item.amount || 0), 0);
+
         setForm((prev) => ({
           ...prev,
           expense: {
             ...prev.expense,
             currency: currency,
             exchangeRate: expensePageData.exchangeRates[currency],
-            amount: ocrResult?.totalAmount ?? prev.expense.amount,
+            amount: calculatedTotal, // 계산된 합계 적용
           },
         }));
-        console.log('form.amount: ', form.expense.amount);
+
         setMembersState(
           expensePageData.members.reduce(
             (acc, member) => {
@@ -102,14 +114,7 @@ export default function ReceiptForm() {
     };
 
     fetchExpensePageData();
-  }, [tripId, date, currency, form.expense.amount, ocrResult?.totalAmount]);
-
-  const handleAmountChange = (amount: number) => {
-    setForm((prev) => ({
-      ...prev,
-      expense: { ...prev.expense, amount: amount },
-    }));
-  };
+  }, [tripId, date, currency]); // 의존성 배열에서 ocrResult 등 제거
 
   const handleNext = () => {
     setOcrResult({
@@ -130,42 +135,41 @@ export default function ReceiptForm() {
         <Loading />
       </div>
     );
-  };
+  }
 
-  console.log("[receiptForm] receiptUrl: ", receiptUrl);
+  console.log('[receiptForm] receiptUrl: ', receiptUrl);
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
       <div className="text-title-1 w-full pb-4">영수증 정보가 맞나요?</div>
 
       <div className="flex flex-col items-center w-full gap-6">
-        <ReceiptThumbnail setZoomOpen={setZoomOpen} receiptUrl={receiptUrl} />
+        <ReceiptThumbnail receiptUrl={receiptUrl} />
 
-        {/* 금액 및 통화 */}
+        {/* 금액 및 통화 (readOnly 적용) */}
         <ExpenseInputCard
           amount={form.expense.amount}
-          setAmount={(amount) => handleExpenseChange('amount', amount)}
+          setAmount={handleAmountChange} // 내부 로직상 readOnly일 땐 호출되지 않지만 타입 유지를 위해 전달
           currency={form.expense.currency}
           setCurrency={(currency) => handleExpenseChange('currency', currency)}
           availCurrencies={pageData.availCurrencies}
           exchangeRates={pageData.exchangeRates}
           setExchangeRate={(exchangeRate) => handleExpenseChange('exchangeRate', exchangeRate)}
           mode="receipt"
+          readOnly={true} // [수정] 입력 불가능하도록 설정
         />
 
         {/* OCR 분석 항목 */}
-        <ReceiptAnalysisSection items={ocrResult?.items || []} setItems={handleItemChange} setAmount={handleAmountChange} />
+        <ReceiptAnalysisSection
+          items={ocrResult?.items || []}
+          setItems={handleItemChange}
+          setAmount={handleAmountChange}
+        />
       </div>
 
       <div className="flex items-center justify-center w-full py-5">
         <Button label="다음으로" onClick={handleNext} enabled={true} />
       </div>
-
-      {zoomOpen && receiptUrl && (
-        <FullScreenModal>
-          <ZoomModal onClose={() => setZoomOpen(false)} receiptUrl={receiptUrl} />
-        </FullScreenModal>
-      )}
     </div>
   );
 }

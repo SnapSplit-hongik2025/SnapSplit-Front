@@ -8,7 +8,6 @@ interface SortFilterBarProps {
   onFilterOpen: () => void;
   filters: FilterState;
   setFilters: (filters: FilterState) => void;
-  onSortChange?: (sort: 'date_desc' | 'date_asc') => void;
 }
 
 export default function SortFilterBar({
@@ -17,15 +16,7 @@ export default function SortFilterBar({
   onFilterOpen,
   filters,
   setFilters,
-  onSortChange,
 }: SortFilterBarProps) {
-  const handleSortClick = () => {
-    if (onSortChange) {
-      onSortChange(selectedSort === 'date_desc' ? 'date_asc' : 'date_desc');
-    } else {
-      onSortOpen();
-    }
-  };
 
   return (
     <div className="display-fixed display-w-full z-10">
@@ -33,7 +24,7 @@ export default function SortFilterBar({
         <div className="flex flex-col gap-3">
           <FilterTagContainer filters={filters} setFilters={setFilters} />
           <button
-            onClick={handleSortClick}
+            onClick={onSortOpen}
             className="self-start cursor-pointer flex items-center h-8 text-body-2 pl-3 pr-1 py-1 rounded-full bg-white border-1 border-grey-250"
           >
             {selectedSort === 'date_desc' ? '최신순' : '오래된순'}{' '}

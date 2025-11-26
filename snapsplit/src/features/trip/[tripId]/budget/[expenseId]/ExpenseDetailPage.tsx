@@ -40,7 +40,7 @@ export default function ExpenseDetailPage({ tripId, expenseId }: ExpenseDetailPa
 
   return (
     <div className="h-screen w-full flex flex-col">
-      <ExpenseDetailHeader tripId={tripId} expenseId={expenseId}/>
+      <ExpenseDetailHeader tripId={tripId} expenseId={expenseId} canAddExpense={data.canAddExpense} />
       <div className="flex h-full flex-col w-full overflow-y-auto scrollbar-hide p-5">
         <ExpenseAmount amount={data.amount} symbol={symbol} amountKRW={data.amountKRW} />
         {data.receiptUrl && <ReceiptImg receiptUrl={data.receiptUrl} />}

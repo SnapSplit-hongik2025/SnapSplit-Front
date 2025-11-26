@@ -1,12 +1,12 @@
 'use client';
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function ExpenseHeader() {
   const router = useRouter();
   return (
     <div className="flex items-center justify-between w-full px-5 py-3">
-      <button type="button" onClick={() => router.back()}>
+      <button type="button" onClick={() => router.back()} className="cursor-pointer">
         <Image src="/svg/arrow-left-grey-1000.svg" alt="뒤로" width={24} height={24} />
       </button>
       <div className="text-label-1">지출 추가하기</div>

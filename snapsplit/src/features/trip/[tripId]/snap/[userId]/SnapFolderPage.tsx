@@ -12,11 +12,12 @@ import SortBottomSheet from '@/features/trip/[tripId]/snap/_components/SortBotto
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import SelectModeActionBar from './_components/SelectModeActionBar';
 import { PhotoResponse } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
-import { getPhotosByFolder } from '@/features/trip/[tripId]/snap/api/snap-api';
+import { getPhotosByFolder, downloadImage } from '@/features/trip/[tripId]/snap/api/snap-api';
 import { getDayCount } from '@/shared/utils/parseDate';
 import { getTripBudgetData } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '@/shared/components/loading/Loading';
+import { getReadiness } from '@/features/trip/[tripId]/snap/api/snap-api';
 
 const SnapFolderPage = () => {
   const router = useRouter();
@@ -42,12 +43,19 @@ const SnapFolderPage = () => {
   
   // URL에서 폴더 정보 가져오기
   const folderName = searchParams.get('name') || '사용자';
-  const profileImageUrl = searchParams.get('profileImageUrl') || undefined;
 
   // trip 기본 정보
   const { data: tripData, isLoading: tripLoading } = useQuery({
     queryKey: ['tripBudget', tripId],
     queryFn: () => getTripBudgetData(Number(tripId)),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // 유저 프로필 정보를 위한 readiness 조회
+  const { data: readinessData } = useQuery({
+    queryKey: ['readiness', tripId],
+    queryFn: () => getReadiness(Number(tripId)),
+    enabled: !!tripId,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -120,6 +128,27 @@ const SnapFolderPage = () => {
     );
   }
 
+  const handleDownloadSelected = async () => {
+    if (selectedImageIds.length === 0 || !tripId) return;
+    
+    try {
+      const blob = await downloadImage(Number(tripId), selectedImageIds.map(id => Number(id)));
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'selected_photos.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('다운로드에 실패했습니다.');
+    }
+  };
+
   const dayCount = getDayCount(tripData.startDate ?? '', tripData.endDate ?? '');
 
   return (
@@ -133,7 +162,7 @@ const SnapFolderPage = () => {
           setIsSelectionMode={setIsSelectionMode}
           setSelectedImageIds={setSelectedImageIds}
         />
-        <SnapFolderInfo name={folderName} profileImageUrl={profileImageUrl || undefined} />
+        <SnapFolderInfo name={folderName} profileImageUrl={readinessData?.members.find((m: { userId: number }) => m.userId === Number(userId))?.profileImageUrl ?? ''} />
       </div>
 
       {/* GallerySection */}
@@ -144,13 +173,6 @@ const SnapFolderPage = () => {
           onFilterOpen={() => setFilterOpen(true)}
           filters={filters}
           setFilters={setFilters}
-          onSortChange={(sort: 'date_desc' | 'date_asc') => {
-            setSelectedSort(sort);
-            setImages([]);
-            setPage(0);
-            setHasNext(true);
-            fetchPhotos(0);
-          }}
         />
 
         <div
@@ -196,6 +218,7 @@ const SnapFolderPage = () => {
           selectedCount={selectedImageIds.length} 
           tripId={Number(tripId)} 
           photoIds={selectedImageIds.map((id) => Number(id))}
+          onDownload={handleDownloadSelected}
           onDelete={() => {
             // 선택 모드 종료
             setIsSelectionMode(false);
