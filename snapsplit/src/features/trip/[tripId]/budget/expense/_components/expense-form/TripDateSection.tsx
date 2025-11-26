@@ -10,10 +10,10 @@ type Props = {
   endDate: string;
   date: string;
   setDate: (date: string) => void;
-  settledDates: string[]; // ["2025-05-22", ...]
+  settledDates: string[];
 };
 
-// --- Helper Functions (기존 함수 유지) ---
+// --- Helper Functions ---
 const getUTCDate = (dateString: string): Date => {
   const [year, month, day] = dateString.split('-').map(Number);
   return new Date(Date.UTC(year, month - 1, day));
@@ -45,19 +45,14 @@ const getTotalDays = (startDate: string, endDate: string): number => {
 export default function TripDateSection({ startDate, endDate, date, setDate, settledDates }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // 현재 선택된 날짜의 Index
   const dayIndex = calculateDayIndex(startDate, date);
-
-  // [추가] 정산된 날짜 문자열들을 Day Index 숫자 배열로 변환
-  // 예: settledDates가 ["2025-05-22"]이고 시작일이 5/20이면 -> [3]
+  const lastDayIndex = getTotalDays(startDate, endDate);
   const settledDayIndices = settledDates.map((settledDate) => calculateDayIndex(startDate, settledDate));
 
   const handleSelectDate = (selectedDayIndex: number) => {
     const actualDate = calculateDate(startDate, selectedDayIndex);
     setDate(actualDate);
   };
-
-  const lastDayIndex = getTotalDays(startDate, endDate);
 
   return (
     <div className="flex flex-col items-start w-full gap-3">
@@ -67,16 +62,17 @@ export default function TripDateSection({ startDate, endDate, date, setDate, set
         onClick={() => setIsOpen(true)}
         className="flex items-center gap-3 w-full h-12 px-4 rounded-xl border-[1px] border-grey-250"
       >
-        <div className="flex-1 text-body-3 text-start">{'Day ' + dayIndex}</div>
+        {/* [수정] dayIndex가 0이면 '여행 준비', 아니면 'Day N' 표시 */}
+        <div className="flex-1 text-body-3 text-start">{dayIndex === 0 ? '여행 준비' : `Day ${dayIndex}`}</div>
         <Image src="/svg/arrow-bottom-grey-450.svg" alt="열기" width={24} height={24} />
       </button>
+
       <BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <DateSelectSheet
           onClose={() => setIsOpen(false)}
           selectedDayIndex={dayIndex}
           handleSelectDate={handleSelectDate}
           daysCount={lastDayIndex}
-          // [추가] 변환된 인덱스 배열 전달
           settledDayIndices={settledDayIndices}
         />
       </BottomSheet>
