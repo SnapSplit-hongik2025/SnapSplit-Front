@@ -97,7 +97,10 @@ export default function ExpenseForm() {
           const sharedFundPayment = sharedFundId ? nextState[sharedFundId]?.payAmount || 0 : 0;
 
           // N빵 대상 금액 = 전체 금액 - 공동경비가 낸 돈
-          const targetAmount = form.expense.amount - sharedFundPayment;
+          let targetAmount = form.expense.amount - sharedFundPayment;
+
+          // [추가] 부동소수점 연산 오차 보정 (OCR 합계 등으로 인해 29.0000004 같은 값이 오는 경우 방지)
+          targetAmount = Math.round(targetAmount * 10000) / 10000;
 
           // 공동경비 제외하고, 현재 체크된 정산자들 찾기
           const activeSplitters = pageData.members.filter(
