@@ -32,7 +32,10 @@ export const getParsedReceipt = async (
 
     return res.data.data;
   } catch (error: any) {
-    console.error('[API Error] Failed to parse OCR image:', error);
+    const status = error.response?.status || error.status;
+    if (status !== 400) {
+      console.error('[API Error] Failed to parse OCR image:', error);
+    }
     throw error; 
   }
 };
