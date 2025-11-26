@@ -28,6 +28,7 @@ import { GetTripBudgetDto } from '../../types/budget-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { getSymbol } from '@/shared/utils/currency';
+import errorIcon from '@public/svg/alert-circle-red.svg';
 
 export type MemberState = {
   isPayer: boolean;
@@ -50,6 +51,9 @@ export default function ExpenseForm() {
   const { ocrResult, clearReceiptData, receiptUrl, items } = useReceiptStore();
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
+
+  // [추가] 제출 시도 여부 상태 (버튼 클릭 시 true로 변경)
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const { data: budgetData } = useQuery<GetTripBudgetDto>({
     queryKey: ['tripBudget', tripId],
@@ -252,7 +256,9 @@ export default function ExpenseForm() {
   // 1. 결제자(Payer) 검증 데이터
   const selectedPayers = Object.entries(membersState).filter(([_, m]) => m.isPayer);
   const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
-  const payerDiff = form.expense.amount - totalPayerAmount;
+  // [수정] 결제 금액 차이 계산 시 반올림 적용하여 미세 오차 무시
+  const rawPayerDiff = form.expense.amount - totalPayerAmount;
+  const payerDiff = Math.round(rawPayerDiff * 10000) / 10000;
 
   // 2. 공동 경비 멤버 ID 찾기 및 결제 금액(sharedFundPayment) 계산
   const sharedFundMember = pageData?.members.find((member) => member.memberType === 'SHARED_FUND');
@@ -264,7 +270,6 @@ export default function ExpenseForm() {
     : 0;
 
   // 3. 공동 경비 예산 초과 여부 확인 (실시간 계산 - 수정됨)
-  // * 지출 총액이 아닌, '공동 경비가 결제하기로 한 금액(sharedFundPayment)'을 기준으로 판단
   let sharedFundErrorMsg: string | null = null;
 
   if (budgetData?.sharedFund && pageData?.exchangeRates && sharedFundPayment > 0) {
@@ -291,7 +296,9 @@ export default function ExpenseForm() {
   const requiredSplitAmount = form.expense.amount - sharedFundPayment;
   const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
   const totalSplitAmount = selectedSplitters.reduce((sum, [_, m]) => sum + (m.splitAmount || 0), 0);
-  const splitDiff = requiredSplitAmount - totalSplitAmount;
+  // [수정] 정산 금액 차이 계산 시 반올림 적용하여 미세 오차 무시
+  const rawSplitDiff = requiredSplitAmount - totalSplitAmount;
+  const splitDiff = Math.round(rawSplitDiff * 10000) / 10000;
 
   const getValidationError = () => {
     // 0. 초기 상태(0원)일 때는 에러 표시 안 함
@@ -325,21 +332,26 @@ export default function ExpenseForm() {
   const isSubmitting = isCreating || isCreatingWithReceipt;
 
   // 폼 완전성 체크 - 필수 필드들이 모두 채워졌는지 확인
+  // [수정] category는 버튼 활성화 조건에서 제외 (제출 시 체크)
   const isFormComplete = Boolean(
     form.expense.date &&
       form.expense.amount > 0 &&
       form.expense.currency &&
       form.expense.exchangeRate > 0 &&
-      form.expense.category &&
+      // form.expense.category && // 카테고리 체크 제거
       form.expense.paymentMethod
   );
 
   const isFormValid = isFormComplete && !validationErrorMessage;
 
   const handleSubmit = () => {
+    setIsSubmitted(true); // 제출 시도 표시
+
     if (!tripId) return;
 
-    // 로직 검증은 isFormValid에서 처리되므로 중복 제거 가능하나 안전을 위해 유지 또는 isFormValid 체크로 대체
+    // [추가] 카테고리 미선택 시 중단
+    if (!form.expense.category) return;
+
     if (!isFormValid) return;
 
     const refinedForm: CreateExpenseRequest = {
@@ -361,7 +373,12 @@ export default function ExpenseForm() {
   };
 
   const handleSubmitWithReceipt = () => {
+    setIsSubmitted(true); // 제출 시도 표시
+
     if (!tripId || !receiptUrl || !items) return;
+
+    // [추가] 카테고리 미선택 시 중단
+    if (!form.expense.category) return;
 
     if (!isFormValid) return;
 
@@ -433,7 +450,20 @@ export default function ExpenseForm() {
           expenseMemo={form.expense.expenseMemo}
           setExpenseMemo={(memo) => handleExpenseChange('expenseMemo', memo)}
         />
-        <CategorySection category={form.expense.category} setCategory={(c) => handleExpenseChange('category', c)} />
+
+        {/* [수정] 카테고리 섹션 및 에러 메시지 */}
+        <div className="w-full flex flex-col gap-1">
+          <CategorySection category={form.expense.category} setCategory={(c) => handleExpenseChange('category', c)} />
+          {isSubmitted && !form.expense.category && (
+            <div className="flex pt-1 w-full items-center gap-1 justify-start text-center">
+              <Image src={errorIcon} alt="error" width={18} height={18} />
+              <span className="flex text-xs text-status_error text-center items-center justify-center">
+                지출 카테고리를 선택해주세요.
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* 영수증에서 온 경우 영수증 상세 항목 */}
         {isFromReceipt && <ReceiptDetailSection items={ocrResult?.items || []} />}
 
