@@ -11,7 +11,7 @@ import CategorySection from './expense-form/CategorySection';
 import PaySection from './expense-form/PaySection';
 import SplitSection from './expense-form/SplitSection';
 import Button from '@/shared/components/Button';
-import alert from '@public/svg/alert-circle-red.svg';
+import alertIcon from '@public/svg/alert-circle-red.svg'; // alert 함수와 이름 충돌 방지를 위해 이름 변경
 import Image from 'next/image';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -167,7 +167,6 @@ export default function ExpenseForm() {
   });
 
   // 2. 영수증 포함 지출 등록 Mutation
-  // refinedForm의 타입을 DTO에 맞게 정의하면 더 좋습니다. (현재 any)
   const { mutate: createExpenseWithReceiptMutate, isPending: isCreatingWithReceipt } = useMutation({
     mutationFn: (refinedForm: CreateExpenseRequestWithReceipt) => createExpenseWithReceipt(Number(tripId), refinedForm),
 
@@ -193,7 +192,7 @@ export default function ExpenseForm() {
   const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
   const payerDiff = form.expense.amount - totalPayerAmount;
 
-  // 2. 공동 경비 멤버 ID 찾기 및 결제 금액 계산
+  // 2. 공동 경비 멤버 ID 찾기 및 결제 금액(sharedFundPayment) 계산
   const sharedFundMember = pageData?.members.find((member) => member.memberType === 'SHARED_FUND');
   const sharedFundMemberId = sharedFundMember?.memberId;
   const sharedFundPayment = sharedFundMemberId
@@ -202,7 +201,30 @@ export default function ExpenseForm() {
         .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0)
     : 0;
 
-  // 3. 정산자(Splitter) 검증 데이터
+  // 3. 공동 경비 예산 초과 여부 확인 (실시간 계산 - 수정됨)
+  // * 지출 총액이 아닌, '공동 경비가 결제하기로 한 금액(sharedFundPayment)'을 기준으로 판단
+  let sharedFundErrorMsg: string | null = null;
+
+  if (budgetData?.sharedFund && pageData?.exchangeRates && sharedFundPayment > 0) {
+    const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
+    const expenseCurrency = form.expense.currency;
+    let paymentAmountInSharedFundCurrency = sharedFundPayment;
+
+    // 통화가 다를 경우 환전 적용
+    if (sharedFundCurrency !== expenseCurrency) {
+      const exchangeRate = pageData.exchangeRates[expenseCurrency];
+      if (exchangeRate) {
+        paymentAmountInSharedFundCurrency = sharedFundPayment * exchangeRate;
+      }
+    }
+
+    // 예산 잔액 비교
+    if (paymentAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
+      sharedFundErrorMsg = `공동 경비 결제액이 예산을 초과합니다.`;
+    }
+  }
+
+  // 4. 정산자(Splitter) 검증 데이터
   // 정산 필요 금액 = 전체 지출 금액 - 공동경비가 낸 금액
   const requiredSplitAmount = form.expense.amount - sharedFundPayment;
   const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
@@ -213,19 +235,24 @@ export default function ExpenseForm() {
     // 0. 초기 상태(0원)일 때는 에러 표시 안 함
     if (form.expense.amount === 0) return null;
 
-    // 1. 결제자 금액 불일치
+    // [추가] 1. 공동 경비 예산 초과 에러
+    if (sharedFundErrorMsg) {
+      return sharedFundErrorMsg;
+    }
+
+    // 2. 결제자 금액 불일치
     if (payerDiff !== 0) {
       const status = payerDiff > 0 ? '부족' : '초과';
       return `결제 금액이 ${Math.abs(payerDiff).toLocaleString()}${getSymbol(form.expense.currency)} ${status}합니다`;
     }
 
-    // 2. 정산자 금액 불일치 (정산 대상 금액이 있을 때만)
+    // 3. 정산자 금액 불일치 (정산 대상 금액이 있을 때만)
     if (requiredSplitAmount > 0 && splitDiff !== 0) {
       const status = splitDiff > 0 ? '부족' : '초과';
       return `정산자 금액이 ${Math.abs(splitDiff).toLocaleString()}${getSymbol(form.expense.currency)} ${status}합니다`;
     }
 
-    // 3. 최소 인원 선택 검증
+    // 4. 최소 인원 선택 검증
     if (selectedPayers.length === 0) return '결제자를 최소 1명 이상 선택해주세요.';
     if (requiredSplitAmount > 0 && selectedSplitters.length === 0) return '정산자를 최소 1명 이상 선택해주세요.';
 
@@ -250,69 +277,8 @@ export default function ExpenseForm() {
   const handleSubmit = () => {
     if (!tripId) return;
 
-    // 공동 경비 예산 체크 (환전 적용)
-    if (budgetData?.sharedFund && pageData?.exchangeRates) {
-      const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
-      const expenseCurrency = form.expense.currency;
-
-      let expenseAmountInSharedFundCurrency = form.expense.amount;
-
-      // 통화가 다를 경우 환전 적용
-      if (sharedFundCurrency !== expenseCurrency) {
-        const exchangeRate = pageData.exchangeRates[expenseCurrency];
-        if (exchangeRate) {
-          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
-        } else {
-          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
-          return;
-        }
-      }
-
-      if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
-        alert(
-          `지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`
-        );
-        return;
-      }
-    }
-
-    // payers/splitters 검증
-    // 결제자 최소 1명 검증
-    if (selectedPayers.length === 0) {
-      alert('결제자를 최소 1명 이상 선택해주세요.');
-      return;
-    }
-
-    // 결제 금액 총합 검증
-    if (totalPayerAmount !== form.expense.amount) {
-      alert(
-        `결제 금액 총합(${totalPayerAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 지출 금액(${form.expense.amount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
-      );
-      return;
-    }
-
-    // 공동 경비 멤버 ID 찾기
-    // (위에서 계산된 변수 사용)
-
-    // 공동 경비 결제 금액 계산 (memberType이 SHARED_FUND인 멤버가 결제자로 선택된 경우)
-    // (위에서 계산된 변수 사용)
-
-    // 정산 필요 금액 계산
-    // (위에서 계산된 변수 사용)
-
-    // 정산자 검증 (정산 필요 금액이 1원 이상일 경우)
-    if (requiredSplitAmount > 0 && selectedSplitters.length === 0) {
-      alert('정산자를 최소 1명 이상 선택해주세요.');
-      return;
-    }
-
-    // 정산 금액 총합 검증
-    if (totalSplitAmount !== requiredSplitAmount) {
-      alert(
-        `정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
-      );
-      return;
-    }
+    // 로직 검증은 isFormValid에서 처리되므로 중복 제거 가능하나 안전을 위해 유지 또는 isFormValid 체크로 대체
+    if (!isFormValid) return;
 
     const refinedForm: CreateExpenseRequest = {
       ...form,
@@ -335,66 +301,7 @@ export default function ExpenseForm() {
   const handleSubmitWithReceipt = () => {
     if (!tripId || !receiptUrl || !items) return;
 
-    // 공동 경비 예산 체크 (환전 적용)
-    if (budgetData?.sharedFund && pageData?.exchangeRates) {
-      const sharedFundCurrency = budgetData.sharedFund.defaultCurrency;
-      const expenseCurrency = form.expense.currency;
-
-      let expenseAmountInSharedFundCurrency = form.expense.amount;
-
-      // 통화가 다를 경우 환전 적용
-      if (sharedFundCurrency !== expenseCurrency) {
-        const exchangeRate = pageData.exchangeRates[expenseCurrency];
-        if (exchangeRate) {
-          expenseAmountInSharedFundCurrency = form.expense.amount * exchangeRate;
-        } else {
-          alert(`${expenseCurrency} 통화의 환율 정보를 찾을 수 없습니다.`);
-          return;
-        }
-      }
-
-      if (expenseAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
-        alert(
-          `지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${budgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`
-        );
-        return;
-      }
-    }
-
-    // payers/splitters 검증
-    // 결제자 최소 1명 검증
-    if (selectedPayers.length === 0) {
-      alert('결제자를 최소 1명 이상 선택해주세요.');
-      return;
-    }
-
-    // 결제 금액 총합 검증
-    if (totalPayerAmount !== form.expense.amount) {
-      alert(
-        `결제 금액 총합(${totalPayerAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 지출 금액(${form.expense.amount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
-      );
-      return;
-    }
-
-    // 공동 경비 결제 금액 계산 (멤버 ID 4번이 공동 경비)
-    // (위에서 계산된 변수 사용)
-
-    // 정산 필요 금액 계산
-    // (위에서 계산된 변수 사용)
-
-    // 정산자 검증 (정산 필요 금액이 1원 이상일 경우)
-    if (requiredSplitAmount > 0 && selectedSplitters.length === 0) {
-      alert('정산자를 최소 1명 이상 선택해주세요.');
-      return;
-    }
-
-    // 정산 금액 총합 검증
-    if (totalSplitAmount !== requiredSplitAmount) {
-      alert(
-        `정산 금액 총합(${totalSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})이 정산 대상 금액(${requiredSplitAmount.toLocaleString()}${getSymbol(form.expense.currency)})과 일치하지 않습니다.`
-      );
-      return;
-    }
+    if (!isFormValid) return;
 
     const refinedForm = {
       // (타입은 실제 DTO에 맞게 설정 권장)
@@ -490,7 +397,7 @@ export default function ExpenseForm() {
         {/* 에러 메시지 렌더링 */}
         {validationErrorMessage && (
           <div className="flex flex-row gap-1 items-center justify-center w-full px-4 py-2 bg-red-50 border border-red-100 rounded-xl">
-            <Image src={alert} alt="error" width={24} height={24} />
+            <Image src={alertIcon} alt="error" width={24} height={24} />
             <span className="text-body-3 text-red-400 font-medium">{validationErrorMessage}</span>
           </div>
         )}
