@@ -17,6 +17,7 @@ import { getDayCount } from '@/shared/utils/parseDate';
 import { getTripBudgetData } from '@/features/trip/[tripId]/budget/api/budget-api';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '@/shared/components/loading/Loading';
+import { getReadiness } from '@/features/trip/[tripId]/snap/api/snap-api';
 
 const SnapFolderPage = () => {
   const router = useRouter();
@@ -42,12 +43,19 @@ const SnapFolderPage = () => {
   
   // URL에서 폴더 정보 가져오기
   const folderName = searchParams.get('name') || '사용자';
-  const profileImageUrl = searchParams.get('profileImageUrl') || undefined;
 
   // trip 기본 정보
   const { data: tripData, isLoading: tripLoading } = useQuery({
     queryKey: ['tripBudget', tripId],
     queryFn: () => getTripBudgetData(Number(tripId)),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // 유저 프로필 정보를 위한 readiness 조회
+  const { data: readinessData } = useQuery({
+    queryKey: ['readiness', tripId],
+    queryFn: () => getReadiness(Number(tripId)),
+    enabled: !!tripId,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -154,7 +162,7 @@ const SnapFolderPage = () => {
           setIsSelectionMode={setIsSelectionMode}
           setSelectedImageIds={setSelectedImageIds}
         />
-        <SnapFolderInfo name={folderName} profileImageUrl={profileImageUrl || undefined} />
+        <SnapFolderInfo name={folderName} profileImageUrl={readinessData?.members.find((m: { userId: number }) => m.userId === Number(userId))?.profileImageUrl ?? ''} />
       </div>
 
       {/* GallerySection */}
