@@ -16,6 +16,7 @@ export interface GetExpenseDetailDto {
   splitters: expenseMember[];
   receiptUrl?: string;
   receiptItems: ReceiptItemDto[];
+  canAddExpense: boolean;
 }
 
 export interface ReceiptItemDto{
