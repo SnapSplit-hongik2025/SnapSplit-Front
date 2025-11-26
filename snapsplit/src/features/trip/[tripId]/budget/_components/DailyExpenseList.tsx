@@ -15,10 +15,7 @@ export default function DailyExpenseList({ dailyExpenses, tripStartDate, tripEnd
   };
 
   return (
-    <div
-      id="scroll-target-top"
-      className="flex-grow w-full space-y-8 p-5 pb-[159px] overflow-y-auto scrollbar-hide bg-grey-50"
-    >
+    <div className="flex-grow w-full space-y-8 p-5 pb-[159px] bg-grey-50">
       {dailyExpenses.map(({ date, expenses, canAddExpense }) => {
         return (
           <div id={`day-${date}`} key={date}>

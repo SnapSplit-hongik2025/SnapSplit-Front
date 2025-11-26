@@ -4,7 +4,6 @@ import Image from 'next/image';
 import arrow from '@public/svg/arrow-top-white.svg';
 
 const TopFloatingButton = () => {
-  // 스크롤 컨테이너 최상단으로 스크롤
   const handleScrollTop = () => {
     const container = document.getElementById('scroll-target-top');
     if (container) {
