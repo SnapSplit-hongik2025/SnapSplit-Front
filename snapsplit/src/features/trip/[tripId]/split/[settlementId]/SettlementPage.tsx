@@ -11,7 +11,7 @@ import { getSettlementData } from './api/settlement-api';
 import { GetSettlementDto } from './types/settlement-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 
-// TypeScript 타입 정의
+// [타입 정의는 그대로 유지]
 declare global {
   interface Window {
     Kakao: {
@@ -77,63 +77,93 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
     return message;
   };
 
-  // 2. 카카오톡 공유 핸들러
+  // 2. 카카오톡 공유 핸들러 (디버깅 강화 버전)
   const handleKakaoShare = () => {
-    // 안전장치: layout에서 초기화가 안 되었을 경우를 대비
-    if (window.Kakao && !window.Kakao.isInitialized()) {
-      window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
-    }
-
-    if (!window.Kakao || !window.Kakao.isInitialized()) {
-      alert('카카오톡 공유 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-
-    if (!data) return;
-
-    const { settlementDetails } = data;
-
-    // 피드 메시지 설명 생성
-    let description = `Day ${startDay} ~ Day ${endDay} 정산 내역입니다.\n\n[송금 목록]\n`;
-
-    if (settlementDetails.length === 0) {
-      description += '정산할 내역이 없습니다.';
-    } else {
-      settlementDetails.slice(0, 5).forEach((detail) => {
-        const senderName = detail.sender.name || '알수없음';
-        const receiverName = detail.receiver.name || '알수없음';
-        const amount = detail.amount.toLocaleString();
-        description += `• ${senderName} → ${receiverName} : ${amount}원\n`;
-      });
-
-      if (settlementDetails.length > 5) {
-        description += `...외 ${settlementDetails.length - 5}건`;
+    try {
+      // [디버깅 1] window.Kakao 객체 존재 확인
+      if (!window.Kakao) {
+        alert('Error: window.Kakao 객체를 찾을 수 없습니다. 스크립트 로딩 실패.');
+        return;
       }
-    }
 
-    window.Kakao.Share.sendDefault({
-      objectType: 'feed',
-      content: {
-        title: '💸 SNAP SPLIT 정산 영수증 도착!',
-        description: description,
-        // 실제 배포된 이미지 URL이나 유효한 URL을 넣어야 카톡에서 이미지가 보입니다.
-        imageUrl:
-          'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=1200',
-        link: {
-          mobileWebUrl: window.location.href,
-          webUrl: window.location.href,
-        },
-      },
-      buttons: [
-        {
-          title: '정산 내역 자세히 보기',
+      // [디버깅 2] API 키 확인 (보안상 앞자리만 노출하거나 확인용으로 전체 출력 후 삭제)
+      const apiKey = process.env.NEXT_PUBLIC_KAKAO_JS_KEY;
+      if (!apiKey) {
+        alert('Error: 환경변수 NEXT_PUBLIC_KAKAO_JS_KEY가 비어있습니다.');
+        return;
+      }
+
+      // 초기화 시도
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init(apiKey);
+      }
+
+      // [디버깅 3] 초기화 후 상태 확인
+      if (!window.Kakao.isInitialized()) {
+        alert('Error: Kakao.init() 실패. 유효하지 않은 키이거나 이미 다른 키로 초기화되었습니다.');
+        return;
+      }
+
+      if (!data) {
+        alert('Error: 공유할 데이터(data)가 아직 로드되지 않았습니다.');
+        return;
+      }
+
+      // [디버깅 4] 현재 도메인 확인 (가장 중요한 체크 포인트!)
+      // 카카오 개발자 센터 > 플랫폼 > Web > 사이트 도메인에 이 주소가 없으면 동작 안 함
+      const currentUrl = window.location.href;
+      const currentOrigin = window.location.origin;
+
+      // 사용자에게 현재 상태를 알려줌 (테스트 후 주석 처리)
+      // alert(`공유 시도\nURL: ${currentOrigin}`);
+
+      const { settlementDetails } = data;
+
+      let description = `Day ${startDay} ~ Day ${endDay} 정산 내역입니다.\n\n[송금 목록]\n`;
+
+      if (settlementDetails.length === 0) {
+        description += '정산할 내역이 없습니다.';
+      } else {
+        settlementDetails.slice(0, 5).forEach((detail) => {
+          const senderName = detail.sender.name || '알수없음';
+          const receiverName = detail.receiver.name || '알수없음';
+          const amount = detail.amount.toLocaleString();
+          description += `• ${senderName} → ${receiverName} : ${amount}원\n`;
+        });
+
+        if (settlementDetails.length > 5) {
+          description += `...외 ${settlementDetails.length - 5}건`;
+        }
+      }
+
+      // 카카오톡 공유 실행
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '💸 SNAP SPLIT 정산 영수증 도착!',
+          description: description,
+          imageUrl:
+            'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=1200',
           link: {
-            mobileWebUrl: window.location.href,
-            webUrl: window.location.href,
+            mobileWebUrl: currentUrl,
+            webUrl: currentUrl,
           },
         },
-      ],
-    });
+        buttons: [
+          {
+            title: '정산 내역 자세히 보기',
+            link: {
+              mobileWebUrl: currentUrl,
+              webUrl: currentUrl,
+            },
+          },
+        ],
+      });
+    } catch (err: any) {
+      // [디버깅 5] 런타임 에러 발생 시
+      alert(`실행 중 에러 발생: ${JSON.stringify(err)}`);
+      console.error(err);
+    }
   };
 
   // 3. 텍스트 복사 핸들러
@@ -143,7 +173,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
       await navigator.clipboard.writeText(text);
       alert('정산 내역이 클립보드에 복사되었습니다!');
     } catch (err) {
-      console.error('복사 실패:', err); // err를 사용하므로 린트 에러 안 남
+      console.error('복사 실패:', err);
       alert('복사에 실패했습니다.');
     }
   };
