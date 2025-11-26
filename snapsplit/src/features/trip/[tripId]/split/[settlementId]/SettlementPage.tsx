@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react'; // useEffect 추가
+import Script from 'next/script';
 import { useQuery } from '@tanstack/react-query';
 import Button from '@/shared/components/Button';
 import SettlementHeader from './_components/SettlementHeader';
@@ -51,33 +51,34 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
     enabled: !!tripId && !!settlementId,
   });
 
-  // 1. 카카오 SDK 초기화
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.Kakao) {
-      // 이미 초기화되었는지 확인
-      if (!window.Kakao.isInitialized()) {
-        // 여기에 발급받은 JavaScript 키를 입력하세요 (.env 파일 사용 권장)
-        window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
-      }
-    }
-  }, []);
+  // [수정] useState 제거 (isKakaoLoaded 미사용)
 
-  // 2. 카카오톡 공유 핸들러 (피드 템플릿 사용)
+  // [수정] 스크립트 로드 완료 시 실행될 함수
+  const handleKakaoLoad = () => {
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_JS_KEY);
+    }
+  };
+
+  // 2. 카카오톡 공유 핸들러
   const handleKakaoShare = () => {
-    if (!data || !window.Kakao) {
-      alert('카카오톡 공유 기능을 사용할 수 없습니다.');
+    // window.Kakao가 없거나 초기화되지 않았으면 에러 처리
+    if (!window.Kakao || !window.Kakao.isInitialized()) {
+      alert('카카오톡 공유 기능을 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+      // 혹시 로드가 안 되었을 경우를 대비해 다시 초기화 시도
+      handleKakaoLoad();
       return;
     }
 
+    if (!data) return;
+
     const { settlementDetails } = data;
 
-    // 공유 메시지 본문 구성 (최대 5줄 정도가 적당)
     let description = `Day ${startDay} ~ Day ${endDay} 정산 내역입니다.\n\n[송금 목록]\n`;
 
     if (settlementDetails.length === 0) {
       description += '정산할 내역이 없습니다.';
     } else {
-      // 너무 길면 잘릴 수 있으므로 상위 몇 개만 보여주거나 요약하는 것이 좋습니다.
       settlementDetails.slice(0, 5).forEach((detail) => {
         const senderName = detail.sender.name || '알수없음';
         const receiverName = detail.receiver.name || '알수없음';
@@ -95,9 +96,8 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
       content: {
         title: '💸 SNAP SPLIT 정산 영수증 도착!',
         description: description,
-        imageUrl: 'https://your-service-domain.com/images/og-settlement.png', // [수정 필요] 정산 관련 썸네일 이미지 URL (필수 아님)
+        imageUrl: 'https://your-service-domain.com/images/og-settlement.png',
         link: {
-          // [수정 필요] 클릭 시 이동할 웹 페이지 URL (보통 현재 정산 페이지)
           mobileWebUrl: window.location.href,
           webUrl: window.location.href,
         },
@@ -114,10 +114,9 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
     });
   };
 
-  // 3. 텍스트 복사 핸들러 (기존 유지 - 백업용)
+  // 3. 텍스트 복사 핸들러
   const handleCopyText = async () => {
     if (!data) return;
-    // ... (기존 텍스트 생성 로직 활용)
     let message = `[SNAP SPLIT 정산 영수증]\nDay ${startDay} ~ Day ${endDay}\n\n`;
     data.settlementDetails.forEach((detail) => {
       message += `- ${detail.sender.name} → ${detail.receiver.name} : ${detail.amount.toLocaleString()}원\n`;
@@ -145,6 +144,13 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
 
   return (
     <div className="h-screen w-full flex flex-col bg-light_grey overflow-y-auto scrollbar-hide">
+      <Script
+        src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+        integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2txfVW9eBzBCc_v4JqTq54"
+        crossOrigin="anonymous"
+        onLoad={handleKakaoLoad}
+      />
+
       <section className="flex flex-col pt-2 pb-6 px-5">
         <SettlementHeader tripId={tripId} />
         {isSuccess && data && (
@@ -157,13 +163,11 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
             />
 
             <div className="flex gap-2 w-full mt-4">
-              {/* 텍스트 복사 버튼 (선택 사항) */}
               <Button label="텍스트 복사" onClick={handleCopyText} bg="bg-grey-300 text-grey-800" className="flex-1" />
-              {/* 카카오톡 공유 버튼 */}
               <Button
                 label="카카오톡 공유"
                 onClick={handleKakaoShare}
-                bg="bg-[#FEE500] text-[#191919]" // 카카오톡 브랜드 컬러
+                bg="bg-[#FEE500] text-[#191919]"
                 className="flex-1"
               />
             </div>
