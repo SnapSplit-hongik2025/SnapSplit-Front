@@ -11,6 +11,39 @@ import { getSettlementData } from './api/settlement-api';
 import { GetSettlementDto } from './types/settlement-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 
+// [타입 정의는 그대로 유지]
+declare global {
+  interface Window {
+    Kakao: {
+      init: (key: string | undefined) => void;
+      isInitialized: () => boolean;
+      Share: {
+        sendDefault: (settings: KakaoShareSettings) => void;
+      };
+    };
+  }
+}
+
+interface KakaoShareSettings {
+  objectType: 'feed' | 'list' | 'location' | 'commerce' | 'text';
+  content: {
+    title: string;
+    description: string;
+    imageUrl: string;
+    link: {
+      mobileWebUrl: string;
+      webUrl: string;
+    };
+  };
+  buttons?: Array<{
+    title: string;
+    link: {
+      mobileWebUrl: string;
+      webUrl: string;
+    };
+  }>;
+}
+
 const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPageProps) => {
   const { data, isLoading, isError, error, isSuccess } = useQuery<GetSettlementDto, Error>({
     queryKey: ['settlement', tripId, settlementId],
@@ -44,36 +77,99 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
     return message;
   };
 
-  // 2. [통합] 범용 공유 핸들러 (Web Share API 우선, 복사 Fallback)
+  // 2. [통합] 범용 공유 핸들러 (카카오 우선 3단계 폴백)
   const handleUniversalShare = async () => {
     if (!data) return;
 
     const shareText = generateShareText();
     const shareTitle = '[SNAP SPLIT 정산 영수증]';
     const currentUrl = window.location.href;
+    const apiKey = process.env.NEXT_PUBLIC_KAKAO_JS_KEY;
 
-    // 1. Web Share API 시도 (모바일 Native Share Sheet)
+    // --- Tier 1: Kakao Rich Template 시도 (성공하면 바로 종료) ---
+    if (typeof window.Kakao !== 'undefined') {
+      try {
+        // 안전 장치: 초기화가 안 되었으면 초기화 시도 (레이아웃에서 로드 실패 대비)
+        if (!window.Kakao.isInitialized() && apiKey) {
+          window.Kakao.init(apiKey);
+        }
+
+        if (window.Kakao.isInitialized()) {
+          const { settlementDetails } = data;
+          let description = `Day ${startDay} ~ Day ${endDay} 정산 내역입니다.\n\n[송금 목록]\n`;
+
+          if (settlementDetails.length === 0) {
+            description += '정산할 내역이 없습니다.';
+          } else {
+            settlementDetails.slice(0, 5).forEach((detail) => {
+              const senderName = detail.sender.name || '알수없음';
+              const receiverName = detail.receiver.name || '알수없음';
+              const amount = detail.amount.toLocaleString();
+              description += `• ${senderName} → ${receiverName} : ${amount}원\n`;
+            });
+
+            if (settlementDetails.length > 5) {
+              description += `...외 ${settlementDetails.length - 5}건`;
+            }
+          }
+
+          window.Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: '💸 SNAP SPLIT 정산 영수증 도착!',
+              description: description,
+              imageUrl:
+                'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=1200',
+              link: { mobileWebUrl: currentUrl, webUrl: currentUrl },
+            },
+            buttons: [
+              {
+                title: '정산 내역 자세히 보기',
+                link: { mobileWebUrl: currentUrl, webUrl: currentUrl },
+              },
+            ],
+          });
+          return; // 카카오 공유 성공 (또는 실행) 시 여기서 종료
+        }
+      } catch (error) {
+        console.log('Kakao Rich Template execution failed, falling back:', error);
+        // Fall through to Tier 2
+      }
+    }
+
+    // --- Tier 2: Web Share API 시도 (General/Native Share Sheet) ---
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
           title: shareTitle,
-          text: `${shareTitle}\n\n${shareText}`, // 텍스트와 타이틀을 합쳐서 전송
+          text: `${shareTitle}\n\n${shareText}`,
           url: currentUrl,
         });
-        return; // 성공 시 여기서 종료
+        return; // 성공 또는 취소 시 여기서 종료
       } catch (error) {
-        // [수정] 실패(취소 포함) 시 콘솔에 로그만 남기고 바로 종료
-        console.log('Native Share Failed or Canceled:', error);
-        return; // 실패/취소 시에도 클립보드 복사 로직으로 넘어가지 않고 종료
+        console.log('Native Share failed, falling back to Clipboard:', error);
+        // Fall through to Tier 3
       }
     }
 
-    // 2. Fallback: 클립보드 복사 (Web Share API가 존재하지 않을 때만 실행됨)
+    // --- Tier 3: Final Fallback (클립보드 복사) ---
     try {
       await navigator.clipboard.writeText(`${shareTitle}\n\n${shareText}`);
-      alert('정산 내역이 클립보드에 복사되었습니다. 카카오톡 등 앱에 붙여넣기 하세요!');
+      alert('공유 기능을 지원하지 않아 클립보드에 복사되었습니다. 다른 앱에 붙여넣기 하세요!');
     } catch {
       alert('공유 기능을 지원하지 않는 환경입니다.');
+    }
+  };
+
+  // 3. 텍스트 복사 핸들러 (UI에서 직접 호출되므로, 통합 함수와는 별개로 존재)
+  const handleCopyText = async () => {
+    const text = generateShareText();
+    try {
+      await navigator.clipboard.writeText(`[SNAP SPLIT 정산 영수증]\n\n${text}`);
+      alert('정산 내역이 클립보드에 복사되었습니다!');
+    } catch (err) {
+      console.error('복사 실패:', err);
+      alert('복사에 실패했습니다.');
     }
   };
 
@@ -101,7 +197,16 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
               startDay={startDay}
               settlementDetails={data.settlementDetails}
             />
-            <Button label="공유하기" onClick={handleUniversalShare} className="w-full" />
+
+            <div className="flex gap-2 w-full mt-4">
+              <Button label="텍스트 복사" onClick={handleCopyText} bg="bg-grey-300 text-grey-800" className="flex-1" />
+              <Button
+                label="공유하기"
+                onClick={handleUniversalShare} // 통합 핸들러 연결
+                bg="bg-primary"
+                className="flex-1"
+              />
+            </div>
           </>
         )}
       </section>
