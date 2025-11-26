@@ -19,14 +19,20 @@ export default function DailyExpenseList({ dailyExpenses, tripStartDate, tripEnd
       id="scroll-target-top"
       className="flex-grow w-full space-y-8 p-5 pb-[159px] overflow-y-auto scrollbar-hide bg-grey-50"
     >
-      {dailyExpenses.map(({ date, expenses }) => {
+      {dailyExpenses.map(({ date, expenses, canAddExpense }) => {
         return (
           <div id={`day-${date}`} key={date}>
             <ExpenseDateBar expenseDate={date} tripStartDate={tripStartDate} />
             {expenses.map((e) => (
               <ExpenseItem key={e.expenseId} expense={e} tripId={tripId} />
             ))}
-            <AddExpenseButton onClick={() => handleClickAddExpense(date)} />
+            {canAddExpense ? (
+              <AddExpenseButton onClick={() => handleClickAddExpense(date)} />
+            ) : (
+              <div className="w-full rounded-lg py-[7.5px] outline-1 outline-offset-[-1px] outline-neutral-200 bg-grey-150 inline-flex justify-center items-center">
+                <p className="text-body-1 text-neutral-500">정산 완료</p>
+              </div>
+            )}
           </div>
         );
       })}
