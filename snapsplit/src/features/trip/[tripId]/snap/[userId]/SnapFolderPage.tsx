@@ -189,6 +189,11 @@ const SnapFolderPage = () => {
           selectedImageIds={selectedImageIds}
           onToggleSelect={handleToggleSelect}
           onRefresh={handleRefresh}
+          members={readinessData?.members.map((m) => ({
+            name: m.name,
+            userId: m.userId,
+            isTagged: false,
+          })) ?? []}
         />
 
         {filterOpen && (
