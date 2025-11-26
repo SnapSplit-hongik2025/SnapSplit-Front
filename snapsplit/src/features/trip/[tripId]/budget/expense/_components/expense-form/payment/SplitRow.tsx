@@ -19,7 +19,7 @@ type Props = {
 export default function SplitRow({ splitter, currency, membersState, handleCheck, updateAmount }: Props) {
   const isChecked = membersState[splitter.memberId]?.isSplitter;
   const splitAmount = membersState[splitter.memberId]?.splitAmount || null;
-  
+
   // 로컬 상태로 입력값을 문자열로 관리
   const [inputValue, setInputValue] = useState(splitAmount?.toString() || '');
 
@@ -50,7 +50,7 @@ export default function SplitRow({ splitter, currency, membersState, handleCheck
           <button
             type="button"
             onClick={() => handleCheck(splitter.memberId, 'isSplitter')}
-            className={`flex items-center justify-center w-6 h-6 rounded-full ${
+            className={`flex items-center cursor-pointer justify-center w-6 h-6 rounded-full ${
               isChecked ? 'bg-primary text-white' : 'border-[1px] border-grey-250'
             }`}
           >

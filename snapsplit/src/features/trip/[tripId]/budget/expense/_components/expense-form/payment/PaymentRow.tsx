@@ -50,7 +50,7 @@ export default function PaymentRow({ payer, currency, membersState, handleCheck,
           <button
             type="button"
             onClick={() => handleCheck(payer.memberId, 'isPayer')}
-            className={`flex items-center justify-center w-6 h-6 rounded-full ${
+            className={`flex cursor-pointer items-center justify-center w-6 h-6 rounded-full ${
               isChecked ? 'bg-primary text-white' : 'border-[1px] border-grey-250'
             }`}
           >

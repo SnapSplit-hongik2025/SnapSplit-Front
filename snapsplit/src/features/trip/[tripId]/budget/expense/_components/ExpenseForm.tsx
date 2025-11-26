@@ -11,7 +11,7 @@ import CategorySection from './expense-form/CategorySection';
 import PaySection from './expense-form/PaySection';
 import SplitSection from './expense-form/SplitSection';
 import Button from '@/shared/components/Button';
-import alertIcon from '@public/svg/alert-circle-red.svg'; // alert 함수와 이름 충돌 방지를 위해 이름 변경
+import alertIcon from '@public/svg/alert-circle-red.svg';
 import Image from 'next/image';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -28,6 +28,7 @@ import { GetTripBudgetDto } from '../../types/budget-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { getSymbol } from '@/shared/utils/currency';
+import errorIcon from '@public/svg/alert-circle-red.svg';
 
 export type MemberState = {
   isPayer: boolean;
@@ -51,6 +52,8 @@ export default function ExpenseForm() {
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const { data: budgetData } = useQuery<GetTripBudgetDto>({
     queryKey: ['tripBudget', tripId],
     queryFn: () => getTripBudgetData(Number(tripId)),
@@ -73,42 +76,33 @@ export default function ExpenseForm() {
 
   const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
 
-  // [수정] toggle 함수 내에 자동 분배 로직 추가
   const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
     setMembersState((prev) => {
       const nextState = { ...prev };
       const isNowChecked = !prev[id][key];
 
-      // 1. 체크 상태 업데이트
       nextState[id] = { ...prev[id], [key]: isNowChecked };
 
-      // 2. '정산자(isSplitter)'를 토글했을 때만 자동 계산 로직 수행
       if (key === 'isSplitter') {
-        // 2-1. 체크 해제된 경우 금액을 0원으로 고정
         if (!isNowChecked) {
           nextState[id].splitAmount = 0;
         }
 
-        // 2-2. 현재 체크되어 있는 정산자 목록 필터링 (공동경비 제외)
-        // pageData가 로드된 상태여야 함
         if (pageData?.members) {
           const sharedFundMember = pageData.members.find((m) => m.memberType === 'SHARED_FUND');
           const sharedFundId = sharedFundMember?.memberId;
           const sharedFundPayment = sharedFundId ? nextState[sharedFundId]?.payAmount || 0 : 0;
 
-          // N빵 대상 금액 = 전체 금액 - 공동경비가 낸 돈
-          const targetAmount = form.expense.amount - sharedFundPayment;
+          let targetAmount = form.expense.amount - sharedFundPayment;
+          targetAmount = Math.round(targetAmount * 10000) / 10000;
 
-          // 공동경비 제외하고, 현재 체크된 정산자들 찾기
           const activeSplitters = pageData.members.filter(
             (m) => m.memberType !== 'SHARED_FUND' && nextState[m.memberId].isSplitter
           );
 
           const count = activeSplitters.length;
 
-          // 2-3. 대상 금액이 있고, 나눌 사람이 있을 때만 분배
           if (targetAmount > 0 && count > 0) {
-            // 소수점 처리 로직 (이전과 동일)
             const amountStr = targetAmount.toString();
             const decimalPlaces = amountStr.includes('.') ? amountStr.split('.')[1].length : 0;
             const multiplier = Math.pow(10, decimalPlaces);
@@ -119,16 +113,22 @@ export default function ExpenseForm() {
 
             activeSplitters.forEach((member, index) => {
               let currentScaledAmount = scaledBase;
-              // 나머지 1씩 분배
               if (index < remainder) {
                 currentScaledAmount += 1;
               }
               const finalAmount = currentScaledAmount / multiplier;
 
-              // 계산된 금액 적용
               nextState[member.memberId] = {
                 ...nextState[member.memberId],
                 splitAmount: finalAmount,
+              };
+            });
+          } else if (targetAmount <= 0) {
+            // [추가] 공동경비가 전액 결제 등으로 나눌 금액이 없으면 정산금액 0원 처리
+            activeSplitters.forEach((member) => {
+              nextState[member.memberId] = {
+                ...nextState[member.memberId],
+                splitAmount: 0,
               };
             });
           }
@@ -207,16 +207,13 @@ export default function ExpenseForm() {
     fetchExpensePageData();
   }, [tripId, date, isFromReceipt, ocrResult]);
 
-  // 1. 영수증 없는 일반 지출 등록 Mutation
   const { mutate: createExpenseMutate, isPending: isCreating } = useMutation({
     mutationFn: (refinedForm: CreateExpenseRequest) => createExpense(Number(tripId), refinedForm),
 
     onSuccess: async () => {
       clearReceiptData();
-
       await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
       await queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
-
       router.push(`/trip/${tripId}/budget`);
     },
     onError: (error) => {
@@ -225,7 +222,6 @@ export default function ExpenseForm() {
     },
   });
 
-  // 2. 영수증 포함 지출 등록 Mutation
   const { mutate: createExpenseWithReceiptMutate, isPending: isCreatingWithReceipt } = useMutation({
     mutationFn: (refinedForm: CreateExpenseRequestWithReceipt) => createExpenseWithReceipt(Number(tripId), refinedForm),
 
@@ -233,7 +229,6 @@ export default function ExpenseForm() {
       clearReceiptData();
       await queryClient.refetchQueries({ queryKey: ['tripBudget', tripId] });
       await queryClient.refetchQueries({ queryKey: ['splitData', tripId] });
-
       router.push(`/trip/${tripId}/budget`);
     },
     onError: (error) => {
@@ -243,15 +238,14 @@ export default function ExpenseForm() {
   });
 
   // --------------------------------------------------------------------------
-  // [추가] 실시간 금액 검증 및 에러 메시지 생성 로직
+  // [실시간 금액 검증 로직]
   // --------------------------------------------------------------------------
 
-  // 1. 결제자(Payer) 검증 데이터
   const selectedPayers = Object.entries(membersState).filter(([_, m]) => m.isPayer);
   const totalPayerAmount = selectedPayers.reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0);
-  const payerDiff = form.expense.amount - totalPayerAmount;
+  const rawPayerDiff = form.expense.amount - totalPayerAmount;
+  const payerDiff = Math.round(rawPayerDiff * 10000) / 10000;
 
-  // 2. 공동 경비 멤버 ID 찾기 및 결제 금액(sharedFundPayment) 계산
   const sharedFundMember = pageData?.members.find((member) => member.memberType === 'SHARED_FUND');
   const sharedFundMemberId = sharedFundMember?.memberId;
   const sharedFundPayment = sharedFundMemberId
@@ -260,8 +254,6 @@ export default function ExpenseForm() {
         .reduce((sum, [_, m]) => sum + (m.payAmount || 0), 0)
     : 0;
 
-  // 3. 공동 경비 예산 초과 여부 확인 (실시간 계산 - 수정됨)
-  // * 지출 총액이 아닌, '공동 경비가 결제하기로 한 금액(sharedFundPayment)'을 기준으로 판단
   let sharedFundErrorMsg: string | null = null;
 
   if (budgetData?.sharedFund && pageData?.exchangeRates && sharedFundPayment > 0) {
@@ -269,7 +261,6 @@ export default function ExpenseForm() {
     const expenseCurrency = form.expense.currency;
     let paymentAmountInSharedFundCurrency = sharedFundPayment;
 
-    // 통화가 다를 경우 환전 적용
     if (sharedFundCurrency !== expenseCurrency) {
       const exchangeRate = pageData.exchangeRates[expenseCurrency];
       if (exchangeRate) {
@@ -277,42 +268,39 @@ export default function ExpenseForm() {
       }
     }
 
-    // 예산 잔액 비교
     if (paymentAmountInSharedFundCurrency > budgetData.sharedFund.balance) {
       sharedFundErrorMsg = `공동 경비 결제액이 예산을 초과합니다.`;
     }
   }
 
-  // 4. 정산자(Splitter) 검증 데이터
-  // 정산 필요 금액 = 전체 지출 금액 - 공동경비가 낸 금액
   const requiredSplitAmount = form.expense.amount - sharedFundPayment;
   const selectedSplitters = Object.entries(membersState).filter(([_, m]) => m.isSplitter);
   const totalSplitAmount = selectedSplitters.reduce((sum, [_, m]) => sum + (m.splitAmount || 0), 0);
-  const splitDiff = requiredSplitAmount - totalSplitAmount;
+  const rawSplitDiff = requiredSplitAmount - totalSplitAmount;
+  const splitDiff = Math.round(rawSplitDiff * 10000) / 10000;
 
   const getValidationError = () => {
-    // 0. 초기 상태(0원)일 때는 에러 표시 안 함
     if (form.expense.amount === 0) return null;
 
-    // [추가] 1. 공동 경비 예산 초과 에러
-    if (sharedFundErrorMsg) {
-      return sharedFundErrorMsg;
-    }
+    if (sharedFundErrorMsg) return sharedFundErrorMsg;
 
-    // 2. 결제자 금액 불일치
     if (payerDiff !== 0) {
       const status = payerDiff > 0 ? '부족' : '초과';
       return `결제 금액이 ${Math.abs(payerDiff).toLocaleString()}${getSymbol(form.expense.currency)} ${status}합니다`;
     }
 
-    // 3. 정산자 금액 불일치 (정산 대상 금액이 있을 때만)
+    // [추가] 공동경비가 전액(또는 그 이상) 결제했는데 정산자가 선택된 경우 에러
+    if (requiredSplitAmount <= 0 && selectedSplitters.length > 0) {
+      return '전액 공동경비 지출이므로 정산할 금액이 없습니다.';
+    }
+
     if (requiredSplitAmount > 0 && splitDiff !== 0) {
       const status = splitDiff > 0 ? '부족' : '초과';
       return `정산자 금액이 ${Math.abs(splitDiff).toLocaleString()}${getSymbol(form.expense.currency)} ${status}합니다`;
     }
 
-    // 4. 최소 인원 선택 검증
     if (selectedPayers.length === 0) return '결제자를 최소 1명 이상 선택해주세요.';
+    // 공동경비 전액 결제가 아닌 경우에만 정산자 최소 선택 확인
     if (requiredSplitAmount > 0 && selectedSplitters.length === 0) return '정산자를 최소 1명 이상 선택해주세요.';
 
     return null;
@@ -321,22 +309,21 @@ export default function ExpenseForm() {
   const validationErrorMessage = getValidationError();
   const isSubmitting = isCreating || isCreatingWithReceipt;
 
-  // 폼 완전성 체크 - 필수 필드들이 모두 채워졌는지 확인
   const isFormComplete = Boolean(
     form.expense.date &&
       form.expense.amount > 0 &&
       form.expense.currency &&
       form.expense.exchangeRate > 0 &&
-      form.expense.category &&
       form.expense.paymentMethod
   );
 
   const isFormValid = isFormComplete && !validationErrorMessage;
 
   const handleSubmit = () => {
-    if (!tripId) return;
+    setIsSubmitted(true);
 
-    // 로직 검증은 isFormValid에서 처리되므로 중복 제거 가능하나 안전을 위해 유지 또는 isFormValid 체크로 대체
+    if (!tripId) return;
+    if (!form.expense.category) return;
     if (!isFormValid) return;
 
     const refinedForm: CreateExpenseRequest = {
@@ -358,12 +345,13 @@ export default function ExpenseForm() {
   };
 
   const handleSubmitWithReceipt = () => {
-    if (!tripId || !receiptUrl || !items) return;
+    setIsSubmitted(true);
 
+    if (!tripId || !receiptUrl || !items) return;
+    if (!form.expense.category) return;
     if (!isFormValid) return;
 
     const refinedForm = {
-      // (타입은 실제 DTO에 맞게 설정 권장)
       ...form,
       payers: Object.entries(membersState)
         .filter(([_, m]) => m.isPayer)
@@ -393,7 +381,6 @@ export default function ExpenseForm() {
 
   return (
     <div className="flex-1 flex flex-col items-center w-full pt-5 px-5">
-      {/* 금액 / 통화 */}
       <ExpenseInputCard
         amount={form.expense.amount}
         setAmount={(amount) => handleExpenseChange('amount', amount)}
@@ -406,8 +393,6 @@ export default function ExpenseForm() {
       />
 
       <div className="flex flex-col items-center gap-7 w-full pt-6">
-        {/* 기본 폼 */}
-
         {budgetData.startDate && budgetData.endDate && date && (
           <TripDateSection
             date={form.expense.date}
@@ -430,11 +415,21 @@ export default function ExpenseForm() {
           expenseMemo={form.expense.expenseMemo}
           setExpenseMemo={(memo) => handleExpenseChange('expenseMemo', memo)}
         />
-        <CategorySection category={form.expense.category} setCategory={(c) => handleExpenseChange('category', c)} />
-        {/* 영수증에서 온 경우 영수증 상세 항목 */}
+
+        <div className="w-full flex flex-col gap-1">
+          <CategorySection category={form.expense.category} setCategory={(c) => handleExpenseChange('category', c)} />
+          {isSubmitted && !form.expense.category && (
+            <div className="flex pt-1 w-full items-center gap-1 justify-start text-center">
+              <Image src={errorIcon} alt="error" width={18} height={18} />
+              <span className="flex text-xs text-status_error text-center items-center justify-center">
+                지출 카테고리를 선택해주세요.
+              </span>
+            </div>
+          )}
+        </div>
+
         {isFromReceipt && <ReceiptDetailSection items={ocrResult?.items || []} />}
 
-        {/* 결제자/분할자 */}
         <PaySection
           currency={form.expense.currency}
           members={pageData.members}
@@ -444,8 +439,6 @@ export default function ExpenseForm() {
         />
         <SplitSection
           currency={form.expense.currency}
-          // [수정] 이제 로직이 부모로 이동했으므로 totalAmount props 전달이 필수는 아니지만,
-          // SplitSection 컴포넌트를 원래대로 돌려놓기 위해 아래 코드를 봅니다.
           members={pageData.members}
           membersState={membersState}
           handleCheck={toggle}
@@ -453,9 +446,7 @@ export default function ExpenseForm() {
         />
       </div>
 
-      {/* ✅ 6. 제출 버튼 (로딩 상태 반영 및 에러 메시지 표시) */}
       <div className="flex flex-col items-center justify-center w-full py-5 gap-3">
-        {/* 에러 메시지 렌더링 */}
         {validationErrorMessage && (
           <div className="flex flex-row gap-1 items-center justify-center w-full px-4 py-2 bg-red-50 border border-red-100 rounded-xl">
             <Image src={alertIcon} alt="error" width={24} height={24} />
@@ -466,7 +457,7 @@ export default function ExpenseForm() {
         <Button
           label={isSubmitting ? '저장 중...' : '추가하기'}
           onClick={isFromReceipt ? handleSubmitWithReceipt : handleSubmit}
-          enabled={!isSubmitting && isFormValid} // 로딩 중 및 폼 미완성(금액 오류 포함) 시 비활성화
+          enabled={!isSubmitting && isFormValid}
         />
       </div>
     </div>

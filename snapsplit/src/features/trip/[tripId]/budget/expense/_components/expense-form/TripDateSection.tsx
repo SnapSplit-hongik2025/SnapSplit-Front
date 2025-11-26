@@ -60,7 +60,7 @@ export default function TripDateSection({ startDate, endDate, date, setDate, set
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-3 w-full h-12 px-4 rounded-xl border-[1px] border-grey-250"
+        className="flex items-center gap-3 cursor-pointer w-full h-12 px-4 rounded-xl border-[1px] border-grey-250"
       >
         {/* [수정] dayIndex가 0이면 '여행 준비', 아니면 'Day N' 표시 */}
         <div className="flex-1 text-body-3 text-start">{dayIndex === 0 ? '여행 준비' : `Day ${dayIndex}`}</div>
