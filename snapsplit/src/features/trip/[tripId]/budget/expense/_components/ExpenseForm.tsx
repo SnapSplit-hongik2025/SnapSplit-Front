@@ -491,7 +491,7 @@ export default function ExpenseForm() {
         {validationErrorMessage && (
           <div className="flex flex-row gap-1 items-center justify-center w-full px-4 py-2 bg-red-50 border border-red-100 rounded-xl">
             <Image src={alert} alt="error" width={24} height={24} />
-            <span className="text-body-3 text-status_error font-medium">{validationErrorMessage}</span>
+            <span className="text-body-3 text-red-400 font-medium">{validationErrorMessage}</span>
           </div>
         )}
 
