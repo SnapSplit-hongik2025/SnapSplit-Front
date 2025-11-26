@@ -43,7 +43,7 @@ const FullExpenseModal = ({ onClose, tripId }: Props) => {
       {/* Header */}
       <div className="flex flex-col w-full bg-grey-850">
         <div className="flex justify-end px-5 py-3 h-12">
-          <button onClick={onClose}>
+          <button onClick={onClose} className="cursor-pointer">
             <Image src="/svg/exit-grey-1000.svg" alt="닫기" width={24} height={24} />
           </button>
         </div>
