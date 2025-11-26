@@ -2,23 +2,32 @@ import { useRef, useState } from 'react';
 import Image from 'next/image';
 import Button from '@/shared/components/Button';
 import { PhotoTagMember } from '@/features/trip/[tripId]/snap/type';
+import { tagPhoto } from '@/features/trip/[tripId]/snap/api/snap-api';
 
 type Props = {
   members: PhotoTagMember[];
   onClose: () => void;
+  tripId: number;
+  photoId: number | null;
 };
 
-const PhotoTagModalContent = ({ onClose, members }: Props) => {
+const PhotoTagModalContent = ({ onClose, members, tripId, photoId }: Props) => {
   const modalBackground = useRef<HTMLDivElement>(null);
 
-  const [selectedMembers, setSelectedMembers] = useState<number[]>(
-    members.map((member) => {
-      if (member.isTagged) {
-        return member.userId;
-      }
-      return 0;
-    })
+  console.log("members", members);
+
+  const [selectedMembers, setSelectedMembers] = useState<number[]>(members
+  .filter(member => member.isTagged)
+  .map(member => member.userId)
   );
+
+  if (!photoId) {
+    return null;
+  }
+
+  const handleApply = async () => {
+    await tagPhoto(tripId, photoId, selectedMembers);
+  }
 
   return (
     <div
@@ -66,7 +75,7 @@ const PhotoTagModalContent = ({ onClose, members }: Props) => {
         ))}
         <div className="flex gap-3 w-full pt-6">
           <Button label="취소" bg="bg-grey-650" onClick={onClose} />
-          <Button label="적용" bg="bg-primary" onClick={() => {}} />
+          <Button label="적용" bg="bg-primary" onClick={handleApply} />
         </div>
       </div>
     </div>

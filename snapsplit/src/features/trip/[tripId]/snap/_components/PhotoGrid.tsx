@@ -184,7 +184,7 @@ export default function PhotoGrid({
 
       {isTagModalOpen && (
         <Modal layer="toast">
-          <PhotoTagModalContent onClose={() => setIsTagModalOpen(false)} members={membersCopy} />
+          <PhotoTagModalContent onClose={() => setIsTagModalOpen(false)} members={membersCopy} tripId={Number(tripId.tripId)} photoId={selectedImageId} />
         </Modal>
       )}
 

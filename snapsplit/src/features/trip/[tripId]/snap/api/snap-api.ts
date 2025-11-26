@@ -2,7 +2,7 @@ import privateInstance from '@/lib/api/instance/privateInstance';
 import { GetReadinessDto, GetTripDataDto } from '../types/snap-dto-types';
 import { ApiEnvelope } from '@/lib/api/type';
 import { apiPath } from '@/shared/constants/apipath';
-import { UploadImageDto, GetPhotosDto } from '../types/snap-dto-types';
+import { UploadImageDto, GetPhotosDto, TagPhotoDto } from '../types/snap-dto-types';
 
 export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
   if (!tripId) {
@@ -80,5 +80,16 @@ export const downloadImage = async (tripId: number, photoIds: number[]) => {
   } catch (error) {
     console.error(`[API Error] Failed to get photos for tripId ${tripId}:`, error);
     throw new Error('이미지를 다운로드하는 데 실패했습니다.');
+  }
+}
+
+export const tagPhoto = async (tripId: number, photoId: number, taggedUsers: number[]) => {
+  const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/photos/' + photoId + '/tags';
+  try {
+    const res = await privateInstance.post<ApiEnvelope<TagPhotoDto>>(finalPath, { memberIds: taggedUsers });
+    return res.data.data;
+  } catch (error) {
+    console.error(`[API Error] Failed to tag photo for tripId ${tripId}:`, error);
+    throw new Error('이미지 태깅하는 데 실패했습니다.');
   }
 }
