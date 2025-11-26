@@ -80,11 +80,9 @@ export default function SnapPage({ tripId }: SnapPageProps) {
     status: photoStatus,
   } = useInfiniteQuery({
     queryKey: ['photos', tripId, sortKey],
-    queryFn: ({ pageParam = 0 }) =>
-      getPhotos(Number(tripId), pageParam, sortKey),
+    queryFn: ({ pageParam = 0 }) => getPhotos(Number(tripId), pageParam, sortKey),
     initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) =>
-      lastPage.last ? undefined : allPages.length,
+    getNextPageParam: (lastPage, allPages) => (lastPage.last ? undefined : allPages.length),
     staleTime: 1000 * 30,
     enabled: !!readiness?.allMembersRegistered, // 얼굴 등록되면 사진 불러오기
   });
@@ -179,7 +177,7 @@ export default function SnapPage({ tripId }: SnapPageProps) {
           members={members}
         />
       ) : (
-        <FolderTabView folders={folders} selectedSort={selectedSort}/>
+        <FolderTabView folders={folders} selectedSort={selectedSort} />
       )}
 
       <FloatingModal>

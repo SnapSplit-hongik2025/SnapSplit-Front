@@ -119,7 +119,7 @@ const BudgetPage = ({ tripId }: BudgetPageProps) => {
       </div>
 
       {/* 스크롤 영역 */}
-      <div className="flex-1 overflow-y-auto bg-grey-100" onScroll={handleScroll}>
+      <div className="flex-1 overflow-y-auto bg-grey-100 scrollbar-hide" onScroll={handleScroll}>
         <DailyExpenseList
           dailyExpenses={budgetData.dailyExpenses}
           tripStartDate={budgetData.startDate}
