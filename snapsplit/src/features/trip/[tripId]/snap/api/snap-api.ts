@@ -18,10 +18,12 @@ export const getTripData = async (tripId: number): Promise<GetTripDataDto> => {
   }
 };
 
-export const uploadImage = async (tripId: number, file: File) => {
+export const uploadImage = async (tripId: number, files: File[]) => {
   const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/photos';
   const formData = new FormData();
-  formData.append('images', file);
+  files.forEach((file) => {
+    formData.append('images', file);
+  });
   try {
     const res = await privateInstance.post<ApiEnvelope<UploadImageDto>>(finalPath, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     return res.data.data;
@@ -70,10 +72,10 @@ export const getPhotos = async (tripId: number, page: number, sort: string) => {
   }
 }
 
-export const downloadImage = async (tripId: number, photoId: number) => {
+export const downloadImage = async (tripId: number, photoIds: number[]) => {
   const finalPath = apiPath.SNAP.replace('{tripId}', String(tripId)) + '/download';
   try {
-    const res = await privateInstance.post<Blob>(finalPath, { photoIds: [photoId] }, { responseType: 'blob' });
+    const res = await privateInstance.post<Blob>(finalPath, { photoIds: photoIds }, { responseType: 'blob' });
     return res.data;
   } catch (error) {
     console.error(`[API Error] Failed to get photos for tripId ${tripId}:`, error);
