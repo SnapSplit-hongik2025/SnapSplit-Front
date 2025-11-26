@@ -193,7 +193,15 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         style={{ display: 'none' }}
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) imageSubmit(file);
+          if (file) {
+            try {
+              imageSubmit(file);
+              queryClient.invalidateQueries({ queryKey: ['photos', tripId, sortKey] });
+            } catch (error) {
+              console.error('이미지 업로드 실패:', error);
+              alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+            }
+          }
         }}
       />
     </div>
