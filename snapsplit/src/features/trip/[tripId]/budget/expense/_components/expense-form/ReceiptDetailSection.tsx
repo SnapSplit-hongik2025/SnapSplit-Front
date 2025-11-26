@@ -12,9 +12,9 @@ export default function ReceiptDetailSection({ items }: Props) {
   const [isOpen, setIsOpen] = useState(true);
   return (
     <div className="flex flex-col items-center gap-3 w-full text-body-3">
-      <button className="flex items-center w-full" onClick={() => setIsOpen(!isOpen)}>
+      <button className="flex items-center justify-start gap-1 w-full text-center" onClick={() => setIsOpen(!isOpen)}>
         <div className="text-start">영수증 상세 정보</div>
-        <Image src={isOpen ? arrowTop : arrowBottom} alt="열기" width={24} height={24} />
+        <Image className="cursor-pointer" src={isOpen ? arrowTop : arrowBottom} alt="열기" width={24} height={24} />
       </button>
       {isOpen && (
         <div className="flex flex-col items-center gap-3 w-full">
