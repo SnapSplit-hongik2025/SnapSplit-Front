@@ -1,9 +1,34 @@
-// src/types/global.d.ts
-
-export {}; // 이 파일이 모듈로 인식되게 함
+export {};
 
 declare global {
   interface Window {
-    Kakao: any; // 또는 구체적인 타입 정의
+    Kakao: {
+      init: (key: string | undefined) => void;
+      isInitialized: () => boolean;
+      Share: {
+        sendDefault: (settings: KakaoShareSettings) => void;
+      };
+    };
   }
+}
+
+// KakaoShareSettings 인터페이스는 global.d.ts 내부에 정의합니다.
+interface KakaoShareSettings {
+  objectType: 'feed' | 'list' | 'location' | 'commerce' | 'text';
+  content: {
+    title: string;
+    description: string;
+    imageUrl: string;
+    link: {
+      mobileWebUrl: string;
+      webUrl: string;
+    };
+  };
+  buttons?: Array<{
+    title: string;
+    link: {
+      mobileWebUrl: string;
+      webUrl: string;
+    };
+  }>;
 }
