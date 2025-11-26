@@ -59,7 +59,7 @@ export default function ReceiptAnalysisSection({ items, setItems, setAmount }: R
       <div className="w-full h-8 px-24 mt-2">
         <button
           onClick={handleAddItem}
-          className="flex items-center justify-center w-full h-full rounded-xl bg-grey-150 text-grey-550 text-body-1 hover:bg-grey-200 transition-colors"
+          className="flex cursor-pointer items-center justify-center w-full h-full rounded-xl bg-grey-150 text-grey-550 text-body-1 hover:bg-grey-200 transition-colors"
         >
           항목 추가하기
         </button>
@@ -109,7 +109,7 @@ function ReceiptAnalysisItem({
         className="flex items-center justify-center text-grey-400 hover:text-red-500 transition-colors"
         aria-label="삭제"
       >
-        <Image src={deleteIcon} alt="삭제 아이콘" width={16} height={16} />
+        <Image src={deleteIcon} alt="삭제 아이콘" width={16} height={16} className="cursor-pointer" />
       </button>
     </div>
   );

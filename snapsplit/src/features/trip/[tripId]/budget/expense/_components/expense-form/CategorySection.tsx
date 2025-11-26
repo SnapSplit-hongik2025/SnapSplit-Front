@@ -14,7 +14,13 @@ export default function CategorySection({ category, setCategory }: Props) {
       <div className="text-body-3">지출 카테고리</div>
       <div className="flex items-center gap-2 w-full">
         {EXPENSE_CATEGORY.map((c) => (
-          <CategoryItem key={c.backendName} id={c.backendName} name={c.name} category={category} setCategory={setCategory} />
+          <CategoryItem
+            key={c.backendName}
+            id={c.backendName}
+            name={c.name}
+            category={category}
+            setCategory={setCategory}
+          />
         ))}
       </div>
     </div>

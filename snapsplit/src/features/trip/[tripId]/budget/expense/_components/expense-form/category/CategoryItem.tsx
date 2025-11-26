@@ -21,7 +21,7 @@ export default function CategoryItem({ id, name, category, setCategory }: Props)
   return (
     <button
       onClick={toggleCategory}
-      className={`flex-1 flex flex-col items-center pt-1 pb-2.5 rounded-full border-[1px] ${category === id ? 'bg-primary text-white border-primary' : 'border-grey-250'}`}
+      className={`flex-1 cursor-pointer flex flex-col items-center pt-1 pb-2.5 rounded-full border-[1px] ${category === id ? 'bg-primary text-white border-primary' : 'border-grey-250'}`}
     >
       <div className="w-8 h-8">
         <Image
