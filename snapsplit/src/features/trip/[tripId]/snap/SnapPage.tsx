@@ -182,9 +182,11 @@ export default function SnapPage({ tripId }: SnapPageProps) {
         <FolderTabView folders={folders} selectedSort={selectedSort}/>
       )}
 
-      <FloatingModal>
-        <UploadButton isScrolled={isScrolled} inputRef={fileInputRef} scrollToTop={scrollToTop} />
-      </FloatingModal>
+      {!readiness.allMembersRegistered ? null : (
+        <FloatingModal>
+          <UploadButton isScrolled={isScrolled} inputRef={fileInputRef} scrollToTop={scrollToTop} />
+        </FloatingModal>
+      )}
 
       <input
         type="file"
