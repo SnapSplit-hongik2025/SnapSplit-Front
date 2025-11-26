@@ -385,6 +385,7 @@ export default function ExpenseForm() {
         />
         <SplitSection
           currency={form.expense.currency}
+          totalAmount={form.expense.amount} // [추가] 총 지출 금액 전달
           members={pageData.members}
           membersState={membersState}
           handleCheck={toggle}
