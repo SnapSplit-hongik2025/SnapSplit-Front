@@ -73,11 +73,70 @@ export default function ExpenseForm() {
 
   const [membersState, setMembersState] = useState<Record<number, MemberState>>({});
 
+  // [수정] toggle 함수 내에 자동 분배 로직 추가
   const toggle = (id: number, key: 'isPayer' | 'isSplitter') => {
-    setMembersState((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [key]: !prev[id][key] },
-    }));
+    setMembersState((prev) => {
+      const nextState = { ...prev };
+      const isNowChecked = !prev[id][key];
+
+      // 1. 체크 상태 업데이트
+      nextState[id] = { ...prev[id], [key]: isNowChecked };
+
+      // 2. '정산자(isSplitter)'를 토글했을 때만 자동 계산 로직 수행
+      if (key === 'isSplitter') {
+        // 2-1. 체크 해제된 경우 금액을 0원으로 고정
+        if (!isNowChecked) {
+          nextState[id].splitAmount = 0;
+        }
+
+        // 2-2. 현재 체크되어 있는 정산자 목록 필터링 (공동경비 제외)
+        // pageData가 로드된 상태여야 함
+        if (pageData?.members) {
+          const sharedFundMember = pageData.members.find((m) => m.memberType === 'SHARED_FUND');
+          const sharedFundId = sharedFundMember?.memberId;
+          const sharedFundPayment = sharedFundId ? nextState[sharedFundId]?.payAmount || 0 : 0;
+
+          // N빵 대상 금액 = 전체 금액 - 공동경비가 낸 돈
+          const targetAmount = form.expense.amount - sharedFundPayment;
+
+          // 공동경비 제외하고, 현재 체크된 정산자들 찾기
+          const activeSplitters = pageData.members.filter(
+            (m) => m.memberType !== 'SHARED_FUND' && nextState[m.memberId].isSplitter
+          );
+
+          const count = activeSplitters.length;
+
+          // 2-3. 대상 금액이 있고, 나눌 사람이 있을 때만 분배
+          if (targetAmount > 0 && count > 0) {
+            // 소수점 처리 로직 (이전과 동일)
+            const amountStr = targetAmount.toString();
+            const decimalPlaces = amountStr.includes('.') ? amountStr.split('.')[1].length : 0;
+            const multiplier = Math.pow(10, decimalPlaces);
+
+            const scaledTotal = Math.round(targetAmount * multiplier);
+            const scaledBase = Math.floor(scaledTotal / count);
+            const remainder = scaledTotal % count;
+
+            activeSplitters.forEach((member, index) => {
+              let currentScaledAmount = scaledBase;
+              // 나머지 1씩 분배
+              if (index < remainder) {
+                currentScaledAmount += 1;
+              }
+              const finalAmount = currentScaledAmount / multiplier;
+
+              // 계산된 금액 적용
+              nextState[member.memberId] = {
+                ...nextState[member.memberId],
+                splitAmount: finalAmount,
+              };
+            });
+          }
+        }
+      }
+
+      return nextState;
+    });
   };
 
   const updateAmount = (id: number, key: 'payAmount' | 'splitAmount', value: number | null) => {
@@ -385,7 +444,8 @@ export default function ExpenseForm() {
         />
         <SplitSection
           currency={form.expense.currency}
-          totalAmount={form.expense.amount} // [추가] 총 지출 금액 전달
+          // [수정] 이제 로직이 부모로 이동했으므로 totalAmount props 전달이 필수는 아니지만,
+          // SplitSection 컴포넌트를 원래대로 돌려놓기 위해 아래 코드를 봅니다.
           members={pageData.members}
           membersState={membersState}
           handleCheck={toggle}
