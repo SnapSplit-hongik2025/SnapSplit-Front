@@ -7,11 +7,16 @@ type Props = {
   name: string;
   category: string;
   setCategory: (category: string) => void;
+  // [추가] 아이콘 경로 props
+  iconOn: string;
+  iconOff: string;
 };
 
-export default function CategoryItem({ id, name, category, setCategory }: Props) {
+export default function CategoryItem({ id, name, category, setCategory, iconOn, iconOff }: Props) {
+  const isSelected = category === id;
+
   const toggleCategory = () => {
-    if (category === id) {
+    if (isSelected) {
       setCategory('');
     } else {
       setCategory(id);
@@ -21,17 +26,15 @@ export default function CategoryItem({ id, name, category, setCategory }: Props)
   return (
     <button
       onClick={toggleCategory}
-      className={`flex-1 cursor-pointer flex flex-col items-center pt-1 pb-2.5 rounded-full border-[1px] ${category === id ? 'bg-primary text-white border-primary' : 'border-grey-250'}`}
+      className={`flex-1 cursor-pointer flex flex-col items-center pt-1 pb-2.5 rounded-full border-[1px] transition-colors duration-200 ${
+        isSelected ? 'bg-primary text-white border-primary' : 'bg-white border-grey-250 text-grey-450'
+      }`}
     >
-      <div className="w-8 h-8">
-        <Image
-          src={category === id ? '/svg/category-example-white.svg' : '/svg/category-example-grey.svg'}
-          alt={name}
-          width={32}
-          height={32}
-        />
+      <div className="w-8 h-8 relative mb-1">
+        {/* 선택 여부에 따라 이미지 src 변경 */}
+        <Image src={isSelected ? iconOn : iconOff} alt={name} width={32} height={32} />
       </div>
-      <div className={`text-caption-1 ${category === id ? 'text-white' : 'text-grey-450'}`}>{name}</div>
+      <div className="text-caption-1">{name}</div>
     </button>
   );
 }

@@ -202,9 +202,9 @@ export default function ExpenseEditForm() {
     if (tripBudgetData?.sharedFund && pageData?.exchangeRates) {
       const sharedFundCurrency = tripBudgetData.sharedFund.defaultCurrency;
       const expenseCurrency = form.expense.currency;
-      
+
       let expenseAmountInSharedFundCurrency = form.expense.amount;
-      
+
       // 통화가 다를 경우 환전 적용
       if (sharedFundCurrency !== expenseCurrency) {
         const exchangeRate = pageData.exchangeRates[expenseCurrency];
@@ -215,9 +215,11 @@ export default function ExpenseEditForm() {
           return;
         }
       }
-      
+
       if (expenseAmountInSharedFundCurrency > tripBudgetData.sharedFund.balance) {
-        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${tripBudgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        alert(
+          `지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${tripBudgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`
+        );
         return;
       }
     }
@@ -233,9 +235,9 @@ export default function ExpenseEditForm() {
     if (tripBudgetData?.sharedFund && pageData?.exchangeRates) {
       const sharedFundCurrency = tripBudgetData.sharedFund.defaultCurrency;
       const expenseCurrency = form.expense.currency;
-      
+
       let expenseAmountInSharedFundCurrency = form.expense.amount;
-      
+
       // 통화가 다를 경우 환전 적용
       if (sharedFundCurrency !== expenseCurrency) {
         const exchangeRate = pageData.exchangeRates[expenseCurrency];
@@ -246,9 +248,11 @@ export default function ExpenseEditForm() {
           return;
         }
       }
-      
+
       if (expenseAmountInSharedFundCurrency > tripBudgetData.sharedFund.balance) {
-        alert(`지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${tripBudgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`);
+        alert(
+          `지출 금액(${form.expense.amount.toLocaleString()} ${expenseCurrency})이 공동 경비 예산(${tripBudgetData.sharedFund.balance.toLocaleString()} ${sharedFundCurrency})을 초과합니다.`
+        );
         return;
       }
     }
@@ -300,6 +304,7 @@ export default function ExpenseEditForm() {
           setDate={(v) => setForm((prev) => ({ ...prev!, expense: { ...prev!.expense, date: v } }))}
           startDate={tripBudgetData?.startDate}
           endDate={tripBudgetData?.endDate}
+          settledDates={pageData.settledDates}
         />
 
         <PaymentMethodSection
