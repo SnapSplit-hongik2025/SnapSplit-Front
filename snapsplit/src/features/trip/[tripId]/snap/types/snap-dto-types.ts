@@ -52,3 +52,12 @@ export interface Folder {
   name: string;
   id: number;
 }
+
+export interface TagPhotoDto {
+  photoId: number;
+  photoUrl: string;
+  taggedUsers: {
+    userId: number;
+    userName: string;
+  }[];
+}

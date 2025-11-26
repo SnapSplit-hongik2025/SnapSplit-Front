@@ -8,6 +8,7 @@ import FilterBottomSheet from '@/features/trip/[tripId]/snap/_components/fiterBo
 import BottomSheet from '@/shared/components/bottom-sheet/BottomSheet';
 import { FilterState } from '@/features/trip/[tripId]/snap/type';
 import { PhotoResponse } from '@/features/trip/[tripId]/snap/types/snap-dto-types';
+import { PhotoTagMember } from '@/features/trip/[tripId]/snap/type';
 
 type BaseTabViewProps = {
   setIsScrolled: (show: boolean) => void;
@@ -20,6 +21,7 @@ type BaseTabViewProps = {
   onRefresh?: () => void;
   dayCount: number;
   members?: string[];
+  tagUsers?: PhotoTagMember[];
 };
 
 export default function BaseTabView({
@@ -33,6 +35,7 @@ export default function BaseTabView({
   onRefresh,
   dayCount,
   members,
+  tagUsers,
 }: BaseTabViewProps) {
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -133,6 +136,7 @@ export default function BaseTabView({
       {/* 사진 그리드 */}
       <PhotoGrid
         images={filteredImages ?? []}
+        members={tagUsers ?? []}
         onRefresh={onRefresh}
         isSelectionMode={false}
         selectedImageIds={[]}

@@ -15,3 +15,9 @@ export type UploadedImage = {
   };
 
 export type ActiveTab = '전체' | '폴더별';
+
+export type PhotoTagMember = {
+    userId: number;
+    name: string;
+    isTagged: boolean;
+};

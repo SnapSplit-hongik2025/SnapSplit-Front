@@ -8,9 +8,12 @@ import Modal from '@/shared/components/modal/Modal';
 import PhotoDeleteModalContent from './photo-grid/PhotoDeleteModalContent';
 import { deleteImages, downloadImage } from '@/features/trip/[tripId]/snap/api/snap-api';
 import { useParams } from 'next/navigation';
+import PhotoTagModalContent from './photo-grid/PhotoTagModalContent';
+import { PhotoTagMember } from '@/features/trip/[tripId]/snap/type';
 
 type PhotoGridProps = {
   images: GetPhotosDto['photos'];
+  members: PhotoTagMember[];
   isSelectionMode?: boolean;
   selectedImageIds?: string[];
   onToggleSelect?: (idx: string) => void;
@@ -19,6 +22,7 @@ type PhotoGridProps = {
 
 export default function PhotoGrid({
   images,
+  members,
   isSelectionMode,
   selectedImageIds,
   onToggleSelect,
@@ -28,6 +32,7 @@ export default function PhotoGrid({
   const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
 
   // 선택된 사진 정보
   const selectedPhoto = images.find((img) => img.photoId === Number(selectedImageId));
@@ -97,6 +102,17 @@ export default function PhotoGrid({
     );
   }
 
+  let membersCopy = members;
+
+  if (selectedImageId) {
+    membersCopy = members.map((member) => {
+      return {
+        ...member,
+        isTagged: images.find((img) => img.photoId === selectedImageId)?.taggedUsers.some((user) => user.userId === member.userId) ?? false,
+      };
+    });
+  }
+
   return (
     <div className="grid grid-cols-3 gap-2 pb-15">
       {images.map((image) => {
@@ -142,6 +158,9 @@ export default function PhotoGrid({
               <button onClick={() => handleDownloadImage()}>
                 <Image src="/svg/download.svg" alt="다운로드" width={24} height={24} />
               </button>
+              <button onClick={() => setIsTagModalOpen(true)}>
+                <Image src="/svg/users-group.svg" alt="그룹" width={24} height={24} />
+              </button>
               <button onClick={() => setIsPhotoModalOpen(false)}>
                 <Image src="/svg/exit-grey-1000.svg" alt="닫기" width={24} height={24} />
               </button>
@@ -161,6 +180,12 @@ export default function PhotoGrid({
             </div>
           </div>
         </FullScreenModal>
+      )}
+
+      {isTagModalOpen && (
+        <Modal layer="toast">
+          <PhotoTagModalContent onClose={() => setIsTagModalOpen(false)} members={membersCopy} tripId={Number(tripId.tripId)} photoId={selectedImageId} />
+        </Modal>
       )}
 
       {isDeleteModalOpen && (
