@@ -49,6 +49,7 @@ export default function ReceiptRegisterButton() {
     setLoading(true);
 
     try {
+      // [수정 1] API 호출 시 tripId(number 변환)와 file을 함께 전달
       const ocrResult = await getParsedReceipt(Number(tripId), file);
       const refined = mapOcrResponseToResult(ocrResult);
 
@@ -56,12 +57,13 @@ export default function ReceiptRegisterButton() {
       setReceiptUrl(ocrResult.receiptUrl);
 
       router.push(`/trip/${tripId}/budget/expense/receipt?date=${date}`);
-    } catch (err: any) {
+    } catch (err) {
+      // [수정 2] ': any' 제거 및 타입 단언(as) 사용
       console.error(err);
 
-      // [수정] 에러 상태 코드에 따라 알림 분기 처리
-      // axios 에러 객체 구조에 따라 status 위치가 다를 수 있어 안전하게 확인
-      const status = err.response?.status || err.status;
+      // err를 임시 객체 타입으로 단언하여 status 프로퍼티에 접근
+      const errorObj = err as { response?: { status: number }; status?: number };
+      const status = errorObj.response?.status || errorObj.status;
 
       if (status === 400) {
         alert('유효하지 않은 이미지 파일입니다. 다른 파일로 시도해주세요.');
@@ -84,7 +86,14 @@ export default function ReceiptRegisterButton() {
 
   return (
     <>
-      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        // capture="environment"
+        className="hidden"
+        onChange={onFileChange}
+      />
       <button
         className="flex items-center justify-center gap-1 w-full h-11 bg-primary rounded-xl cursor-pointer disabled:opacity-60"
         onClick={openCamera}
