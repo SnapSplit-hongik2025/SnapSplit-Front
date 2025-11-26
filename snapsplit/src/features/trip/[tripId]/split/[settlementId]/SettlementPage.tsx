@@ -11,39 +11,6 @@ import { getSettlementData } from './api/settlement-api';
 import { GetSettlementDto } from './types/settlement-dto-type';
 import Loading from '@/shared/components/loading/Loading';
 
-// [타입 정의는 그대로 유지]
-declare global {
-  interface Window {
-    Kakao: {
-      init: (key: string | undefined) => void;
-      isInitialized: () => boolean;
-      Share: {
-        sendDefault: (settings: KakaoShareSettings) => void;
-      };
-    };
-  }
-}
-
-interface KakaoShareSettings {
-  objectType: 'feed' | 'list' | 'location' | 'commerce' | 'text';
-  content: {
-    title: string;
-    description: string;
-    imageUrl: string;
-    link: {
-      mobileWebUrl: string;
-      webUrl: string;
-    };
-  };
-  buttons?: Array<{
-    title: string;
-    link: {
-      mobileWebUrl: string;
-      webUrl: string;
-    };
-  }>;
-}
-
 const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPageProps) => {
   const { data, isLoading, isError, error, isSuccess } = useQuery<GetSettlementDto, Error>({
     queryKey: ['settlement', tripId, settlementId],
