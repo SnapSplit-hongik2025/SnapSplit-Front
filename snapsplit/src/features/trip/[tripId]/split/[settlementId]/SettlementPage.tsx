@@ -83,10 +83,9 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
           window.Kakao.Share.sendDefault({
             objectType: 'feed',
             content: {
-              title: '💸 SNAP SPLIT 정산 영수증 도착!',
-              description: description,
-              imageUrl:
-                'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=1200',
+              title: 'SNAP SPLIT 정산 영수증 도착!',
+              description: `Day ${startDay} ~ Day ${endDay} 정산 내역입니다.`,
+              imageUrl: 'https://ibb.co/gMCG3LN7',
               link: { mobileWebUrl: currentUrl, webUrl: currentUrl },
             },
             buttons: [
@@ -128,18 +127,6 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
     }
   };
 
-  // 3. 텍스트 복사 핸들러 (UI에서 직접 호출되므로, 통합 함수와는 별개로 존재)
-  const handleCopyText = async () => {
-    const text = generateShareText();
-    try {
-      await navigator.clipboard.writeText(`[SNAP SPLIT 정산 영수증]\n\n${text}`);
-      alert('정산 내역이 클립보드에 복사되었습니다!');
-    } catch (err) {
-      console.error('복사 실패:', err);
-      alert('복사에 실패했습니다.');
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
@@ -164,16 +151,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
               startDay={startDay}
               settlementDetails={data.settlementDetails}
             />
-
-            <div className="flex gap-2 w-full mt-4">
-              <Button label="텍스트 복사" onClick={handleCopyText} bg="bg-grey-300 text-grey-800" className="flex-1" />
-              <Button
-                label="공유하기"
-                onClick={handleUniversalShare} // 통합 핸들러 연결
-                bg="bg-primary"
-                className="flex-1"
-              />
-            </div>
+            <Button label="카카오톡으로 공유하기" onClick={handleUniversalShare} className="w-full" />
           </>
         )}
       </section>
