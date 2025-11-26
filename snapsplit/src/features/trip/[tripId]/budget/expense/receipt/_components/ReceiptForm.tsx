@@ -25,7 +25,6 @@ export default function ReceiptForm() {
   const date = searchParams.get('date') as string;
 
   const [pageData, setPageData] = useState<ExpensePageDataResponse | null>(null);
-  const [zoomOpen, setZoomOpen] = useState(false);
 
   // ✅ Zustand에서 OCR 결과 / 통화정보 관리
   const { ocrResult, receiptUrl, currency, setOcrResult } = useReceiptStore();
@@ -145,7 +144,7 @@ export default function ReceiptForm() {
       <div className="text-title-1 w-full pb-4">영수증 정보가 맞나요?</div>
 
       <div className="flex flex-col items-center w-full gap-6">
-        <ReceiptThumbnail setZoomOpen={setZoomOpen} receiptUrl={receiptUrl} />
+        <ReceiptThumbnail receiptUrl={receiptUrl} />
 
         {/* 금액 및 통화 (readOnly 적용) */}
         <ExpenseInputCard
@@ -171,12 +170,6 @@ export default function ReceiptForm() {
       <div className="flex items-center justify-center w-full py-5">
         <Button label="다음으로" onClick={handleNext} enabled={true} />
       </div>
-
-      {zoomOpen && receiptUrl && (
-        <FullScreenModal>
-          <ZoomModal onClose={() => setZoomOpen(false)} receiptUrl={receiptUrl} />
-        </FullScreenModal>
-      )}
     </div>
   );
 }
