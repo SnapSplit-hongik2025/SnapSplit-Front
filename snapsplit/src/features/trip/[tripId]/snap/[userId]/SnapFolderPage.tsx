@@ -173,13 +173,6 @@ const SnapFolderPage = () => {
           onFilterOpen={() => setFilterOpen(true)}
           filters={filters}
           setFilters={setFilters}
-          onSortChange={(sort: 'date_desc' | 'date_asc') => {
-            setSelectedSort(sort);
-            setImages([]);
-            setPage(0);
-            setHasNext(true);
-            fetchPhotos(0);
-          }}
         />
 
         <div
