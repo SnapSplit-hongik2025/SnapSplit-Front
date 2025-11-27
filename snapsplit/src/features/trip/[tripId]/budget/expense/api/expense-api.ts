@@ -46,13 +46,14 @@ export const createExpense = async (tripId: number, data: CreateExpenseRequest):
 };
 
 export const createExpenseWithReceipt = async (tripId: number, data: CreateExpenseRequestWithReceipt): Promise<ApiEnvelope<{expenseId: number}>> => {
+  console.log('[THIS] createExpenseWithReceipt called with data:', data);
+  
   if (!tripId) {
     throw new Error('유효하지 않은 여행 ID입니다.');
   }
   if (!data) {
     throw new Error('유효하지 않은 지출 데이터입니다.');
   }
-  
   try {
     const finalPath = `trips/${tripId}/expense`;
     const res = await privateInstance.post<ApiEnvelope<{expenseId: number}>>(finalPath, {
@@ -65,6 +66,8 @@ export const createExpenseWithReceipt = async (tripId: number, data: CreateExpen
       }),
     });
     console.log(`[API] Created expense for tripId ${tripId}:`, res.data.data);
+    console.log('createExpenseWithReceipt response:', res.data);
+    
     return res.data;
   } catch (error) {
     console.error(`[API Error] Failed to create expense for tripId ${tripId}:`, error);

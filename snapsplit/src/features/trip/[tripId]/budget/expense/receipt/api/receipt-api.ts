@@ -35,6 +35,8 @@ export const getParsedReceipt = async (
       },
     });
 
+
+    console.log('OCR API Response:', res.data); // 디버그용 로그
     return res.data.data;
   } catch (error) { 
     // [수정] ': any' 제거 (TypeScript는 기본적으로 catch 변수를 unknown으로 처리함)

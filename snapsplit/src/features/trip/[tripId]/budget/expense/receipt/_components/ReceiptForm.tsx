@@ -86,14 +86,14 @@ export default function ReceiptForm() {
         // [수정] 초기 로드 시, OCR 아이템들의 합계를 계산하여 amount에 설정
         const initialItems = ocrResult?.items ?? [];
         const calculatedTotal = initialItems.reduce((acc, item) => acc + Number(item.amount || 0), 0);
-
+        const correctedTotal = Math.round(calculatedTotal * 10000) / 10000;
         setForm((prev) => ({
           ...prev,
           expense: {
             ...prev.expense,
             currency: currency,
             exchangeRate: expensePageData.exchangeRates[currency],
-            amount: calculatedTotal, // 계산된 합계 적용
+            amount: correctedTotal, // 계산된 합계 적용
           },
         }));
 
