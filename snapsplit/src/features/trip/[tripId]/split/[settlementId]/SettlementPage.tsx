@@ -139,7 +139,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
           title: '💸 SNAP SPLIT 정산 영수증 도착!',
           description: description,
           imageUrl:
-            'https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=1200',
+            'https://snapsplit-assets.s3.ap-northeast-2.amazonaws.com/photos/44721b30-a5aa-46e4-900c-11efd2580996_KakaoTalk_Photo_2025-11-27-10-47-53.png',
           link: {
             mobileWebUrl: currentUrl,
             webUrl: currentUrl,
@@ -199,14 +199,14 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
               settlementDetails={data.settlementDetails}
             />
 
-            <div className="flex gap-2 w-full mt-4">
-              <Button label="텍스트 복사" onClick={handleCopyText} bg="bg-grey-300 text-grey-800" className="flex-1" />
-              <Button
-                label="카카오톡 공유"
-                onClick={handleKakaoShare}
-                bg="bg-[#FEE500] text-[#191919]"
-                className="flex-1"
-              />
+            <div className="flex gap-2 w-full">
+              <button
+                onClick={handleCopyText}
+                className="cursor-pointer border-1 border-grey-350 text-grey-650 bg-grey-50 rounded-xl w-full py-[14px] flex-1"
+              >
+                텍스트 복사하기
+              </button>
+              <Button label="카카오톡 공유하기" onClick={handleKakaoShare} className="flex-1" />
             </div>
           </>
         )}
