@@ -202,7 +202,7 @@ const SettlementPage = ({ tripId, settlementId, startDay, endDay }: SettlementPa
             <div className="flex gap-2 w-full">
               <button
                 onClick={handleCopyText}
-                className="cursor-pointer border-1 border-grey-350 text-grey-650 bg-grey-50 rounded-xl w-full py-[14px] flex-1"
+                className="cursor-pointer text-[15px] border-1 border-grey-350 text-grey-650 bg-grey-50 rounded-xl w-full py-[14px] flex-1"
               >
                 텍스트 복사하기
               </button>

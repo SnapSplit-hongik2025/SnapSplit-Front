@@ -7,7 +7,7 @@ export type ButtonProps = {
 };
 
 export default function Button({ label, onClick, enabled = true, className = '', bg }: ButtonProps) {
-  const baseStyle = 'rounded-xl w-full py-[14px] text-white text-center';
+  const baseStyle = 'rounded-xl w-full py-[14px] text-white text-center text-[15px]';
   const bgStyle = bg ? bg : enabled ? 'bg-primary' : 'bg-light_green_deep';
   const cursorStyle = enabled ? 'cursor-pointer' : 'cursor-not-allowed';
 
